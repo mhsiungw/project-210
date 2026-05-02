@@ -1,6 +1,11 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { IPC } from '@shared/ipcChannels'
+
+const s3 = new S3Client({
+  region: 'us-east-1',
+})
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -37,3 +42,38 @@ app.on('window-all-closed', () => {
 })
 
 ipcMain.handle(IPC.PING, (): string => 'pong')
+
+ipcMain.handle(
+  IPC.S3_UPLOAD,
+  async (
+    _event,
+    buffer: ArrayBuffer,
+    fileName: string,
+    previewBuffer: ArrayBuffer
+  ): Promise<{ key: string; previewKey: string }> => {
+    const base = `uploads/${Date.now()}-${fileName}`
+    const key = base
+    const previewKey = base.replace(/\.pdf$/i, '') + '-preview.png'
+
+    await Promise.all([
+      s3.send(
+        new PutObjectCommand({
+          Bucket: 'project-210',
+          Key: key,
+          Body: Buffer.from(buffer),
+          ContentType: 'application/pdf',
+        })
+      ),
+      s3.send(
+        new PutObjectCommand({
+          Bucket: 'project-210',
+          Key: previewKey,
+          Body: Buffer.from(previewBuffer),
+          ContentType: 'image/png',
+        })
+      ),
+    ])
+
+    return { key, previewKey }
+  }
+)
