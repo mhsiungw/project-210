@@ -1,4 +1,12 @@
+import './index.css'
 import { StrictMode } from 'react'
+
+const mq = window.matchMedia('(prefers-color-scheme: dark)')
+const applyTheme = (dark: boolean): void => {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+}
+applyTheme(mq.matches)
+mq.addEventListener('change', e => applyTheme(e.matches))
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { HashRouter, BrowserRouter } from 'react-router-dom'
