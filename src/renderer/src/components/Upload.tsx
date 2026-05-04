@@ -34,7 +34,7 @@ async function renderFirstPagePreview(pdfBuffer: ArrayBuffer): Promise<ArrayBuff
   })
 }
 
-export function Upload(): JSX.Element {
+export default function Upload(): JSX.Element {
   // return <div>123</div>
 
   const [file, setFile] = useState<File | null>(null)

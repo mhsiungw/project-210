@@ -1,21 +1,20 @@
-import { Link, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { Home } from '@renderer/pages/Home'
-import { Upload } from '@renderer/pages/Upload'
 import { PdfNotes } from '@renderer/pages/PdfNotes'
+import Sidebar from '@renderer/components/Sidebar'
 
 export default function App(): JSX.Element {
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', padding: '1rem' }}>
-      <nav style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
-        <Link to="/">Home</Link>
-        <Link to="/upload">Upload</Link>
-        <Link to="/pdf-notes">Carrie + Notes</Link>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/upload" element={<Upload />} />
-        <Route path="/pdf-notes" element={<PdfNotes />} />
-      </Routes>
+    <div className="flex gap-4 p-4">
+      <div className="min-w-37.5">
+        <Sidebar />
+      </div>
+      <main className="flex flex-1 max-w-[calc(100vw-150px)] overflow-hidden">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/pdf-notes" element={<PdfNotes />} />
+        </Routes>
+      </main>
     </div>
   )
 }
