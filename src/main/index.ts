@@ -9,13 +9,6 @@ import {
 import { IPC } from '@shared/ipcChannels'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 
-app.whenReady().then(async () => {
-  if (process.env.NODE_ENV === 'development') {
-    await installExtension(REDUX_DEVTOOLS)
-  }
-  createWindow()
-})
-
 const s3 = new S3Client({
   region: 'us-east-1',
 })
@@ -43,8 +36,11 @@ function createWindow(): void {
   }
 }
 
-app.whenReady().then(() => {
-  createWindow()
+app.whenReady().then(async () => {
+  if (process.env.NODE_ENV === 'development') {
+    await installExtension(REDUX_DEVTOOLS)
+  }
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })

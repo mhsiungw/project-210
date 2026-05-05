@@ -15,8 +15,6 @@ export function Pdf(): JSX.Element {
   const [pdfData, setPdfData] = useState<ArrayBuffer | null>(null)
   const url = useAppSelector(state => state.app.currentPdfUrl)
 
-  console.log('pdfData', pdfData)
-
   useEffect(() => {
     if (typeof url == 'string') {
       window.api.fetchPDF(url).then(setPdfData)
@@ -32,7 +30,7 @@ export function Pdf(): JSX.Element {
     if (numPages === 0) return
     const saved = Number(localStorage.getItem('currentPage')) || 1
     pageRefs.current[saved - 1]?.scrollIntoView()
-  })
+  }, [numPages])
 
   useEffect(() => {
     const observers = pageRefs.current.map((el, i) => {
@@ -48,13 +46,12 @@ export function Pdf(): JSX.Element {
     })
 
     return () => observers.forEach(obs => obs?.disconnect())
-  })
+  }, [numPages])
 
   useEffect(() => {
     if (!containerRef.current) return
     const observer = new ResizeObserver(([entry]) =>
       setContainerWidth(() => {
-        console.log(entry.contentRect.width)
         return entry.contentRect.width
       })
     )
@@ -65,7 +62,7 @@ export function Pdf(): JSX.Element {
   return (
     <div className="flex flex-col max-w-[calc((100vw-150px)/2)] h-full overflow-auto">
       <div ref={containerRef} />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="flex items-center gap-4">
         <div>
           <button onClick={() => setScale(p => Math.max(1, parseFloat((p - 0.5).toFixed(1))))}>
             Prev

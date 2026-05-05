@@ -149,45 +149,34 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
   const uploadDisabled = !file || isGenerating || isUploading || !previewBufferRef.current
 
   return (
-    <div style={{ maxWidth: 480 }}>
-      <h2 style={{ marginBottom: '1rem' }}>Upload PDF</h2>
+    <div className="max-w-120">
+      <h2 className="mb-4">Upload PDF</h2>
 
       <div
         onClick={() => inputRef.current?.click()}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        style={{
-          border: `2px dashed ${isDragging ? '#0070f3' : '#ccc'}`,
-          borderRadius: 8,
-          padding: previewUrl ? '0.75rem' : '2rem',
-          textAlign: 'center',
-          cursor: 'pointer',
-          background: isDragging ? '#f0f7ff' : '#fafafa',
-          marginBottom: '1rem',
-          transition: 'border-color 0.2s, background 0.2s',
-          overflow: 'hidden',
-        }}
+        className={[
+          'border-2 border-dashed rounded-lg text-center cursor-pointer mb-4 overflow-hidden transition-[border-color,background] duration-200',
+          isDragging ? 'border-primary bg-[#f0f7ff]' : 'border-border bg-[#fafafa]',
+          previewUrl ? 'p-3' : 'p-8',
+        ].join(' ')}
       >
         {previewUrl ? (
           <>
             <img
               src={previewUrl}
               alt="PDF preview"
-              style={{
-                maxWidth: '100%',
-                borderRadius: 4,
-                display: 'block',
-                margin: '0 auto 0.5rem',
-              }}
+              className="max-w-full rounded block mx-auto mb-2"
             />
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#555' }}>{file?.name}</p>
-            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#888' }}>
+            <p className="m-0 text-[0.85rem] text-muted">{file?.name}</p>
+            <p className="mt-1 m-0 text-[0.8rem] text-[#888]">
               {file ? `${(file.size / 1024).toFixed(1)} KB` : ''}
             </p>
           </>
         ) : (
-          <p style={{ margin: 0, color: '#555' }}>
+          <p className="m-0 text-muted">
             {isGenerating ? 'Generating preview…' : 'Drag & drop a PDF here, or click to select'}
           </p>
         )}
@@ -196,39 +185,26 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
           type="file"
           accept="application/pdf"
           onChange={handleFileChange}
-          style={{ display: 'none' }}
+          className="hidden"
         />
       </div>
 
-      {validationError && (
-        <p style={{ color: '#d32f2f', margin: '0 0 0.75rem', fontSize: '0.9rem' }}>
-          {validationError}
-        </p>
-      )}
+      {validationError && <p className="text-error mb-3 text-[0.9rem]">{validationError}</p>}
 
-      {uploadError && (
-        <p style={{ color: '#d32f2f', margin: '0 0 0.75rem', fontSize: '0.9rem' }}>{uploadError}</p>
-      )}
+      {uploadError && <p className="text-error mb-3 text-[0.9rem]">{uploadError}</p>}
 
       {status === 'success' && (
-        <p style={{ color: '#2e7d32', margin: '0 0 0.75rem', fontSize: '0.9rem' }}>
-          File uploaded successfully.
-        </p>
+        <p className="text-success mb-3 text-[0.9rem]">File uploaded successfully.</p>
       )}
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className="flex gap-2">
         <button
           onClick={handleUpload}
           disabled={uploadDisabled}
-          style={{
-            padding: '0.5rem 1.25rem',
-            background: uploadDisabled ? '#ccc' : '#0070f3',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            cursor: uploadDisabled ? 'not-allowed' : 'pointer',
-            fontWeight: 600,
-          }}
+          className={[
+            'px-5 py-2 text-white border-none rounded-md font-semibold',
+            uploadDisabled ? 'bg-bordercursor-not-allowed' : 'bg-primary cursor-pointer',
+          ].join(' ')}
         >
           {isUploading ? 'Uploading…' : 'Upload'}
         </button>
@@ -236,13 +212,7 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
         {(file || status !== 'idle') && (
           <button
             onClick={handleReset}
-            style={{
-              padding: '0.5rem 1rem',
-              background: 'transparent',
-              border: '1px solid #ccc',
-              borderRadius: 6,
-              cursor: 'pointer',
-            }}
+            className="px-4 py-2 bg-transparent border border-borderrounded-md cursor-pointer"
           >
             Reset
           </button>

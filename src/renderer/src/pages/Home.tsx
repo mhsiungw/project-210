@@ -24,14 +24,7 @@ export function Home(): JSX.Element {
       <Upload onUploadSuccess={fetchPreviews} />
 
       {previews.length > 0 && (
-        <div
-          style={{
-            marginTop: '2rem',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="mt-8 grid gap-4 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
           {previews.map(key => {
             const pdfKey = key.replace('-preview.png', '.pdf')
             const pdfUrl = `${CLOUDFRONT_BASE}/${pdfKey}`
@@ -45,13 +38,7 @@ export function Home(): JSX.Element {
                   navigate('/pdf-notes')
                 }}
                 alt={key}
-                style={{
-                  width: '100%',
-                  aspectRatio: '3 / 4',
-                  objectFit: 'cover',
-                  borderRadius: 6,
-                  border: '1px solid #e0e0e0',
-                }}
+                className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"
               />
             )
           })}

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface AppState {
-  currentPdfUrl: string | null
+  currentPdfUrl: string
 }
 
 const initialState: AppState = {
