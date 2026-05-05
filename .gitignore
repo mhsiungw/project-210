@@ -5,3 +5,5 @@ out/
 *.local
 resource/*
 src/renderer/public/*
+.env
+supabase

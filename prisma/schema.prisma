@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Book {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String   @default("")
+  url          String   @default("")
+  preview_url  String   @default("")
+  total_pages  Int?
+  current_page Int?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("books")
+}

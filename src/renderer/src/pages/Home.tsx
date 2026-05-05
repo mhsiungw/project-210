@@ -3,41 +3,37 @@ import { useNavigate } from 'react-router-dom'
 import Upload from '@renderer/components/Upload'
 import { useAppDispatch } from '@renderer/store'
 import { setCurrentPDFUrl } from '@renderer/store/appSlice'
-
-const CLOUDFRONT_BASE = 'https://d11m54w1vy523e.cloudfront.net'
+import type { Book } from '@prisma/client'
 
 export function Home(): JSX.Element {
-  const [previews, setPreviews] = useState<string[]>([])
+  const [books, setBooks] = useState<Book[]>([])
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const fetchPreviews = useCallback(() => {
-    window.api.getS3Previews().then(setPreviews)
+  const fetchBooks = useCallback(() => {
+    window.api.fetchBooks().then(setBooks)
   }, [])
 
   useEffect(() => {
-    fetchPreviews()
-  }, [fetchPreviews])
+    fetchBooks()
+  }, [fetchBooks])
 
   return (
     <div>
-      <Upload onUploadSuccess={fetchPreviews} />
+      <Upload onUploadSuccess={fetchBooks} />
 
-      {previews.length > 0 && (
+      {books.length > 0 && (
         <div className="mt-8 grid gap-4 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-          {previews.map(key => {
-            const pdfKey = key.replace('-preview.png', '.pdf')
-            const pdfUrl = `${CLOUDFRONT_BASE}/${pdfKey}`
-
+          {books.map(({ id, preview_url, url }) => {
             return (
               <img
-                key={key}
-                src={`${CLOUDFRONT_BASE}/${key}`}
+                key={id}
+                src={preview_url}
                 onDoubleClick={() => {
-                  dispatch(setCurrentPDFUrl(pdfUrl))
+                  dispatch(setCurrentPDFUrl(url))
                   navigate('/pdf-notes')
                 }}
-                alt={key}
+                alt={id}
                 className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"
               />
             )

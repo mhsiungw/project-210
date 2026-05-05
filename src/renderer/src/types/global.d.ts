@@ -1,3 +1,5 @@
+import type { Book } from '@prisma/client'
+
 declare module '*.css'
 declare module 'react-pdf/dist/Page/AnnotationLayer.css'
 declare module 'react-pdf/dist/Page/TextLayer.css'
@@ -13,6 +15,7 @@ export declare global {
       ) => Promise<{ key: string; previewKey: string }>
       getS3Previews: () => Promise<string[]>
       fetchPDF: (url: string) => Promise<ArrayBuffer>
+      fetchBooks: () => Promise<Book[]>
     }
   }
 }

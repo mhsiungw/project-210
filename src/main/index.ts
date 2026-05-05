@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import {
@@ -6,8 +7,10 @@ import {
   ListObjectsV2Command,
   ListObjectsV2CommandOutput,
 } from '@aws-sdk/client-s3'
-import { IPC } from '@shared/ipcChannels'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
+import { IPC } from '@shared/ipcChannels'
+import { prisma } from '@main/db'
+import { Book } from '@prisma/client'
 
 const s3 = new S3Client({
   region: 'us-east-1',
@@ -40,10 +43,15 @@ app.whenReady().then(async () => {
   if (process.env.NODE_ENV === 'development') {
     await installExtension(REDUX_DEVTOOLS)
   }
-
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  createWindow()
+})
+
+app.on('before-quit', async () => {
+  await prisma.$disconnect()
 })
 
 app.on('window-all-closed', () => {
@@ -106,9 +114,12 @@ ipcMain.handle(IPC.S3_GET_PREVIEWS, async (): Promise<string[]> => {
 })
 
 ipcMain.handle(IPC.FETCH_PDF, async (_, url: string): Promise<ArrayBuffer> => {
-  console.log('url', url)
   const res = await fetch(url)
   const buf = await res.arrayBuffer()
-  console.log(buf)
   return buf
+})
+
+ipcMain.handle(IPC.FETCH_BOOKS, async (): Promise<Book[]> => {
+  const books = await prisma.book.findMany()
+  return books
 })
