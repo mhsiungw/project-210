@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 :root {
   font-size: 17px;
 }
@@ -21,6 +23,7 @@ body {
 @theme {
   --color-primary: #0070f3;
   --color-error: #d32f2f;
+  --color-sidebar: #2c2c2c;
   --color-success: #2e7d32;
   --color-border: #ccc;
   --color-muted: #555;
@@ -32,6 +35,7 @@ body {
 
 [data-theme='dark'] {
   --color-bg: #212121;
+  --color-sidebar: #2c2c2c;
   --color-text: #e2e2e2;
-  --color-boder: #2e2e2e;
+  --color-border: #ccc;
 }
