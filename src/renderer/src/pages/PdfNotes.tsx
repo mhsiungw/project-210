@@ -8,7 +8,7 @@ export function PdfNotes(): JSX.Element {
     <div className="flex flex-1 gap-4">
       <div className="flex flex-1">
         <textarea
-          className="flex-1 rounded p-3 border border-border resize-none"
+          className="flex-1 rounded p-3 border border-border resize-none outline-none"
           placeholder="Write your notes here..."
           value={notes}
           onChange={e => {
