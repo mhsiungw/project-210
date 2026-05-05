@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
+import { useAppSelector } from '@renderer/store'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 
@@ -11,6 +12,16 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 export function Pdf(): JSX.Element {
   const [numPages, setNumPages] = useState<number>(0)
   const [scale, setScale] = useState<number>(1)
+  const [pdfData, setPdfData] = useState<ArrayBuffer | null>(null)
+  const url = useAppSelector(state => state.app.currentPdfUrl)
+
+  console.log('pdfData', pdfData)
+
+  useEffect(() => {
+    if (typeof url == 'string') {
+      window.api.fetchPDF(url).then(setPdfData)
+    }
+  }, [url])
 
   const [containerWidth, setContainerWidth] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,7 +77,7 @@ export function Pdf(): JSX.Element {
         </div>
       </div>
       <Document
-        file="/Carrie.pdf"
+        file={pdfData ? pdfData : null}
         onLoadSuccess={({ numPages }) => {
           setNumPages(numPages)
         }}

@@ -10,4 +10,5 @@ contextBridge.exposeInMainWorld('api', {
   ): Promise<{ key: string; previewKey: string }> =>
     ipcRenderer.invoke(IPC.S3_UPLOAD, buffer, fileName, previewBuffer),
   getS3Previews: (): Promise<string[]> => ipcRenderer.invoke(IPC.S3_GET_PREVIEWS),
+  fetchPDF: (url: string): Promise<ArrayBuffer> => ipcRenderer.invoke(IPC.FETCH_PDF, url),
 })

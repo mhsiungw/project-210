@@ -12,6 +12,7 @@ export declare global {
         previewBuffer: ArrayBuffer
       ) => Promise<{ key: string; previewKey: string }>
       getS3Previews: () => Promise<string[]>
+      fetchPDF: (url: string) => Promise<ArrayBuffer>
     }
   }
 }

@@ -1,33 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface AppState {
-  count: number
-  pingResponse: string | null
+  currentPdfUrl: string | null
 }
 
 const initialState: AppState = {
-  count: 0,
-  pingResponse: null,
+  currentPdfUrl: '',
 }
 
 const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    increment(state) {
-      state.count += 1
-    },
-    decrement(state) {
-      state.count -= 1
-    },
-    reset(state) {
-      state.count = 0
-    },
-    setPingResponse(state, action: PayloadAction<string>) {
-      state.pingResponse = action.payload
+    setCurrentPDFUrl(state, action: PayloadAction<string>) {
+      state.currentPdfUrl = action.payload
     },
   },
 })
 
-export const { increment, decrement, reset, setPingResponse } = appSlice.actions
+export const { setCurrentPDFUrl } = appSlice.actions
 export default appSlice.reducer

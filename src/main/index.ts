@@ -7,6 +7,14 @@ import {
   ListObjectsV2CommandOutput,
 } from '@aws-sdk/client-s3'
 import { IPC } from '@shared/ipcChannels'
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
+
+app.whenReady().then(async () => {
+  if (process.env.NODE_ENV === 'development') {
+    await installExtension(REDUX_DEVTOOLS)
+  }
+  createWindow()
+})
 
 const s3 = new S3Client({
   region: 'us-east-1',
@@ -88,8 +96,6 @@ ipcMain.handle(IPC.S3_GET_PREVIEWS, async (): Promise<string[]> => {
   let response: ListObjectsV2CommandOutput
   const allObjects = []
 
-  console.log(IPC.S3_GET_PREVIEWS)
-
   do {
     response = await s3.send(
       new ListObjectsV2Command({
@@ -101,4 +107,12 @@ ipcMain.handle(IPC.S3_GET_PREVIEWS, async (): Promise<string[]> => {
     token = response.NextContinuationToken
   } while (response.IsTruncated)
   return allObjects.map(obj => obj.Key!).filter(key => key.endsWith('-preview.png'))
+})
+
+ipcMain.handle(IPC.FETCH_PDF, async (_, url: string): Promise<ArrayBuffer> => {
+  console.log('url', url)
+  const res = await fetch(url)
+  const buf = await res.arrayBuffer()
+  console.log(buf)
+  return buf
 })
