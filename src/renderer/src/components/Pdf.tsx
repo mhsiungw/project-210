@@ -11,13 +11,33 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 export function Pdf(): JSX.Element {
   const [numPages, setNumPages] = useState<number>(0)
   const [scale, setScale] = useState<number>(1)
+
   const [containerWidth, setContainerWidth] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [pageNumber, setPageNumber] = useState(Number(localStorage.getItem('currentPage')) || 1)
+
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
-    localStorage.setItem('currentPage', `${pageNumber}`)
-  }, [pageNumber])
+    if (numPages === 0) return
+    const saved = Number(localStorage.getItem('currentPage')) || 1
+    pageRefs.current[saved - 1]?.scrollIntoView()
+  })
+
+  useEffect(() => {
+    const observers = pageRefs.current.map((el, i) => {
+      if (!el) return null
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) localStorage.setItem('currentPage', String(i + 1))
+        },
+        { threshold: 0.5 }
+      )
+      obs.observe(el)
+      return obs
+    })
+
+    return () => observers.forEach(obs => obs?.disconnect())
+  })
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -36,31 +56,11 @@ export function Pdf(): JSX.Element {
       <div ref={containerRef} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div>
-          <button onClick={() => setPageNumber(p => Math.max(1, p - 1))} disabled={pageNumber <= 1}>
-            Prev
-          </button>
-          <span>
-            Page {pageNumber} of {numPages}
-          </span>
-          <button
-            onClick={() => setPageNumber(p => Math.min(numPages, p + 1))}
-            disabled={pageNumber >= numPages}
-          >
-            Next
-          </button>
-        </div>
-        <div>
-          <button
-            onClick={() => setScale(p => Math.max(1, parseFloat((p - 0.5).toFixed(1))))}
-            disabled={pageNumber <= 1}
-          >
+          <button onClick={() => setScale(p => Math.max(1, parseFloat((p - 0.5).toFixed(1))))}>
             Prev
           </button>
           <span>scale: {scale}</span>
-          <button
-            onClick={() => setScale(p => Math.min(2, parseFloat((p + 0.5).toFixed(1))))}
-            disabled={pageNumber >= numPages}
-          >
+          <button onClick={() => setScale(p => Math.min(2, parseFloat((p + 0.5).toFixed(1))))}>
             Next
           </button>
         </div>
@@ -71,7 +71,16 @@ export function Pdf(): JSX.Element {
           setNumPages(numPages)
         }}
       >
-        <Page pageNumber={pageNumber} width={containerWidth * scale} />
+        {Array.from({ length: numPages }, (_, i) => (
+          <div
+            key={i + 1}
+            ref={el => {
+              pageRefs.current[i] = el
+            }}
+          >
+            <Page pageNumber={i + 1} width={containerWidth * scale} />
+          </div>
+        ))}
       </Document>
     </div>
   )
