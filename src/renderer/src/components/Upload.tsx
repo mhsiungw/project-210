@@ -34,9 +34,7 @@ async function renderFirstPagePreview(pdfBuffer: ArrayBuffer): Promise<ArrayBuff
   })
 }
 
-export default function Upload(): JSX.Element {
-  // return <div>123</div>
-
+export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => void }): JSX.Element {
   const [file, setFile] = useState<File | null>(null)
   const [validationError, setValidationError] = useState<string | null>(null)
   const [status, setStatus] = useState<UploadStatus>('idle')
@@ -130,6 +128,7 @@ export default function Upload(): JSX.Element {
       await window.api.uploadToS3(buffer, file.name, previewBufferRef.current)
       setStatus('success')
       setFile(null)
+      onUploadSuccess?.()
       if (inputRef.current) inputRef.current.value = ''
     } catch (err) {
       setStatus('error')

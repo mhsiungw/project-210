@@ -1,6 +1,11 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import {
+  S3Client,
+  PutObjectCommand,
+  ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
+} from '@aws-sdk/client-s3'
 import { IPC } from '@shared/ipcChannels'
 
 const s3 = new S3Client({
@@ -77,3 +82,23 @@ ipcMain.handle(
     return { key, previewKey }
   }
 )
+
+ipcMain.handle(IPC.S3_GET_PREVIEWS, async (): Promise<string[]> => {
+  let token: string | undefined
+  let response: ListObjectsV2CommandOutput
+  const allObjects = []
+
+  console.log(IPC.S3_GET_PREVIEWS)
+
+  do {
+    response = await s3.send(
+      new ListObjectsV2Command({
+        Bucket: 'project-210',
+        ContinuationToken: token,
+      })
+    )
+    allObjects.push(...(response.Contents ?? []))
+    token = response.NextContinuationToken
+  } while (response.IsTruncated)
+  return allObjects.map(obj => obj.Key!).filter(key => key.endsWith('-preview.png'))
+})

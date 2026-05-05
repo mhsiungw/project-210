@@ -11,6 +11,7 @@ export declare global {
         fileName: string,
         previewBuffer: ArrayBuffer
       ) => Promise<{ key: string; previewKey: string }>
+      getS3Previews: () => Promise<string[]>
     }
   }
 }
