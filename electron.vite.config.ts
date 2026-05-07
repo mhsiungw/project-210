@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
+    build: {
+      watch: {},
+    },
     resolve: {
       alias: {
         '@main': resolve('src/main'),
