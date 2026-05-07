@@ -21,12 +21,12 @@ type IpcHandlers = {
 }
 
 const listeners: IpcHandlers = {
-  uploadToS3: async (
+  postBook: async (
     _event,
     buffer: ArrayBuffer,
     fileName: string,
     previewBuffer: ArrayBuffer
-  ): Promise<Awaited<ReturnType<IpcApi['uploadToS3']>>> => {
+  ): Promise<{ key: string; previewKey: string }> => {
     const base = `uploads/${Date.now()}-${fileName}`
     const key = base
     const previewKey = base.replace(/\.pdf$/i, '') + '-preview.png'
@@ -52,7 +52,7 @@ const listeners: IpcHandlers = {
 
     return { key, previewKey }
   },
-  getS3Previews: async (): Promise<string[]> => {
+  getBookPreviews: async (): Promise<string[]> => {
     let token: string | undefined
     let response: ListObjectsV2CommandOutput
     const allObjects = []
@@ -69,23 +69,24 @@ const listeners: IpcHandlers = {
     } while (response.IsTruncated)
     return allObjects.map(obj => obj.Key!).filter(key => key.endsWith('-preview.png'))
   },
-  fetchPDF: async (_, url: string): Promise<ArrayBuffer> => {
+  getPDF: async (_, url: string): Promise<ArrayBuffer> => {
     const res = await fetch(url)
     const buf = await res.arrayBuffer()
     return buf
   },
-  fetchBooks: async (): Promise<Book[]> => {
+  getBooks: async (): Promise<Book[]> => {
     const books = await prisma.book.findMany()
+    console.log('bookssss')
     return books
   },
 }
 
 export function registerListeners(): void {
-  ipcMain.handle(IPC.S3_UPLOAD, listeners.uploadToS3)
+  ipcMain.handle(IPC.POST_BOOK, listeners.postBook)
 
-  ipcMain.handle(IPC.S3_GET_PREVIEWS, listeners.getS3Previews)
+  ipcMain.handle(IPC.GET_BOOK_PREVIEWS, listeners.getBookPreviews)
 
-  ipcMain.handle(IPC.FETCH_PDF, listeners.fetchPDF)
+  ipcMain.handle(IPC.GET_PDF, listeners.getPDF)
 
-  ipcMain.handle(IPC.FETCH_BOOKS, listeners.fetchBooks)
+  ipcMain.handle(IPC.GET_BOOKS, listeners.getBooks)
 }

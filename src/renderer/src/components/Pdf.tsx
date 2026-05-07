@@ -17,7 +17,7 @@ export function Pdf(): JSX.Element {
 
   useEffect(() => {
     if (typeof url == 'string') {
-      window.api.fetchPDF(url).then(setPdfData)
+      window.api.getPDF(url).then(setPdfData)
     }
   }, [url])
 

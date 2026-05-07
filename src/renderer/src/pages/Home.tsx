@@ -11,7 +11,7 @@ export function Home(): JSX.Element {
   const navigate = useNavigate()
 
   const fetchBooks = useCallback(() => {
-    window.api.fetchBooks().then(setBooks)
+    window.api.getBooks().then(setBooks)
   }, [])
 
   useEffect(() => {

@@ -1,22 +1,21 @@
 import type { Book } from '@prisma/client'
 
 export const IPC = {
-  PING: 'ping',
-  S3_UPLOAD: 's3-upload',
-  S3_GET_PREVIEWS: 's3-get-previews',
-  FETCH_PDF: 'fetch-pdf',
-  FETCH_BOOKS: 'fetch-books',
+  POST_BOOK: 'POST_BOOK',
+  GET_BOOK_PREVIEWS: 'GET_BOOK_PREVIEWS',
+  GET_PDF: 'GET_PDF',
+  GET_BOOKS: 'GET_BOOKS',
 } as const
 
 export interface IpcApi {
-  uploadToS3: (
+  postBook: (
     buffer: ArrayBuffer,
     fileName: string,
     previewBuffer: ArrayBuffer
   ) => Promise<{ key: string; previewKey: string }>
-  getS3Previews: () => Promise<string[]>
-  fetchPDF: (url: string) => Promise<ArrayBuffer>
-  fetchBooks: () => Promise<Book[]>
+  getBookPreviews: () => Promise<string[]>
+  getPDF: (url: string) => Promise<ArrayBuffer>
+  getBooks: () => Promise<Book[]>
 }
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC]

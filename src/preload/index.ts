@@ -3,13 +3,13 @@ import { IPC, IpcApi } from '@shared/ipcChannels'
 import type { Book } from '@prisma/client'
 
 contextBridge.exposeInMainWorld('api', {
-  uploadToS3: (
+  postBook: (
     buffer: ArrayBuffer,
     fileName: string,
     previewBuffer: ArrayBuffer
   ): Promise<{ key: string; previewKey: string }> =>
-    ipcRenderer.invoke(IPC.S3_UPLOAD, buffer, fileName, previewBuffer),
-  getS3Previews: (): Promise<string[]> => ipcRenderer.invoke(IPC.S3_GET_PREVIEWS),
-  fetchPDF: (url: string): Promise<ArrayBuffer> => ipcRenderer.invoke(IPC.FETCH_PDF, url),
-  fetchBooks: (): Promise<Book[]> => ipcRenderer.invoke(IPC.FETCH_BOOKS),
+    ipcRenderer.invoke(IPC.POST_BOOK, buffer, fileName, previewBuffer),
+  getBookPreviews: (): Promise<string[]> => ipcRenderer.invoke(IPC.GET_BOOK_PREVIEWS),
+  getPDF: (url: string): Promise<ArrayBuffer> => ipcRenderer.invoke(IPC.GET_PDF, url),
+  getBooks: (): Promise<Book[]> => ipcRenderer.invoke(IPC.GET_BOOKS),
 } satisfies IpcApi)

@@ -125,7 +125,7 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
 
     try {
       const buffer = await file.arrayBuffer()
-      await window.api.uploadToS3(buffer, file.name, previewBufferRef.current)
+      await window.api.postBook(buffer, file.name, previewBufferRef.current)
       setStatus('success')
       setFile(null)
       onUploadSuccess?.()
