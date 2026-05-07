@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Upload from '@renderer/components/Upload'
 import { useAppDispatch } from '@renderer/store'
-import { setCurrentPDFUrl } from '@renderer/store/appSlice'
+import { setSelectedBook } from '@renderer/store/selectedBook'
 import type { Book } from '@prisma/client'
 
 export function Home(): JSX.Element {
@@ -24,13 +24,14 @@ export function Home(): JSX.Element {
 
       {books.length > 0 && (
         <div className="mt-8 grid gap-4 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-          {books.map(({ id, preview_url, url }) => {
+          {books.map(book => {
+            const { id, preview_url } = book
             return (
               <img
                 key={id}
                 src={preview_url}
                 onDoubleClick={() => {
-                  dispatch(setCurrentPDFUrl(url))
+                  dispatch(setSelectedBook({ ...book, created_at: book.created_at.toISOString() }))
                   navigate('/pdf-notes')
                 }}
                 alt={id}
