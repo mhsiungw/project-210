@@ -9,13 +9,25 @@ datasource db {
 }
 
 model Book {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title        String   @default("")
-  url          String   @default("")
-  preview_url  String   @default("")
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at   DateTime      @default(now()) @db.Timestamptz(6)
   total_pages  Int?
   current_page Int?
-  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  url          String        @default("")
+  title        String        @default("")
+  preview_url  String        @default("")
+  translations Translation[]
 
   @@map("books")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Translation {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  book_id    String?  @db.Uuid
+  text       String?
+  books      Book?    @relation(fields: [book_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@map("translations")
 }

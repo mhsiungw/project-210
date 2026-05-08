@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-s3'
 import { IPC, IpcApi } from '@shared/ipcChannels'
 import { prisma } from '@main/db'
-import { Book } from '@prisma/client'
+import { Book, Translation } from '@prisma/client'
 
 const s3 = new S3Client({
   region: 'us-east-1',
@@ -76,8 +76,44 @@ const listeners: IpcHandlers = {
   },
   getBooks: async (): Promise<Book[]> => {
     const books = await prisma.book.findMany()
-    console.log('bookssss')
+    console.log(books)
     return books
+  },
+  putBook: async (_event, book: Omit<Book, 'created_at'>): Promise<Book> => {
+    return prisma.book.update({
+      where: { id: book.id },
+      data: {
+        title: book.title,
+        url: book.url,
+        preview_url: book.preview_url,
+        total_pages: book.total_pages,
+        current_page: book.current_page,
+      },
+    })
+  },
+  getTranslation: async (_event, bookId: string): Promise<Translation> => {
+    const translation = await prisma.translation.findFirst({
+      where: { book_id: bookId },
+      orderBy: { created_at: 'desc' },
+    })
+    if (!translation) throw new Error(`No translation found for book ${bookId}`)
+    return translation
+  },
+  postTranslation: async (
+    _event,
+    bookId: string,
+    translationText: string,
+    id?: string
+  ): Promise<Translation> => {
+    if (id) {
+      return prisma.translation.update({
+        where: { id },
+        data: { text: translationText },
+      })
+    }
+    return prisma.translation.create({
+      data: { book_id: bookId, text: translationText },
+    })
   },
 }
 
@@ -89,4 +125,9 @@ export function registerListeners(): void {
   ipcMain.handle(IPC.GET_PDF, listeners.getPDF)
 
   ipcMain.handle(IPC.GET_BOOKS, listeners.getBooks)
+
+  ipcMain.handle(IPC.PUT_BOOK, listeners.putBook)
+
+  ipcMain.handle(IPC.GET_TRANSLATION, listeners.getTranslation)
+  ipcMain.handle(IPC.POST_TRANSLATION, listeners.postTranslation)
 }
