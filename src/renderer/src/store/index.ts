@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import selectedBook from './selectedBook'
+import translation from './translation'
 import { exampleApi } from './api'
 
 export const store = configureStore({
   reducer: {
-    selectedBook: selectedBook,
+    selectedBook,
+    translation,
     [exampleApi.reducerPath]: exampleApi.reducer,
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(exampleApi.middleware),

@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useAppSelector } from '@renderer/store'
 import { useBlocker } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '@renderer/store'
+import { setTranslation } from '@renderer/store/translation'
 import { PdfViewer } from '@renderer/components/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {
-  const [translationText, setTranslationText] = useState('')
+  const dispatch = useAppDispatch()
+  const translation = useAppSelector(state => state.translation)
   const selectedBook = useAppSelector(state => state.selectedBook)
   const { id: bookId, url: selectedBookUrl, current_page } = selectedBook
   const blocker = useBlocker(
@@ -21,8 +23,9 @@ export function PdfNotes(): JSX.Element {
 
   const getTranslation = useCallback(async () => {
     const translation = await window.api.getTranslation(selectedBook.id)
-    setTranslationText(translation.text || '')
-  }, [selectedBook.id])
+    const { created_at, ...rest } = translation
+    dispatch(setTranslation({ ...rest, created_at: created_at.toISOString() }))
+  }, [dispatch, selectedBook.id])
 
   useEffect(() => {
     getTranslation()
@@ -30,7 +33,7 @@ export function PdfNotes(): JSX.Element {
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
-      window.api.postTranslation(bookId, translationText).then(() => {
+      window.api.postTranslation(bookId, translation.text || '', translation?.id).then(() => {
         blocker.proceed()
       })
     }
@@ -43,9 +46,9 @@ export function PdfNotes(): JSX.Element {
         <textarea
           className="flex-1 rounded p-3 border border-border resize-none outline-none"
           placeholder="Write your notes here..."
-          value={translationText}
+          value={translation.text || ''}
           onChange={e => {
-            setTranslationText(e.target.value)
+            dispatch(setTranslation({ ...translation, text: e.target.value }))
           }}
         />
       </div>
