@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -35,99 +35,49 @@ async function renderFirstPagePreview(pdfBuffer: ArrayBuffer): Promise<ArrayBuff
 }
 
 export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => void }): JSX.Element {
-  const [file, setFile] = useState<File | null>(null)
   const [validationError, setValidationError] = useState<string | null>(null)
   const [status, setStatus] = useState<UploadStatus>('idle')
   const [uploadError, setUploadError] = useState<string | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const previewBufferRef = useRef<ArrayBuffer | null>(null)
 
-  useEffect(() => {
-    if (!file) {
-      setPreviewUrl(null)
-      previewBufferRef.current = null
-      return
-    }
-
-    let objectUrl: string | null = null
-    setStatus('generating')
-
-    file
-      .arrayBuffer()
-      .then(buf => renderFirstPagePreview(buf))
-      .then(previewBuf => {
-        previewBufferRef.current = previewBuf
-        const blob = new Blob([previewBuf], { type: 'image/png' })
-        objectUrl = URL.createObjectURL(blob)
-        setPreviewUrl(objectUrl)
-        setStatus('idle')
-      })
-      .catch(() => {
-        setUploadError('Failed to generate preview.')
-        setStatus('error')
-      })
-
-    return () => {
-      if (objectUrl) URL.revokeObjectURL(objectUrl)
-    }
-  }, [file])
-
-  function validateAndSetFile(selected: File): void {
+  function validateAndSetFile(selected: File): boolean {
     setValidationError(null)
     setUploadError(null)
     setStatus('idle')
-    setPreviewUrl(null)
-    previewBufferRef.current = null
 
     if (selected.type !== 'application/pdf') {
       setValidationError('Only PDF files are allowed.')
-      setFile(null)
-      return
+      return false
     }
 
     if (selected.size >= MAX_FILE_SIZE) {
       setValidationError('File must be smaller than 2MB.')
-      setFile(null)
-      return
+      return false
     }
-
-    setFile(selected)
+    return true
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>): void {
     const selected = e.target.files?.[0]
-    if (selected) validateAndSetFile(selected)
+    if (!selected) return
+    if (!validateAndSetFile(selected)) return
+
+    handleUpload(selected)
   }
 
-  function handleDrop(e: React.DragEvent<HTMLDivElement>): void {
-    e.preventDefault()
-    setIsDragging(false)
-    const dropped = e.dataTransfer.files?.[0]
-    if (dropped) validateAndSetFile(dropped)
-  }
-
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>): void {
-    e.preventDefault()
-    setIsDragging(true)
-  }
-
-  function handleDragLeave(): void {
-    setIsDragging(false)
-  }
-
-  async function handleUpload(): Promise<void> {
-    if (!file || !previewBufferRef.current) return
+  async function handleUpload(file: File): Promise<void> {
+    if (!file) return
 
     setStatus('uploading')
     setUploadError(null)
 
     try {
       const buffer = await file.arrayBuffer()
-      await window.api.postBook(buffer, file.name, previewBufferRef.current)
+      const previewBuffer = await renderFirstPagePreview(buffer.slice(0))
+      console.log('buffer', buffer)
+      console.log('previewBuffer', previewBuffer)
+      await window.api.postBook(buffer, file.name, previewBuffer)
       setStatus('success')
-      setFile(null)
       onUploadSuccess?.()
       if (inputRef.current) inputRef.current.value = ''
     } catch (err) {
@@ -136,50 +86,12 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
     }
   }
 
-  function handleReset(): void {
-    setFile(null)
-    setValidationError(null)
-    setUploadError(null)
-    setStatus('idle')
-    if (inputRef.current) inputRef.current.value = ''
-  }
-
-  const isGenerating = status === 'generating'
   const isUploading = status === 'uploading'
-  const uploadDisabled = !file || isGenerating || isUploading || !previewBufferRef.current
 
   return (
-    <div className="max-w-120">
-      <h2 className="mb-4">Upload PDF</h2>
-
-      <div
-        onClick={() => inputRef.current?.click()}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        className={[
-          'border-2 border-dashed rounded-lg text-center cursor-pointer mb-4 overflow-hidden transition-[border-color,background] duration-200',
-          isDragging ? 'border-primary bg-[#f0f7ff]' : 'border-border bg-[#fafafa]',
-          previewUrl ? 'p-3' : 'p-8',
-        ].join(' ')}
-      >
-        {previewUrl ? (
-          <>
-            <img
-              src={previewUrl}
-              alt="PDF preview"
-              className="max-w-full rounded block mx-auto mb-2"
-            />
-            <p className="m-0 text-[0.85rem] text-muted">{file?.name}</p>
-            <p className="mt-1 m-0 text-[0.8rem] text-[#888]">
-              {file ? `${(file.size / 1024).toFixed(1)} KB` : ''}
-            </p>
-          </>
-        ) : (
-          <p className="m-0 text-muted">
-            {isGenerating ? 'Generating preview…' : 'Drag & drop a PDF here, or click to select'}
-          </p>
-        )}
+    <div>
+      <button onClick={() => inputRef.current?.click()} className="btn border">
+        <p>Upload</p>
         <input
           ref={inputRef}
           type="file"
@@ -187,7 +99,7 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
           onChange={handleFileChange}
           className="hidden"
         />
-      </div>
+      </button>
 
       {validationError && <p className="text-error mb-3 text-[0.9rem]">{validationError}</p>}
 
@@ -197,27 +109,7 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
         <p className="text-success mb-3 text-[0.9rem]">File uploaded successfully.</p>
       )}
 
-      <div className="flex gap-2">
-        <button
-          onClick={handleUpload}
-          disabled={uploadDisabled}
-          className={[
-            'px-5 py-2 text-white border-none rounded-md font-semibold',
-            uploadDisabled ? 'bg-bordercursor-not-allowed' : 'bg-primary cursor-pointer',
-          ].join(' ')}
-        >
-          {isUploading ? 'Uploading…' : 'Upload'}
-        </button>
-
-        {(file || status !== 'idle') && (
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 bg-transparent border border-borderrounded-md cursor-pointer"
-          >
-            Reset
-          </button>
-        )}
-      </div>
+      {isUploading && <div>Uploading...</div>}
     </div>
   )
 }

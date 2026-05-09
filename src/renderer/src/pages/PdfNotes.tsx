@@ -16,7 +16,7 @@ export function PdfNotes(): JSX.Element {
   const [pdfData, setPdfData] = useState(new ArrayBuffer())
 
   useEffect(() => {
-    if (typeof selectedBookUrl == 'string') {
+    if (selectedBookUrl && typeof selectedBookUrl === 'string') {
       window.api.getPDF(selectedBookUrl).then(setPdfData)
     }
   }, [selectedBookUrl])
@@ -28,20 +28,31 @@ export function PdfNotes(): JSX.Element {
   }, [dispatch, selectedBook.id])
 
   useEffect(() => {
+    if (!selectedBookUrl) {
+      return
+    }
+
     getTranslation()
-  }, [getTranslation])
+  }, [getTranslation, selectedBookUrl])
 
   useEffect(() => {
+    console.log('blocker.state', blocker.state)
     if (blocker.state === 'blocked') {
+      if (!selectedBookUrl) {
+        console.log('blocker.proceed()')
+        blocker.proceed()
+        return
+      }
+
       window.api.postTranslation(bookId, translation.text || '', translation?.id).then(() => {
         blocker.proceed()
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blocker.state])
+  }, [blocker.state, selectedBookUrl])
 
   return (
-    <div className="flex flex-1 gap-4">
+    <div className="flex flex-1 gap-4 ">
       <div className="flex flex-1">
         <textarea
           className="flex-1 rounded p-3 border border-border resize-none outline-none"

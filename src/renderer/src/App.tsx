@@ -5,11 +5,11 @@ import Sidebar from '@renderer/components/Sidebar'
 
 export default function App(): JSX.Element {
   return (
-    <div className="flex gap-4 p-4">
-      <div className="min-w-37.5">
+    <div className="flex gap-4">
+      <div className="min-w-37.5 bg-sidebar p-2">
         <Sidebar />
       </div>
-      <main className="flex flex-1 max-w-[calc(100vw-150px)] overflow-hidden">
+      <main className="flex flex-1 max-w-[calc(100vw-150px)] overflow-hidden p-2">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/pdf-notes" element={<PdfNotes />} />
