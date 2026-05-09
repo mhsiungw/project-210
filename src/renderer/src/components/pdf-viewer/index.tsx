@@ -1,56 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Document, Page, pdfjs } from 'react-pdf'
 import { File } from 'react-pdf/dist/shared/types.js'
-import 'react-pdf/dist/Page/AnnotationLayer.css'
-import 'react-pdf/dist/Page/TextLayer.css'
+import { Document, Page, pdfjs } from 'react-pdf'
+import { useThrottle } from '@renderer/hooks'
 import { PdfToolbar } from './pdfToolbar'
 
-export function useDebounce<T extends unknown[]>(
-  fn: (...args: T) => void,
-  delay = 300
-): (...args: T) => void {
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const callbackRef = useRef(fn)
-
-  // Keep ref current so stale closures never capture an old fn
-  useEffect(() => {
-    callbackRef.current = fn
-  }, [fn])
-
-  // Cancel any pending call on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
-
-  return useCallback(
-    (...args: T) => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-      timerRef.current = setTimeout(() => {
-        callbackRef.current(...args)
-      }, delay)
-    },
-    [delay]
-  )
-}
-
-export function useThrottle<T extends unknown[]>(
-  fn: (...args: T) => void,
-  ms: number
-): (...args: T) => void {
-  const lastCall = useRef<number>(0)
-  return useCallback(
-    (...args: T) => {
-      const now = Date.now()
-      if (now - lastCall.current >= ms) {
-        lastCall.current = now
-        fn(...args)
-      }
-    },
-    [fn, ms]
-  )
-}
+import 'react-pdf/dist/Page/AnnotationLayer.css'
+import 'react-pdf/dist/Page/TextLayer.css'
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -71,18 +26,15 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
   const [numPages, setNumPages] = useState(0)
   const [scale, setScale] = useState(DEFAULT_SCALE)
   const [currentPage, setCurrentPage] = useState(defaultPage)
+  const currentPageRef = useRef(currentPage)
+  const currentPageBeforeChange = useRef(defaultPage)
   const [containerWidth, setContainerWidth] = useState(0)
   const pageWidth = containerWidth > 0 ? containerWidth * scale : undefined
   const setThrottledContainerWidth = useThrottle(setContainerWidth, 700)
-  //   const setThrottledContainerWidth = useDebounce(setContainerWidth, 500)
-
-  console.log('%ccurrentPage', 'color: red', currentPage)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const pageRefs = useRef<(HTMLDivElement | null)[]>([])
   const observerRef = useRef<IntersectionObserver | null>(null)
-  const currentPageRef = useRef(currentPage)
-  const currentPageBeforeChange = useRef(defaultPage)
 
   const rafId = useRef<number | null>(null)
   const isRestoring = useRef(false)
@@ -136,7 +88,6 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
       },
       {
         root: containerRef.current,
-        // threshold: Array.from({ length: 21 }, (_, i) => i * 0.05),
         threshold: [0, 0.25, 0.5, 0.75, 1],
       }
     )
@@ -148,16 +99,8 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
 
   // Re-setup observer when pages change
   useEffect(() => {
-    let refId: number
     if (numPages > 0) {
       setupIntersectionObserver()
-      // TODO:
-      refId = requestAnimationFrame(() => {
-        setTimeout(() => {
-          scrollToPage(defaultPage)
-        }, 500)
-      })
-      return () => cancelAnimationFrame(refId)
     }
     return () => observerRef.current?.disconnect()
   }, [numPages, setupIntersectionObserver, defaultPage])
@@ -171,8 +114,6 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
     const p = pageRefs.current[idx]
     if (!c || !p) return
     isRestoring.current = true
-    console.log(`%crestoring ${idx}`, 'color: green')
-    // console.log('pageRefs.current', pageRefs.current)
     rafId.current = requestAnimationFrame(() => {
       rafId.current = null
       c.scrollTo({
@@ -180,7 +121,6 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
         behavior: 'smooth',
       })
       isRestoring.current = false
-      console.log('%crestored', 'color: green')
     })
     return () => {
       if (rafId.current !== null) cancelAnimationFrame(rafId.current)
@@ -197,14 +137,13 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
     setScale(s => Math.min(SCALE_MAX, parseFloat((s + SCALE_STEP).toFixed(2))))
   }
 
-  const scrollToPage = (pageNum: number): void => {
+  const scrollToPage = (pageNum: number, behaviour: ScrollBehavior = 'smooth'): void => {
     const idx = pageNum - 1
     const ref = pageRefs.current[idx]
-    console.log('scrollToPage ref', ref)
     if (ref && containerRef.current) {
       containerRef.current.scrollTo({
         top: ref.offsetTop,
-        behavior: 'smooth',
+        behavior: behaviour,
       })
     }
   }
@@ -248,7 +187,17 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
               }}
               style={{ margin: '8px 0' }}
             >
-              <Page pageNumber={i + 1} width={pageWidth} renderAnnotationLayer renderTextLayer />
+              <Page
+                pageNumber={i + 1}
+                width={pageWidth}
+                renderAnnotationLayer
+                renderTextLayer
+                onRenderSuccess={page => {
+                  if (page.pageNumber === defaultPage) {
+                    scrollToPage(defaultPage, 'instant')
+                  }
+                }}
+              />
             </div>
           ))}
         </Document>
