@@ -36,10 +36,8 @@ export function PdfNotes(): JSX.Element {
   }, [getTranslation, selectedBookUrl])
 
   useEffect(() => {
-    console.log('blocker.state', blocker.state)
     if (blocker.state === 'blocked') {
       if (!selectedBookUrl) {
-        console.log('blocker.proceed()')
         blocker.proceed()
         return
       }

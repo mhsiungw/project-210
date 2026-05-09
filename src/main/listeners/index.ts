@@ -84,7 +84,6 @@ const listeners: IpcHandlers = {
   },
   getBooks: async (): Promise<Book[]> => {
     const books = await prisma.book.findMany()
-    console.log(books)
     return books
   },
   putBook: async (_event, book: Omit<Book, 'created_at'>): Promise<Book> => {
