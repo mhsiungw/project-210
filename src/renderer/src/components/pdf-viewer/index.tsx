@@ -12,6 +12,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString()
 
+const PDF_OPTIONS = { wasmUrl: new URL('./wasm/', location.href).href }
+
 const SCALE_STEP = 0.1
 const SCALE_MIN = 0.5
 const SCALE_MAX = 2.0
@@ -172,6 +174,7 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
       >
         <Document
           file={file}
+          options={PDF_OPTIONS}
           onLoadSuccess={({ numPages }) => {
             setNumPages(numPages)
             pageRefs.current = new Array(numPages).fill(null)

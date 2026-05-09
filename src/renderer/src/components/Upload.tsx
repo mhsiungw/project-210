@@ -6,7 +6,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).href
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024
+const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 type UploadStatus = 'idle' | 'generating' | 'uploading' | 'success' | 'error'
 
@@ -74,8 +74,6 @@ export default function Upload({ onUploadSuccess }: { onUploadSuccess?: () => vo
     try {
       const buffer = await file.arrayBuffer()
       const previewBuffer = await renderFirstPagePreview(buffer.slice(0))
-      console.log('buffer', buffer)
-      console.log('previewBuffer', previewBuffer)
       await window.api.postBook(buffer, file.name, previewBuffer)
       setStatus('success')
       onUploadSuccess?.()
