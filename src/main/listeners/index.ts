@@ -50,6 +50,14 @@ const listeners: IpcHandlers = {
       ),
     ])
 
+    await prisma.book.create({
+      data: {
+        file_name: fileName,
+        url: `https://d11m54w1vy523e.cloudfront.net/${key}`,
+        preview_url: `https://d11m54w1vy523e.cloudfront.net/${previewKey}`,
+      },
+    })
+
     return { key, previewKey }
   },
   getBookPreviews: async (): Promise<string[]> => {
@@ -83,7 +91,7 @@ const listeners: IpcHandlers = {
     return prisma.book.update({
       where: { id: book.id },
       data: {
-        title: book.title,
+        file_name: book.file_name,
         url: book.url,
         preview_url: book.preview_url,
         total_pages: book.total_pages,

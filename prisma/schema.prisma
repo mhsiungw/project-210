@@ -14,7 +14,7 @@ model Book {
   total_pages  Int?
   current_page Int?
   url          String        @default("")
-  title        String        @default("")
+  file_name    String        @default("")
   preview_url  String        @default("")
   translations Translation[]
 
