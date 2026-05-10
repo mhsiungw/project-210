@@ -163,47 +163,52 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
       <div
         ref={containerRef}
         style={{
-          flex: 1,
           overflow: 'auto',
           background: '#525659',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
           paddingBottom: 80,
         }}
       >
-        <Document
-          file={file}
-          options={PDF_OPTIONS}
-          onLoadSuccess={({ numPages }) => {
-            setNumPages(numPages)
-            pageRefs.current = new Array(numPages).fill(null)
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            minWidth: 'min-content',
           }}
-          loading={<div style={{ color: '#fff', padding: 32 }}>Loading PDF…</div>}
-          error={<div style={{ color: '#faa', padding: 32 }}>Failed to load PDF.</div>}
         >
-          {Array.from({ length: numPages }, (_, i) => (
-            <div
-              key={i}
-              ref={el => {
-                pageRefs.current[i] = el
-              }}
-              style={{ margin: '8px 0' }}
-            >
-              <Page
-                pageNumber={i + 1}
-                width={pageWidth}
-                renderAnnotationLayer
-                renderTextLayer
-                onRenderSuccess={page => {
-                  if (page.pageNumber === defaultPage) {
-                    scrollToPage(defaultPage, 'instant')
-                  }
+          <Document
+            file={file}
+            options={PDF_OPTIONS}
+            onLoadSuccess={({ numPages }) => {
+              setNumPages(numPages)
+              pageRefs.current = new Array(numPages).fill(null)
+            }}
+            loading={<div style={{ color: '#fff', padding: 32 }}>Loading PDF…</div>}
+            error={<div style={{ color: '#faa', padding: 32 }}>Failed to load PDF.</div>}
+          >
+            {Array.from({ length: numPages }, (_, i) => (
+              <div
+                key={i}
+                ref={el => {
+                  pageRefs.current[i] = el
                 }}
-              />
-            </div>
-          ))}
-        </Document>
+                style={{ margin: '8px 0' }}
+              >
+                <Page
+                  pageNumber={i + 1}
+                  width={pageWidth}
+                  renderAnnotationLayer
+                  renderTextLayer
+                  onRenderSuccess={page => {
+                    if (page.pageNumber === defaultPage) {
+                      scrollToPage(defaultPage, 'instant')
+                    }
+                  }}
+                />
+              </div>
+            ))}
+          </Document>
+        </div>
       </div>
 
       <PdfToolbar
