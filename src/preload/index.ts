@@ -14,8 +14,7 @@ contextBridge.exposeInMainWorld('api', {
   getBooks: (): Promise<Book[]> => ipcRenderer.invoke(IPC.GET_BOOKS),
   putBook: (book: Omit<Book, 'created_at'>): Promise<Book> =>
     ipcRenderer.invoke(IPC.PUT_BOOK, book),
-  getTranslation: (bookId: string): Promise<Translation> =>
-    ipcRenderer.invoke(IPC.GET_TRANSLATION, bookId),
+  getTranslation: (bookId: string) => ipcRenderer.invoke(IPC.GET_TRANSLATION, bookId),
   postTranslation: (bookId: string, translationText: string, id?: string): Promise<Translation> =>
     ipcRenderer.invoke(IPC.POST_TRANSLATION, bookId, translationText, id),
 } satisfies IpcApi)

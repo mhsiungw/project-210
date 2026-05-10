@@ -23,6 +23,9 @@ export function PdfNotes(): JSX.Element {
 
   const getTranslation = useCallback(async () => {
     const translation = await window.api.getTranslation(selectedBook.id)
+
+    if (!translation) return
+
     const { created_at, ...rest } = translation
     dispatch(setTranslation({ ...rest, created_at: created_at.toISOString() }))
   }, [dispatch, selectedBook.id])

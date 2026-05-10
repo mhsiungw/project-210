@@ -23,7 +23,7 @@ export interface IpcApi {
   putBook: (book: Omit<Book, 'created_at'>) => Promise<Book>
   getPDF: (url: string) => Promise<ArrayBuffer>
 
-  getTranslation: (bookId: string) => Promise<Translation>
+  getTranslation: (bookId: string) => Promise<Translation | null>
   postTranslation: (bookId: string, translationText: string, id?: string) => Promise<Translation>
 }
 

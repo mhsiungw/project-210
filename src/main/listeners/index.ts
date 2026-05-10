@@ -98,12 +98,12 @@ const listeners: IpcHandlers = {
       },
     })
   },
-  getTranslation: async (_event, bookId: string): Promise<Translation> => {
+  getTranslation: async (_event, bookId: string) => {
     const translation = await prisma.translation.findFirst({
       where: { book_id: bookId },
       orderBy: { created_at: 'desc' },
     })
-    if (!translation) throw new Error(`No translation found for book ${bookId}`)
+    if (!translation) return null
     return translation
   },
   postTranslation: async (
