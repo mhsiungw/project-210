@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '@renderer/store'
-import { setSelectedBook } from '@renderer/store/selectedBook'
-import type { Book } from '@prisma/client'
+import { setSelectedBookId } from '@renderer/store/selectedBook'
+import type { BookDto } from '@shared/types'
 
 interface Props {
-  books: Book[]
+  books: BookDto[]
 }
 
 export function BookGrid({ books }: Props): JSX.Element | null {
@@ -15,21 +15,18 @@ export function BookGrid({ books }: Props): JSX.Element | null {
 
   return (
     <div className="mt-8 grid gap-4 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-      {books.map(book => {
-        const { id, preview_url } = book
-        return (
-          <img
-            key={id}
-            src={preview_url}
-            onDoubleClick={() => {
-              dispatch(setSelectedBook({ ...book, created_at: book.created_at.toISOString() }))
-              navigate('/pdf-notes')
-            }}
-            alt={id}
-            className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"
-          />
-        )
-      })}
+      {books.map(book => (
+        <img
+          key={book.id}
+          src={book.previewUrl}
+          onDoubleClick={() => {
+            dispatch(setSelectedBookId(book.id))
+            navigate('/pdf-notes')
+          }}
+          alt={book.id}
+          className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"
+        />
+      ))}
     </div>
   )
 }

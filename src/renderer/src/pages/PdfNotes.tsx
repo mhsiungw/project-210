@@ -1,72 +1,71 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useBlocker } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '@renderer/store'
-import { setTranslation } from '@renderer/store/translation'
+import { useAppSelector } from '@renderer/store'
+import {
+  useGetBooksQuery,
+  useGetTranslationQuery,
+  usePostTranslationMutation,
+} from '@renderer/store/api'
 import { PdfViewer } from '@renderer/components/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {
-  const dispatch = useAppDispatch()
-  const translation = useAppSelector(state => state.translation)
-  const selectedBook = useAppSelector(state => state.selectedBook)
-  const { id: bookId, url: selectedBookUrl, current_page } = selectedBook
+  const selectedBookId = useAppSelector(state => state.selectedBook.id)
+
+  const { book } = useGetBooksQuery(undefined, {
+    selectFromResult: ({ data }) => ({
+      book: data?.find(b => b.id === selectedBookId),
+    }),
+  })
+
+  const { data: savedTranslation } = useGetTranslationQuery(selectedBookId ?? '', {
+    skip: !selectedBookId,
+  })
+
+  const [postTranslation] = usePostTranslationMutation()
+  const [draftText, setDraftText] = useState('')
+  const [pdfData, setPdfData] = useState(new ArrayBuffer())
+
+  // Seed draft from DB on initial load only (keyed on id, not text, so typing doesn't reset)
+  useEffect(() => {
+    setDraftText(savedTranslation?.text ?? '')
+  }, [savedTranslation?.id, savedTranslation?.text])
+
+  useEffect(() => {
+    if (book?.url) {
+      window.api.getPDF(book.url).then(setPdfData)
+    }
+  }, [book?.url])
+
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => currentLocation !== nextLocation
   )
 
-  const [pdfData, setPdfData] = useState(new ArrayBuffer())
-
   useEffect(() => {
-    if (selectedBookUrl && typeof selectedBookUrl === 'string') {
-      window.api.getPDF(selectedBookUrl).then(setPdfData)
-    }
-  }, [selectedBookUrl])
+    if (blocker.state !== 'blocked') return
 
-  const getTranslation = useCallback(async () => {
-    const translation = await window.api.getTranslation(selectedBook.id)
-
-    if (!translation) return
-
-    const { created_at, ...rest } = translation
-    dispatch(setTranslation({ ...rest, created_at: created_at.toISOString() }))
-  }, [dispatch, selectedBook.id])
-
-  useEffect(() => {
-    if (!selectedBookUrl) {
+    if (!selectedBookId) {
+      blocker.proceed()
       return
     }
 
-    getTranslation()
-  }, [getTranslation, selectedBookUrl])
-
-  useEffect(() => {
-    if (blocker.state === 'blocked') {
-      if (!selectedBookUrl) {
-        blocker.proceed()
-        return
-      }
-
-      window.api.postTranslation(bookId, translation.text || '', translation?.id).then(() => {
-        blocker.proceed()
-      })
-    }
+    postTranslation({ bookId: selectedBookId, text: draftText, id: savedTranslation?.id }).then(
+      () => blocker.proceed()
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blocker.state, selectedBookUrl])
+  }, [blocker.state])
 
   return (
-    <div className="flex flex-1 gap-4 ">
+    <div className="flex flex-1 gap-4">
       <div className="flex flex-1">
         <textarea
           className="flex-1 rounded p-3 border border-border resize-none outline-none"
           placeholder="Write your notes here..."
-          value={translation.text || ''}
-          onChange={e => {
-            dispatch(setTranslation({ ...translation, text: e.target.value }))
-          }}
+          value={draftText}
+          onChange={e => setDraftText(e.target.value)}
         />
       </div>
       <div className="flex-1 rounded border border-border p-3 max-w-[calc((100vw-150px)/2)]">
-        <PdfViewer file={pdfData} defaultPage={current_page || 1} />
-        {/* <Pdf /> */}
+        <PdfViewer file={pdfData} defaultPage={book?.currentPage || 1} />
       </div>
     </div>
   )

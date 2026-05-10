@@ -1,22 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
 import Upload from '@renderer/components/Upload'
 import { BookGrid } from '@renderer/components/BookGrid'
-import type { Book } from '@prisma/client'
+import { useGetBooksQuery } from '@renderer/store/api'
 
 export function Home(): JSX.Element {
-  const [books, setBooks] = useState<Book[]>([])
-
-  const fetchBooks = useCallback(() => {
-    window.api.getBooks().then(setBooks)
-  }, [])
-
-  useEffect(() => {
-    fetchBooks()
-  }, [fetchBooks])
+  const { data: books = [] } = useGetBooksQuery()
 
   return (
     <div>
-      <Upload onUploadSuccess={fetchBooks} />
+      <Upload />
       <BookGrid books={books} />
     </div>
   )

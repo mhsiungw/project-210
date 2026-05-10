@@ -1,8 +1,7 @@
-import type { Book, Translation } from '@prisma/client'
+import type { BookDto, TranslationDto } from './types'
 
 export const IPC = {
   POST_BOOK: 'POST_BOOK',
-  GET_BOOK_PREVIEWS: 'GET_BOOK_PREVIEWS',
   GET_BOOKS: 'GET_BOOKS',
   PUT_BOOK: 'PUT_BOOK',
 
@@ -13,18 +12,12 @@ export const IPC = {
 } as const
 
 export interface IpcApi {
-  postBook: (
-    buffer: ArrayBuffer,
-    fileName: string,
-    previewBuffer: ArrayBuffer
-  ) => Promise<{ key: string; previewKey: string }>
-  getBookPreviews: () => Promise<string[]>
-  getBooks: () => Promise<Book[]>
-  putBook: (book: Omit<Book, 'created_at'>) => Promise<Book>
+  postBook: (buffer: ArrayBuffer, fileName: string, previewBuffer: ArrayBuffer) => Promise<void>
+  getBooks: () => Promise<BookDto[]>
+  putBook: (book: BookDto) => Promise<BookDto>
   getPDF: (url: string) => Promise<ArrayBuffer>
-
-  getTranslation: (bookId: string) => Promise<Translation | null>
-  postTranslation: (bookId: string, translationText: string, id?: string) => Promise<Translation>
+  getTranslation: (bookId: string) => Promise<TranslationDto | null>
+  postTranslation: (bookId: string, text: string, id?: string) => Promise<TranslationDto>
 }
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC]

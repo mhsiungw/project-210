@@ -1,13 +1,9 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron'
-import {
-  S3Client,
-  PutObjectCommand,
-  ListObjectsV2Command,
-  ListObjectsV2CommandOutput,
-} from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { IPC, IpcApi } from '@shared/ipcChannels'
 import { prisma } from '@main/db'
 import { Book, Translation } from '@prisma/client'
+import type { BookDto, TranslationDto } from '@shared/types'
 
 const s3 = new S3Client({
   region: 'us-east-1',
@@ -20,13 +16,29 @@ type IpcHandlers = {
   ) => ReturnType<IpcApi[K]>
 }
 
+function toBookDto(book: Book): BookDto {
+  return {
+    id: book.id,
+    fileName: book.file_name,
+    url: book.url,
+    previewUrl: book.preview_url,
+    totalPages: book.total_pages ?? 0,
+    currentPage: book.current_page ?? 0,
+    createdAt: book.created_at.toISOString(),
+  }
+}
+
+function toTranslationDto(t: Translation): TranslationDto {
+  return {
+    id: t.id,
+    bookId: t?.book_id || '',
+    text: t?.text || '',
+    createdAt: t.created_at.toISOString(),
+  }
+}
+
 const listeners: IpcHandlers = {
-  postBook: async (
-    _event,
-    buffer: ArrayBuffer,
-    fileName: string,
-    previewBuffer: ArrayBuffer
-  ): Promise<{ key: string; previewKey: string }> => {
+  postBook: async (_event, buffer, fileName, previewBuffer): Promise<void> => {
     const base = `uploads/${Date.now()}-${fileName}`
     const key = base
     const previewKey = base.replace(/\.pdf$/i, '') + '-preview.png'
@@ -57,84 +69,48 @@ const listeners: IpcHandlers = {
         preview_url: `https://d11m54w1vy523e.cloudfront.net/${previewKey}`,
       },
     })
-
-    return { key, previewKey }
   },
-  getBookPreviews: async (): Promise<string[]> => {
-    let token: string | undefined
-    let response: ListObjectsV2CommandOutput
-    const allObjects = []
-
-    do {
-      response = await s3.send(
-        new ListObjectsV2Command({
-          Bucket: 'project-210',
-          ContinuationToken: token,
-        })
-      )
-      allObjects.push(...(response.Contents ?? []))
-      token = response.NextContinuationToken
-    } while (response.IsTruncated)
-    return allObjects.map(obj => obj.Key!).filter(key => key.endsWith('-preview.png'))
-  },
-  getPDF: async (_, url: string): Promise<ArrayBuffer> => {
+  getPDF: async (_, url): Promise<ArrayBuffer> => {
     const res = await fetch(url)
-    const buf = await res.arrayBuffer()
-    return buf
+    return res.arrayBuffer()
   },
-  getBooks: async (): Promise<Book[]> => {
+  getBooks: async (): Promise<BookDto[]> => {
     const books = await prisma.book.findMany()
-    return books
+    return books.map(toBookDto)
   },
-  putBook: async (_event, book: Omit<Book, 'created_at'>): Promise<Book> => {
-    return prisma.book.update({
+  putBook: async (_event, book): Promise<BookDto> => {
+    const updated = await prisma.book.update({
       where: { id: book.id },
       data: {
-        file_name: book.file_name,
+        file_name: book.fileName,
         url: book.url,
-        preview_url: book.preview_url,
-        total_pages: book.total_pages,
-        current_page: book.current_page,
+        preview_url: book.previewUrl,
+        total_pages: book.totalPages,
+        current_page: book.currentPage,
       },
     })
+    return toBookDto(updated)
   },
-  getTranslation: async (_event, bookId: string) => {
-    const translation = await prisma.translation.findFirst({
+  getTranslation: async (_event, bookId): Promise<TranslationDto | null> => {
+    const t = await prisma.translation.findFirst({
       where: { book_id: bookId },
       orderBy: { created_at: 'desc' },
     })
-    if (!translation) return null
-    return translation
+    return t ? toTranslationDto(t) : null
   },
-  postTranslation: async (
-    _event,
-    bookId: string,
-    translationText: string,
-    id?: string
-  ): Promise<Translation> => {
-    if (id) {
-      return prisma.translation.update({
-        where: { id },
-        data: { text: translationText },
-      })
-    }
-    return prisma.translation.create({
-      data: { book_id: bookId, text: translationText },
-    })
+  postTranslation: async (_event, bookId, text, id): Promise<TranslationDto> => {
+    const result = id
+      ? await prisma.translation.update({ where: { id }, data: { text } })
+      : await prisma.translation.create({ data: { book_id: bookId, text } })
+    return toTranslationDto(result)
   },
 }
 
 export function registerListeners(): void {
   ipcMain.handle(IPC.POST_BOOK, listeners.postBook)
-
-  ipcMain.handle(IPC.GET_BOOK_PREVIEWS, listeners.getBookPreviews)
-
   ipcMain.handle(IPC.GET_PDF, listeners.getPDF)
-
   ipcMain.handle(IPC.GET_BOOKS, listeners.getBooks)
-
   ipcMain.handle(IPC.PUT_BOOK, listeners.putBook)
-
   ipcMain.handle(IPC.GET_TRANSLATION, listeners.getTranslation)
   ipcMain.handle(IPC.POST_TRANSLATION, listeners.postTranslation)
 }
