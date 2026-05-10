@@ -16,16 +16,18 @@ export function BookGrid({ books }: Props): JSX.Element | null {
   return (
     <div className="mt-8 grid gap-4 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
       {books.map(book => (
-        <img
-          key={book.id}
-          src={book.previewUrl}
-          onDoubleClick={() => {
-            dispatch(setSelectedBookId(book.id))
-            navigate('/pdf-notes')
-          }}
-          alt={book.id}
-          className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"
-        />
+        <div className="cursor-pointer flex flex-col gap-0.5" key={book.id}>
+          <img
+            src={book.previewUrl}
+            onDoubleClick={() => {
+              dispatch(setSelectedBookId(book.id))
+              navigate('/pdf-notes')
+            }}
+            alt={book.id}
+            className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"
+          />
+          <div className="text-center">{book.fileName}</div>
+        </div>
       ))}
     </div>
   )
