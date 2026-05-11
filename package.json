@@ -10,7 +10,10 @@
     "preview": "electron-vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --config vitest.config.renderer.ts && vitest run --config vitest.config.main.ts",
+    "test:renderer": "vitest --config vitest.config.renderer.ts",
+    "test:main": "vitest --config vitest.config.main.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1041.0",
@@ -27,6 +30,10 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20.17.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -43,10 +50,12 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^4.6.2",
+    "happy-dom": "^20.9.0",
     "prettier": "^3.4.2",
     "tailwindcss": "^4.2.4",
     "typescript": "^5.7.2",
     "vite": "^5.4.10",
-    "vite-plugin-static-copy": "^4.1.0"
+    "vite-plugin-static-copy": "^4.1.0",
+    "vitest": "^4.1.5"
   }
 }
