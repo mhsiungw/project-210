@@ -13,7 +13,9 @@ import { createHashRouter, createBrowserRouter, RouterProvider } from 'react-rou
 import { store } from '@renderer/store'
 import App from '@renderer/App'
 
-const createRouter = navigator.userAgent.includes('Electron') ? createHashRouter : createBrowserRouter
+const createRouter = navigator.userAgent.includes('Electron')
+  ? createHashRouter
+  : createBrowserRouter
 const router = createRouter([{ path: '*', element: <App /> }])
 
 const rootEl = document.getElementById('root')

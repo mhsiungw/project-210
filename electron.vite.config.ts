@@ -1,14 +1,14 @@
 import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
     build: {
       watch: {},
+      externalizeDeps: true,
     },
     resolve: {
       alias: {
@@ -18,7 +18,9 @@ export default defineConfig({
     },
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
+    build: {
+      externalizeDeps: true,
+    },
     resolve: {
       alias: {
         '@preload': resolve('src/preload'),
@@ -37,7 +39,7 @@ export default defineConfig({
       react(),
       tailwindcss(),
       viteStaticCopy({
-        targets: [{ src: 'node_modules/pdfjs-dist/wasm/*.wasm', dest: 'wasm' }],
+        targets: [{ src: resolve('node_modules/pdfjs-dist/wasm/*.wasm'), dest: 'wasm' }],
       }),
     ],
   },
