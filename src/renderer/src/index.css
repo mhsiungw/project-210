@@ -28,6 +28,7 @@ body {
   --color-border: #ccc;
   --color-muted: #555;
   --color-bg: #e2e2e2;
+  --color-context-menu: #343333;
   --color-text: #212121;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -38,6 +39,7 @@ body {
   --color-muted: #555;
   --color-bg: #212121;
   --color-sidebar: #2c2c2c;
+  --color-context-menu: #343333;
   --color-text: #e2e2e2;
   --color-border: #ccc;
 }

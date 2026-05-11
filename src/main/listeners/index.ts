@@ -1,5 +1,5 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { IPC, IpcApi } from '@shared/ipcChannels'
 import { prisma } from '@main/db'
 import { Book, Translation } from '@prisma/client'
@@ -72,6 +72,23 @@ const listeners: IpcHandlers = {
       },
     })
   },
+  deleteBook: async (_, bookId) => {
+    const book = await prisma.book.findUnique({ where: { id: bookId } })
+
+    await prisma.translation.deleteMany({ where: { book_id: bookId } })
+    await prisma.book.delete({ where: { id: bookId } })
+
+    if (book) {
+      await s3.send(
+        new DeleteObjectsCommand({
+          Bucket: process.env.S3_BUCKET,
+          Delete: {
+            Objects: [{ Key: book.s3_key }, { Key: book.s3_preview_key }],
+          },
+        })
+      )
+    }
+  },
   getPDF: async (_, url): Promise<ArrayBuffer> => {
     const res = await fetch(url)
     return res.arrayBuffer()
@@ -108,6 +125,7 @@ export function registerListeners(): void {
   ipcMain.handle(IPC.POST_BOOK, listeners.postBook)
   ipcMain.handle(IPC.GET_PDF, listeners.getPDF)
   ipcMain.handle(IPC.GET_BOOKS, listeners.getBooks)
+  ipcMain.handle(IPC.DELETE_BOOK, listeners.deleteBook)
   ipcMain.handle(IPC.PUT_BOOK, listeners.putBook)
   ipcMain.handle(IPC.GET_TRANSLATION, listeners.getTranslation)
   ipcMain.handle(IPC.POST_TRANSLATION, listeners.postTranslation)

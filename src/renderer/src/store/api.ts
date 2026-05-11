@@ -19,6 +19,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['Book'],
     }),
+    deleteBook: builder.mutation<void, string>({
+      queryFn: async bookId => ({ data: await window.api.deleteBook(bookId) }),
+      invalidatesTags: ['Book'],
+    }),
     getTranslation: builder.query<TranslationDto | null, string>({
       queryFn: async bookId => ({ data: await window.api.getTranslation(bookId) }),
       providesTags: (_result, _error, bookId) => [{ type: 'Translation', id: bookId }],
@@ -40,4 +44,5 @@ export const {
   usePostBookMutation,
   useGetTranslationQuery,
   usePostTranslationMutation,
+  useDeleteBookMutation,
 } = api

@@ -4,6 +4,7 @@ export const IPC = {
   POST_BOOK: 'POST_BOOK',
   GET_BOOKS: 'GET_BOOKS',
   PUT_BOOK: 'PUT_BOOK',
+  DELETE_BOOK: 'DELETE_BOOK',
 
   GET_PDF: 'GET_PDF',
 
@@ -15,6 +16,7 @@ export interface IpcApi {
   postBook: (buffer: ArrayBuffer, fileName: string, previewBuffer: ArrayBuffer) => Promise<void>
   getBooks: () => Promise<BookDto[]>
   putBook: (book: BookDto) => Promise<BookDto>
+  deleteBook(bookId: string): Promise<void>
   getPDF: (url: string) => Promise<ArrayBuffer>
   getTranslation: (bookId: string) => Promise<TranslationDto | null>
   postTranslation: (bookId: string, text: string, id?: string) => Promise<TranslationDto>
