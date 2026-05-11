@@ -31,10 +31,10 @@ export function PdfNotes(): JSX.Element {
   }, [savedTranslation?.id, savedTranslation?.text])
 
   useEffect(() => {
-    if (book?.url) {
-      window.api.getPDF(book.url).then(setPdfData)
+    if (book?.s3KeyUrl) {
+      window.api.getPDF(book.s3KeyUrl).then(setPdfData)
     }
-  }, [book?.url])
+  }, [book?.s3KeyUrl])
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => currentLocation !== nextLocation

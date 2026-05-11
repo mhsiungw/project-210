@@ -1,8 +1,10 @@
 export interface BookDto {
   id: string
   fileName: string
-  url: string
-  previewUrl: string
+  s3Key: string
+  s3PreviewKey: string
+  s3KeyUrl: string
+  s3PreviewKeyUrl: string
   totalPages: number
   currentPage: number
   createdAt?: string

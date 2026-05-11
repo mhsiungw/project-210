@@ -20,8 +20,10 @@ function toBookDto(book: Book): BookDto {
   return {
     id: book.id,
     fileName: book.file_name,
-    url: book.url,
-    previewUrl: book.preview_url,
+    s3Key: book.s3_key,
+    s3PreviewKey: book.s3_preview_key,
+    s3KeyUrl: `${process.env.CLOUDFRONT_BASE_URL}/${book.s3_key}`,
+    s3PreviewKeyUrl: `${process.env.CLOUDFRONT_BASE_URL}/${book.s3_preview_key}`,
     totalPages: book.total_pages ?? 0,
     currentPage: book.current_page ?? 0,
     createdAt: book.created_at.toISOString(),
@@ -46,7 +48,7 @@ const listeners: IpcHandlers = {
     await Promise.all([
       s3.send(
         new PutObjectCommand({
-          Bucket: 'project-210',
+          Bucket: process.env.S3_BUCKET,
           Key: key,
           Body: Buffer.from(buffer),
           ContentType: 'application/pdf',
@@ -54,7 +56,7 @@ const listeners: IpcHandlers = {
       ),
       s3.send(
         new PutObjectCommand({
-          Bucket: 'project-210',
+          Bucket: process.env.S3_BUCKET,
           Key: previewKey,
           Body: Buffer.from(previewBuffer),
           ContentType: 'image/png',
@@ -65,8 +67,8 @@ const listeners: IpcHandlers = {
     await prisma.book.create({
       data: {
         file_name: fileName,
-        url: `https://d11m54w1vy523e.cloudfront.net/${key}`,
-        preview_url: `https://d11m54w1vy523e.cloudfront.net/${previewKey}`,
+        s3_key: key,
+        s3_preview_key: previewKey,
       },
     })
   },
@@ -82,10 +84,6 @@ const listeners: IpcHandlers = {
     const updated = await prisma.book.update({
       where: { id: book.id },
       data: {
-        file_name: book.fileName,
-        url: book.url,
-        preview_url: book.previewUrl,
-        total_pages: book.totalPages,
         current_page: book.currentPage,
       },
     })

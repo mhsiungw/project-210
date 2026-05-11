@@ -18,7 +18,7 @@ export function BookGrid({ books }: Props): JSX.Element | null {
       {books.map(book => (
         <div className="cursor-pointer flex flex-col gap-0.5" key={book.id}>
           <img
-            src={book.previewUrl}
+            src={book.s3PreviewKeyUrl}
             onDoubleClick={() => {
               dispatch(setSelectedBookId(book.id))
               navigate('/pdf-notes')

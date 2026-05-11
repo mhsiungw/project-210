@@ -13,10 +13,10 @@ model Book {
   created_at   DateTime      @default(now()) @db.Timestamptz(6)
   total_pages  Int?
   current_page Int?
-  url          String        @default("")
   file_name    String        @default("")
-  preview_url  String        @default("")
   translations Translation[]
+  s3_key         String  @default("")
+  s3_preview_key String  @default("")
 
   @@map("books")
 }
