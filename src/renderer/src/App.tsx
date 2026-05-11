@@ -2,10 +2,12 @@ import { Route, Routes } from 'react-router-dom'
 import { Home } from '@renderer/pages/Home'
 import { PdfNotes } from '@renderer/pages/PdfNotes'
 import Sidebar from '@renderer/components/Sidebar'
+import { GlobalLoader } from '@renderer/components/GlobalLoader'
 
 export default function App(): JSX.Element {
   return (
     <div className="flex gap-4">
+      <GlobalLoader />
       <div className="min-w-37.5 bg-sidebar p-2">
         <Sidebar />
       </div>

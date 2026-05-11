@@ -34,7 +34,7 @@ async function renderFirstPagePreview(pdfBuffer: ArrayBuffer): Promise<ArrayBuff
 }
 
 export default function Upload(): JSX.Element {
-  const [postBook, { isLoading, isSuccess, isError, error }] = usePostBookMutation()
+  const [postBook, { isLoading, isError, error }] = usePostBookMutation()
   const [validationError, setValidationError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -83,8 +83,6 @@ export default function Upload(): JSX.Element {
           {error instanceof Error ? error.message : 'Upload failed.'}
         </p>
       )}
-      {isSuccess && <p className="text-success mb-3 text-[0.9rem]">File uploaded successfully.</p>}
-      {isLoading && <div>Uploading...</div>}
     </div>
   )
 }
