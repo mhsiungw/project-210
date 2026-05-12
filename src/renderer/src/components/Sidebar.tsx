@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Link } from 'react-router-dom'
 import { RiFileLine } from '@remixicon/react'
 

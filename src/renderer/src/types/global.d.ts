@@ -1,8 +1,6 @@
-import type { IpcApi } from '@shared/ipcChannels'
+/// <reference types="vite/client" />
 
-declare module '*.css'
-declare module 'react-pdf/dist/Page/AnnotationLayer.css'
-declare module 'react-pdf/dist/Page/TextLayer.css'
+import type { IpcApi } from '@shared/ipcChannels'
 
 export declare global {
   interface Window {

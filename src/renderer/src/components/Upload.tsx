@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, JSX } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { usePostBookMutation } from '@renderer/store/api'
 

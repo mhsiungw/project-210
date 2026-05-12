@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { Home } from '@renderer/pages/Home'
 import { PdfNotes } from '@renderer/pages/PdfNotes'
