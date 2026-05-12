@@ -22,7 +22,16 @@ import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { createHashRouter, createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { store } from '@renderer/store'
+import { setSession } from '@renderer/store/auth'
+import { supabase } from '@renderer/lib/supabase'
 import App from '@renderer/App'
+
+supabase.auth.getSession().then(({ data }) => {
+  store.dispatch(setSession(data.session))
+})
+supabase.auth.onAuthStateChange((_event, session) => {
+  store.dispatch(setSession(session))
+})
 
 const createRouter = navigator.userAgent.includes('Electron')
   ? createHashRouter

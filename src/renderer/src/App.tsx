@@ -1,11 +1,36 @@
 import { JSX } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Home } from '@renderer/pages/Home'
 import { PdfNotes } from '@renderer/pages/PdfNotes'
+import { Login } from '@renderer/pages/Login'
 import Sidebar from '@renderer/components/Sidebar'
 import { GlobalLoader } from '@renderer/components/GlobalLoader'
+import { useAppSelector } from '@renderer/store'
 
 export default function App(): JSX.Element {
+  const status = useAppSelector(s => s.auth.status)
+  const isLogin = useLocation().pathname === '/login'
+
+  if (status === 'loading') {
+    return <GlobalLoader />
+  }
+
+  if (status === 'unauthenticated' && !isLogin) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (status === 'authenticated' && isLogin) {
+    return <Navigate to="/" replace />
+  }
+
+  if (isLogin) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    )
+  }
+
   return (
     <div className="flex gap-4">
       <GlobalLoader />
