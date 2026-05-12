@@ -4,6 +4,13 @@ import { join } from 'path'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import { prisma } from '@main/db'
 import { registerListeners } from '@main/listeners'
+import * as Sentry from '@sentry/electron/main'
+
+Sentry.init({
+  dsn: process.env.VITE_SENTRY_DSN,
+  enableLogs: true,
+  enabled: process.env.VITE_ENVIRONMENT === 'production',
+})
 
 function createWindow(): void {
   const win = new BrowserWindow({

@@ -8,3 +8,5 @@ src/renderer/public/*
 .env
 supabase
 docs
+# Sentry Config File
+.env.sentry-build-plugin

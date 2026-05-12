@@ -1,8 +1,9 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron'
 import { S3Client, PutObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
-import { IPC, IpcApi } from '@shared/ipcChannels'
-import { prisma } from '@main/db'
 import { Book, Translation } from '@prisma/client'
+import * as Sentry from '@sentry/electron/main'
+import { prisma } from '@main/db'
+import { IPC, IpcApi } from '@shared/ipcChannels'
 import type { BookDto, TranslationDto } from '@shared/types'
 
 const s3 = new S3Client({
@@ -45,79 +46,114 @@ const listeners: IpcHandlers = {
     const key = base
     const previewKey = base.replace(/\.pdf$/i, '') + '-preview.png'
 
-    await Promise.all([
-      s3.send(
-        new PutObjectCommand({
-          Bucket: process.env.S3_BUCKET,
-          Key: key,
-          Body: Buffer.from(buffer),
-          ContentType: 'application/pdf',
-        })
-      ),
-      s3.send(
-        new PutObjectCommand({
-          Bucket: process.env.S3_BUCKET,
-          Key: previewKey,
-          Body: Buffer.from(previewBuffer),
-          ContentType: 'image/png',
-        })
-      ),
-    ])
+    try {
+      await Promise.all([
+        s3.send(
+          new PutObjectCommand({
+            Bucket: process.env.S3_BUCKET,
+            Key: key,
+            Body: Buffer.from(buffer),
+            ContentType: 'application/pdf',
+          })
+        ),
+        s3.send(
+          new PutObjectCommand({
+            Bucket: process.env.S3_BUCKET,
+            Key: previewKey,
+            Body: Buffer.from(previewBuffer),
+            ContentType: 'image/png',
+          })
+        ),
+      ])
 
-    await prisma.book.create({
-      data: {
-        file_name: fileName,
-        s3_key: key,
-        s3_preview_key: previewKey,
-      },
-    })
+      await prisma.book.create({
+        data: {
+          file_name: fileName,
+          s3_key: key,
+          s3_preview_key: previewKey,
+        },
+      })
+    } catch (err) {
+      Sentry.captureException(err, { tags: { channel: IPC.POST_BOOK } })
+      throw err
+    }
   },
   deleteBook: async (_, bookId) => {
-    const book = await prisma.book.findUnique({ where: { id: bookId } })
+    try {
+      const book = await prisma.book.findUnique({ where: { id: bookId } })
 
-    await prisma.translation.deleteMany({ where: { book_id: bookId } })
-    await prisma.book.delete({ where: { id: bookId } })
+      await prisma.translation.deleteMany({ where: { book_id: bookId } })
+      await prisma.book.delete({ where: { id: bookId } })
 
-    if (book) {
-      await s3.send(
-        new DeleteObjectsCommand({
-          Bucket: process.env.S3_BUCKET,
-          Delete: {
-            Objects: [{ Key: book.s3_key }, { Key: book.s3_preview_key }],
-          },
-        })
-      )
+      if (book) {
+        await s3.send(
+          new DeleteObjectsCommand({
+            Bucket: process.env.S3_BUCKET,
+            Delete: {
+              Objects: [{ Key: book.s3_key }, { Key: book.s3_preview_key }],
+            },
+          })
+        )
+      }
+    } catch (err) {
+      Sentry.captureException(err, { tags: { channel: IPC.DELETE_BOOK } })
+      throw err
     }
   },
   getPDF: async (_, url): Promise<ArrayBuffer> => {
-    const res = await fetch(url)
-    return res.arrayBuffer()
+    try {
+      const res = await fetch(url)
+      return res.arrayBuffer()
+    } catch (err) {
+      Sentry.captureException(err, { tags: { channel: IPC.GET_PDF } })
+      throw err
+    }
   },
   getBooks: async (): Promise<BookDto[]> => {
-    const books = await prisma.book.findMany()
-    return books.map(toBookDto)
+    try {
+      const books = await prisma.book.findMany()
+      return books.map(toBookDto)
+    } catch (err) {
+      Sentry.captureException(err, { tags: { channel: IPC.GET_BOOKS } })
+      throw err
+    }
   },
   putBook: async (_event, book): Promise<BookDto> => {
-    const updated = await prisma.book.update({
-      where: { id: book.id },
-      data: {
-        current_page: book.currentPage,
-      },
-    })
-    return toBookDto(updated)
+    try {
+      const updated = await prisma.book.update({
+        where: { id: book.id },
+        data: {
+          current_page: book.currentPage,
+        },
+      })
+      return toBookDto(updated)
+    } catch (err) {
+      Sentry.captureException(err, { tags: { channel: IPC.PUT_BOOK } })
+      throw err
+    }
   },
   getTranslation: async (_event, bookId): Promise<TranslationDto | null> => {
-    const t = await prisma.translation.findFirst({
-      where: { book_id: bookId },
-      orderBy: { created_at: 'desc' },
-    })
-    return t ? toTranslationDto(t) : null
+    try {
+      const t = await prisma.translation.findFirst({
+        where: { book_id: bookId },
+        orderBy: { created_at: 'desc' },
+      })
+      return t ? toTranslationDto(t) : null
+    } catch (err) {
+      Sentry.captureException(err, { tags: { channel: IPC.GET_TRANSLATION } })
+      throw err
+    }
   },
   postTranslation: async (_event, bookId, text, id): Promise<TranslationDto> => {
-    const result = id
-      ? await prisma.translation.update({ where: { id }, data: { text } })
-      : await prisma.translation.create({ data: { book_id: bookId, text } })
-    return toTranslationDto(result)
+    try {
+      const result = id
+        ? await prisma.translation.update({ where: { id }, data: { text } })
+        : await prisma.translation.create({ data: { book_id: bookId, text } })
+      return toTranslationDto(result)
+    } catch (err) {
+      Sentry.captureException(err, { tags: { channel: IPC.POST_TRANSLATION } })
+      throw err
+    }
   },
 }
 

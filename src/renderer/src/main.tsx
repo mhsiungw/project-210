@@ -1,5 +1,16 @@
-import './index.css'
 import { StrictMode } from 'react'
+import { init } from '@sentry/electron/renderer'
+import { init as reactInit } from '@sentry/react'
+import { ErrorBoundary } from '@sentry/react'
+import './index.css'
+
+init(
+  {
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    enabled: import.meta.env.VITE_ENVIRONMENT === 'production',
+  },
+  reactInit
+)
 
 const mq = window.matchMedia('(prefers-color-scheme: dark)')
 const applyTheme = (dark: boolean): void => {
@@ -23,8 +34,10 @@ if (!rootEl) throw new Error('#root element not found')
 
 createRoot(rootEl).render(
   <StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </ErrorBoundary>
   </StrictMode>
 )
