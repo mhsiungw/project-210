@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "out/preload",
-    "rootDir": "preload",
+    "rootDir": ".",
     "lib": ["ES2022", "DOM"],
     "types": ["node"],
     "paths": {
@@ -11,6 +11,6 @@
       "@app/shared/*": ["../shared/src/*"]
     }
   },
-  "include": ["preload/**/*"],
+  "include": ["preload/**/*", "ipcChannels.ts"],
   "references": [{ "path": "../shared" }]
 }

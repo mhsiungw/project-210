@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = ""
+}
+
+model Book {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at   DateTime      @default(now()) @db.Timestamptz(6)
+  total_pages  Int?
+  current_page Int?
+  file_name    String        @default("")
+  translations Translation[]
+  s3_key         String  @default("")
+  s3_preview_key String  @default("")
+
+  @@map("books")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Translation {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  book_id    String?  @db.Uuid
+  text       String?
+  books      Book?    @relation(fields: [book_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@map("translations")
+}

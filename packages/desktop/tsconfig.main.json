@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "out/main",
-    "rootDir": "main",
+    "rootDir": ".",
     "lib": ["ES2022"],
     "types": ["node"],
     "paths": {
@@ -11,6 +11,6 @@
       "@app/shared/*": ["../shared/src/*"]
     }
   },
-  "include": ["main/**/*"],
+  "include": ["main/**/*", "ipcChannels.ts"],
   "references": [{ "path": "../shared" }]
 }

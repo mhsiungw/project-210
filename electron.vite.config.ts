@@ -4,35 +4,46 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
+const shared = resolve('packages/shared/src')
+const desktop = resolve('packages/desktop')
+
 export default defineConfig({
   main: {
     build: {
+      lib: { entry: resolve(desktop, 'main/index.ts') },
       watch: {},
       externalizeDeps: true,
     },
     resolve: {
       alias: {
-        '@main': resolve('src/main'),
-        '@shared': resolve('src/shared'),
+        '@main': resolve(desktop, 'main'),
+        '@app/shared': shared,
       },
     },
   },
   preload: {
     build: {
+      lib: { entry: resolve(desktop, 'preload/index.ts') },
       externalizeDeps: true,
     },
     resolve: {
       alias: {
-        '@preload': resolve('src/preload'),
-        '@shared': resolve('src/shared'),
+        '@preload': resolve(desktop, 'preload'),
+        '@app/shared': shared,
       },
     },
   },
   renderer: {
+    root: resolve(desktop, 'renderer'),
+    build: {
+      rollupOptions: {
+        input: resolve(desktop, 'renderer/index.html'),
+      },
+    },
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src'),
-        '@shared': resolve('src/shared'),
+        '@renderer': resolve(desktop, 'renderer/src'),
+        '@app/shared': shared,
       },
     },
     plugins: [

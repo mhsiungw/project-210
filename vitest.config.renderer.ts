@@ -7,13 +7,12 @@ export default defineConfig({
   test: {
     name: 'renderer',
     environment: 'happy-dom',
-    include: ['src/renderer/**/*.{test,spec}.{ts,tsx}'],
+    include: ['packages/shared/src/**/*.{test,spec}.{ts,tsx}'],
     globals: true,
   },
   resolve: {
     alias: {
-      '@renderer': resolve('src/renderer/src'),
-      '@shared': resolve('src/shared'),
+      '@app/shared': resolve('packages/shared/src'),
     },
   },
 })
