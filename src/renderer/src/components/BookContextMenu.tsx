@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { useDeleteBookMutation } from '@renderer/store/api'
+import { useDeleteBookMutation } from '@renderer/store/api/book'
 import type { BookDto } from '@shared/types'
 import { RiDeleteBinLine } from '@remixicon/react'
 

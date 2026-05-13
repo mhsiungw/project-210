@@ -5,7 +5,7 @@ import { PdfNotes } from '@renderer/pages/PdfNotes'
 import { Login } from '@renderer/pages/Login'
 import Sidebar from '@renderer/components/Sidebar'
 import { GlobalLoader } from '@renderer/components/GlobalLoader'
-import { useGetSessionQuery } from '@renderer/store/auth'
+import { useGetSessionQuery } from '@renderer/store/api/auth'
 
 export default function App(): JSX.Element {
   const { data: session, isLoading } = useGetSessionQuery()

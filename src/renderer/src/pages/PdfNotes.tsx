@@ -1,11 +1,8 @@
 import { useState, useEffect, JSX } from 'react'
 import { useBlocker } from 'react-router-dom'
 import { useAppSelector } from '@renderer/store'
-import {
-  useGetBooksQuery,
-  useGetTranslationQuery,
-  usePostTranslationMutation,
-} from '@renderer/store/api'
+import { useGetBooksQuery } from '@renderer/store/api/book'
+import { useGetTranslationQuery, usePostTranslationMutation } from '@renderer/store/api/translation'
 import { PdfViewer } from '@renderer/components/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {

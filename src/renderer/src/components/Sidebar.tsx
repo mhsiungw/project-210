@@ -1,7 +1,7 @@
 import { JSX } from 'react'
 import { Link } from 'react-router-dom'
 import { RiFileLine, RiLogoutBoxLine } from '@remixicon/react'
-import { useGetSessionQuery, useSignOutMutation } from '@renderer/store/auth'
+import { useGetSessionQuery, useSignOutMutation } from '@renderer/store/api/auth'
 
 export default function Sidebar(): JSX.Element {
   const { data: session } = useGetSessionQuery()
