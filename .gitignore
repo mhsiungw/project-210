@@ -12,3 +12,4 @@ docs
 .env.sentry-build-plugin
 .claude/
 generated/
+*.tsbuildinfo

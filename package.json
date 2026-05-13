@@ -7,7 +7,9 @@
   "main": "./out/main/index.js",
   "scripts": {
     "postinstall": "prisma generate --config packages/db/prisma.config.ts",
-    "dev": "electron-vite dev --config packages/desktop/electron.vite.config.ts",
+    "dev": "pnpm run dev:desktop & pnpm run dev:web",
+    "dev:desktop": "electron-vite dev --config packages/desktop/electron.vite.config.ts",
+    "dev:web": "pnpm --filter @app/web dev",
     "build": "electron-vite build --config packages/desktop/electron.vite.config.ts && electron-builder --config packages/desktop/electron-builder.yml",
     "build:unpack": "electron-vite build --config packages/desktop/electron.vite.config.ts && electron-builder --dir --config packages/desktop/electron-builder.yml",
     "preview": "electron-vite preview --config packages/desktop/electron.vite.config.ts",
