@@ -1,0 +1,22 @@
+{
+  "name": "@app/web-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --build"
+  },
+  "dependencies": {
+    "@app/db": "workspace:*",
+    "@app/shared": "workspace:*",
+    "@aws-sdk/client-s3": "^3.1045.0",
+    "@hono/node-server": "^1.0.0",
+    "@supabase/supabase-js": "^2.105.4",
+    "dotenv": "^17.4.2",
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  }
+}
