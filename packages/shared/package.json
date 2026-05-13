@@ -8,8 +8,9 @@
     "./api": "./src/api/index.ts",
     "./api/client": "./src/api/client.ts",
     "./api/transport": "./src/api/transport.ts",
+    "./api/context": "./src/api/context.tsx",
     "./api/types": "./src/api/types.ts",
-    "./platform": "./src/platform/context.ts",
+    "./platform": "./src/platform/context.tsx",
     "./store": "./src/store/index.ts",
     "./styles": "./src/styles/index.ts",
     "./styles/global.css": "./src/styles/global.css",
@@ -19,5 +20,12 @@
   },
   "scripts": {
     "typecheck": "tsc --build"
+  },
+  "peerDependencies": {
+    "@reduxjs/toolkit": "^2.4.0",
+    "@supabase/supabase-js": "^2.105.4",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-redux": "^9.1.2"
   }
 }
