@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out/main",
+    "rootDir": "main",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "paths": {
+      "@main/*": ["./main/*"],
+      "@app/shared": ["../shared/src"],
+      "@app/shared/*": ["../shared/src/*"]
+    }
+  },
+  "include": ["main/**/*"],
+  "references": [{ "path": "../shared" }]
+}

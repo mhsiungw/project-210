@@ -1,0 +1,23 @@
+{
+  "name": "@app/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./api": "./src/api/index.ts",
+    "./api/client": "./src/api/client.ts",
+    "./api/transport": "./src/api/transport.ts",
+    "./api/types": "./src/api/types.ts",
+    "./platform": "./src/platform/context.ts",
+    "./store": "./src/store/index.ts",
+    "./styles": "./src/styles/index.ts",
+    "./styles/global.css": "./src/styles/global.css",
+    "./ui/*": "./src/ui/*.tsx",
+    "./features/*": "./src/features/*/index.ts",
+    "./pages/*": "./src/pages/*.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc --build"
+  }
+}

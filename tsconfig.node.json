@@ -20,5 +20,6 @@
     "src/preload/**/*",
     "src/shared/**/*",
     "electron.vite.config.*"
-  ]
+  ],
+  "exclude": ["packages/**"]
 }
