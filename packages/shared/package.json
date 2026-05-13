@@ -21,6 +21,10 @@
   "scripts": {
     "typecheck": "tsc --build"
   },
+  "dependencies": {
+    "pdfjs-dist": "^5.4.296",
+    "react-pdf": "^10.4.1"
+  },
   "peerDependencies": {
     "@reduxjs/toolkit": "^2.4.0",
     "@supabase/supabase-js": "^2.105.4",

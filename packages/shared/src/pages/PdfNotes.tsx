@@ -3,10 +3,7 @@ import { useBlocker } from 'react-router-dom'
 import { useApiClient } from '../api/context'
 import { useAppSelector } from '../store'
 import { useGetBooksQuery } from '../features/books/api'
-import {
-  useGetTranslationQuery,
-  usePostTranslationMutation,
-} from '../features/translations/api'
+import { useGetTranslationQuery, usePostTranslationMutation } from '../features/translations/api'
 import { PdfViewer } from '../ui/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {

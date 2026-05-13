@@ -7,10 +7,12 @@
     "types": ["node"],
     "paths": {
       "@main/*": ["./main/*"],
+      "@app/db": ["../db/src"],
+      "@app/db/*": ["../db/src/*"],
       "@app/shared": ["../shared/src"],
       "@app/shared/*": ["../shared/src/*"]
     }
   },
   "include": ["main/**/*", "ipcChannels.ts"],
-  "references": [{ "path": "../shared" }]
+  "references": [{ "path": "../db" }, { "path": "../shared" }]
 }

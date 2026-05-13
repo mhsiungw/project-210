@@ -1,11 +1,15 @@
 import { fileURLToPath } from 'url'
-import { resolve } from 'path'
+import { createRequire } from 'module'
+import { resolve, dirname } from 'path'
 import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+const _require = createRequire(import.meta.url)
+const pdfjsDist = dirname(_require.resolve('pdfjs-dist/package.json'))
+const db = resolve(__dirname, '../db/src')
 const shared = resolve(__dirname, '../shared/src')
 const desktop = __dirname
 
@@ -15,10 +19,14 @@ export default defineConfig({
       lib: { entry: resolve(desktop, 'main/index.ts') },
       watch: {},
       externalizeDeps: true,
+      rollupOptions: {
+        external: [/^@prisma\//],
+      },
     },
     resolve: {
       alias: {
         '@main': resolve(desktop, 'main'),
+        '@app/db': db,
         '@app/shared': shared,
       },
     },
@@ -52,7 +60,7 @@ export default defineConfig({
       react(),
       tailwindcss(),
       viteStaticCopy({
-        targets: [{ src: resolve(__dirname, '../../node_modules/pdfjs-dist/wasm/*.wasm'), dest: 'wasm' }],
+        targets: [{ src: `${pdfjsDist}/wasm/*.wasm`, dest: 'wasm' }],
       }),
     ],
   },

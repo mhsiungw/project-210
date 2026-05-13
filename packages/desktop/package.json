@@ -8,6 +8,7 @@
     "typecheck": "tsc --build"
   },
   "dependencies": {
+    "@app/db": "workspace:*",
     "@app/shared": "workspace:*"
   }
 }

@@ -1,6 +1,6 @@
 import { ipcMain, type IpcMainInvokeEvent } from 'electron'
 import { S3Client, PutObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
-import type { Book, Translation } from '@prisma/client'
+import type { Book, Translation } from '@app/db'
 import * as Sentry from '@sentry/electron/main'
 import { prisma } from '../db'
 import { IPC, type IpcApi } from '../../ipcChannels'
