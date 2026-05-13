@@ -1,62 +1,34 @@
 import { useState, JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@renderer/lib/supabase'
+import { useSignInWithOtpMutation, useVerifyOtpMutation } from '@renderer/store/auth'
 
 export function Login(): JSX.Element {
   const navigate = useNavigate()
-  const [error, setError] = useState<string | null>(null)
-  const [pending, setPending] = useState(false)
   const [email, setEmail] = useState('s16103145@gmail.com')
   const [otp, setOtp] = useState('')
-  const [isEmailFieldVisible, setIsEmailFieldVisible] = useState(true)
-  const [isOtpFieldVisible, setIsOtpFieldVisible] = useState(false)
+  const [otpSent, setOtpSent] = useState(false)
 
-  async function signInWithOtp(): Promise<void> {
-    setError(null)
-    setPending(true)
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-    })
+  const [signInWithOtp, signInState] = useSignInWithOtpMutation()
+  const [verifyOtp, verifyState] = useVerifyOtpMutation()
 
-    console.log(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
+  const pending = signInState.isLoading || verifyState.isLoading
+  const error = signInState.error || verifyState.error
 
-    console.log('error', error)
-
-    if (!error) {
-      setIsEmailFieldVisible(false)
-      setIsOtpFieldVisible(true)
-    } else {
-      setError(error.message)
-      setPending(false)
-      return
-    }
+  async function handleSendOtp(): Promise<void> {
+    const result = await signInWithOtp({ email })
+    if (!result.error) setOtpSent(true)
   }
-  async function signInWithOtp2(): Promise<void> {
-    setError(null)
-    setPending(true)
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: email,
-      token: otp,
-      type: 'email',
-    })
 
-    console.log('error', error)
-    console.log('data', data)
-
-    if (!error) {
-      navigate('/')
-    } else {
-      setError(error.message)
-      setPending(false)
-      return
-    }
+  async function handleVerifyOtp(): Promise<void> {
+    const result = await verifyOtp({ email, token: otp })
+    if (!result.error) navigate('/')
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-8">
       <h1 className="text-2xl font-semibold">Sign in</h1>
       <div>
-        {isEmailFieldVisible && (
+        {!otpSent && (
           <input
             value={email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +36,7 @@ export function Login(): JSX.Element {
             }}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === 'Enter') {
-                signInWithOtp()
+                handleSendOtp()
               }
             }}
             className="p-1.5 text-center outline-none border"
@@ -72,7 +44,7 @@ export function Login(): JSX.Element {
             type="text"
           />
         )}
-        {isOtpFieldVisible && (
+        {otpSent && (
           <input
             value={otp}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +52,7 @@ export function Login(): JSX.Element {
             }}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === 'Enter') {
-                signInWithOtp2()
+                handleVerifyOtp()
               }
             }}
             className="p-1.5 text-center outline-none border"
@@ -89,7 +61,9 @@ export function Login(): JSX.Element {
           />
         )}
       </div>
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && (
+        <p className="text-red-600 text-sm">{typeof error === 'string' ? error : error.message}</p>
+      )}
       {pending && 'loading'}
     </div>
   )

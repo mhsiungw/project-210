@@ -1,25 +1,56 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { Session } from '@supabase/supabase-js'
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react'
+import type { Session, User } from '@supabase/supabase-js'
+import { supabase } from '@renderer/lib/supabase'
 
-export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated'
-
-export interface AuthState {
-  status: AuthStatus
-  session: Session | null
-}
-
-const auth = createSlice({
-  name: 'auth',
-  initialState: { status: 'loading', session: null } as AuthState,
-  reducers: {
-    setSession(_, action: PayloadAction<Session | null>) {
-      return {
-        status: action.payload ? 'authenticated' : 'unauthenticated',
-        session: action.payload,
-      }
-    },
-  },
+export const auth = createApi({
+  reducerPath: 'auth',
+  baseQuery: fakeBaseQuery<string>(),
+  tagTypes: ['Session'],
+  endpoints: builder => ({
+    getSession: builder.query<Session | null, void>({
+      queryFn: async () => {
+        const { data, error } = await supabase.auth.getSession()
+        if (error) return { error: error.message }
+        return { data: data.session }
+      },
+      providesTags: ['Session'],
+    }),
+    signInWithOtp: builder.mutation<void, { email: string }>({
+      queryFn: async ({ email }) => {
+        const { error } = await supabase.auth.signInWithOtp({ email })
+        if (error) return { error: error.message }
+        return { data: undefined }
+      },
+    }),
+    verifyOtp: builder.mutation<
+      { session: Session | null; user: User | null },
+      { email: string; token: string }
+    >({
+      queryFn: async ({ email, token }) => {
+        const { data, error } = await supabase.auth.verifyOtp({
+          email,
+          token,
+          type: 'email',
+        })
+        if (error) return { error: error.message }
+        return { data: { session: data.session, user: data.user } }
+      },
+      invalidatesTags: ['Session'],
+    }),
+    signOut: builder.mutation<void, void>({
+      queryFn: async () => {
+        const { error } = await supabase.auth.signOut()
+        if (error) return { error: error.message }
+        return { data: undefined }
+      },
+      invalidatesTags: ['Session'],
+    }),
+  }),
 })
 
-export const { setSession } = auth.actions
-export default auth.reducer
+export const {
+  useGetSessionQuery,
+  useSignInWithOtpMutation,
+  useVerifyOtpMutation,
+  useSignOutMutation,
+} = auth

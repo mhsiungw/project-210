@@ -5,21 +5,21 @@ import { PdfNotes } from '@renderer/pages/PdfNotes'
 import { Login } from '@renderer/pages/Login'
 import Sidebar from '@renderer/components/Sidebar'
 import { GlobalLoader } from '@renderer/components/GlobalLoader'
-import { useAppSelector } from '@renderer/store'
+import { useGetSessionQuery } from '@renderer/store/auth'
 
 export default function App(): JSX.Element {
-  const status = useAppSelector(s => s.auth.status)
+  const { data: session, isLoading } = useGetSessionQuery()
   const isLogin = useLocation().pathname === '/login'
 
-  if (status === 'loading') {
+  if (isLoading) {
     return <GlobalLoader />
   }
 
-  if (status === 'unauthenticated' && !isLogin) {
+  if (!session && !isLogin) {
     return <Navigate to="/login" replace />
   }
 
-  if (status === 'authenticated' && isLogin) {
+  if (session && isLogin) {
     return <Navigate to="/" replace />
   }
 

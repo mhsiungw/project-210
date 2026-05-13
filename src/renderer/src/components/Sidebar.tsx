@@ -1,11 +1,12 @@
 import { JSX } from 'react'
 import { Link } from 'react-router-dom'
 import { RiFileLine, RiLogoutBoxLine } from '@remixicon/react'
-import { supabase } from '@renderer/lib/supabase'
-import { useAppSelector } from '@renderer/store'
+import { useGetSessionQuery, useSignOutMutation } from '@renderer/store/auth'
 
 export default function Sidebar(): JSX.Element {
-  const email = useAppSelector(s => s.auth.session?.user.email)
+  const { data: session } = useGetSessionQuery()
+  const [signOut] = useSignOutMutation()
+  const email = session?.user.email
 
   return (
     <nav className="flex flex-col h-full gap-1">
@@ -19,7 +20,7 @@ export default function Sidebar(): JSX.Element {
             {email}
           </p>
         )}
-        <button className="btn flex gap-2" onClick={() => supabase.auth.signOut()}>
+        <button className="btn flex gap-2" onClick={() => signOut()}>
           <RiLogoutBoxLine />
           Sign out
         </button>
