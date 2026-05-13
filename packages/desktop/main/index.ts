@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
-import { prisma } from './db'
+import { prisma } from '@app/db'
 import { registerListeners } from './ipc'
 import * as Sentry from '@sentry/electron/main'
 

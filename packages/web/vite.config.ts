@@ -9,6 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '../..')
 
 export default defineConfig({
+  envDir: root,
   resolve: {
     alias: {
       '@app/shared': resolve(__dirname, '../shared/src'),
