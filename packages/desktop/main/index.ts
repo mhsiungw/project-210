@@ -36,8 +36,12 @@ function createWindow(): void {
 
 app.whenReady().then(async () => {
   if (process.env.NODE_ENV === 'development') {
-    const { installExtension, REDUX_DEVTOOLS } = await import('electron-devtools-installer')
-    await installExtension(REDUX_DEVTOOLS)
+    try {
+      const { installExtension, REDUX_DEVTOOLS } = await import('electron-devtools-installer')
+      await installExtension(REDUX_DEVTOOLS)
+    } catch {
+      // Extension install fails on some Electron/MV3 combos — app works without it
+    }
   }
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

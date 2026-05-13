@@ -1,11 +1,13 @@
+import { fileURLToPath } from 'url'
 import { resolve } from 'path'
 import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
-const shared = resolve('packages/shared/src')
-const desktop = resolve('packages/desktop')
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
+const shared = resolve(__dirname, '../shared/src')
+const desktop = __dirname
 
 export default defineConfig({
   main: {
@@ -50,7 +52,7 @@ export default defineConfig({
       react(),
       tailwindcss(),
       viteStaticCopy({
-        targets: [{ src: resolve('node_modules/pdfjs-dist/wasm/*.wasm'), dest: 'wasm' }],
+        targets: [{ src: resolve(__dirname, '../../node_modules/pdfjs-dist/wasm/*.wasm'), dest: 'wasm' }],
       }),
     ],
   },
