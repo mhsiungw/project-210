@@ -17,9 +17,9 @@
     "format": "prettier --write .",
     "typecheck": "tsc --build",
     "typecheck:legacy": "tsc --noEmit",
-    "test": "vitest run --config vitest.config.renderer.ts && vitest run --config vitest.config.main.ts",
-    "test:renderer": "vitest --config vitest.config.renderer.ts",
-    "test:main": "vitest --config vitest.config.main.ts"
+    "test": "vitest run --config packages/shared/vitest.config.ts && vitest run --config packages/desktop/vitest.config.ts",
+    "test:renderer": "vitest --config packages/shared/vitest.config.ts",
+    "test:main": "vitest --config packages/desktop/vitest.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
