@@ -2,8 +2,8 @@ import { configureStore } from '@reduxjs/toolkit'
 import type { TypedUseSelectorHook } from 'react-redux'
 import { useDispatch, useSelector } from 'react-redux'
 import type { ApiClient } from '../api/client'
-import selectedBook from '../features/books/selectedBook'
-import { auth } from '../features/auth/api'
+import selectedBook from './selectedBook'
+import { auth } from './api/auth'
 import { emptyApi } from './api/emptyApi'
 
 export interface ThunkExtra {

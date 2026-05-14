@@ -1,6 +1,6 @@
 import type { TranslationDto } from '../../api/types'
-import type { ThunkExtra } from '../../store'
-import { emptyApi } from '../../store/api/emptyApi'
+import type { ThunkExtra } from '..'
+import { emptyApi } from './emptyApi'
 
 const translationApi = emptyApi.injectEndpoints({
   endpoints: builder => ({

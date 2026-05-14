@@ -1,6 +1,6 @@
 import type { BookDto } from '../../api/types'
-import type { ThunkExtra } from '../../store'
-import { emptyApi } from '../../store/api/emptyApi'
+import type { ThunkExtra } from '..'
+import { emptyApi } from './emptyApi'
 
 const bookApi = emptyApi.injectEndpoints({
   endpoints: builder => ({

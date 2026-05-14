@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { render, type RenderResult } from '@testing-library/react'
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { emptyApi as api } from '../../store/api/emptyApi'
-import selectedBook from '../../features/books/selectedBook'
+import selectedBook from '../../store/selectedBook'
 import type { RootState } from '../../store'
 import { GlobalLoader } from '../GlobalLoader'
 

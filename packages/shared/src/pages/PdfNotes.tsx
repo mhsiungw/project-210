@@ -2,8 +2,8 @@ import { useState, useEffect, type JSX } from 'react'
 import { useBlocker } from 'react-router-dom'
 import { useApiClient } from '../api/context'
 import { useAppSelector } from '../store'
-import { useGetBooksQuery } from '../features/books/api'
-import { useGetTranslationQuery, usePostTranslationMutation } from '../features/translations/api'
+import { useGetBooksQuery } from '../store/api/book'
+import { useGetTranslationQuery, usePostTranslationMutation } from '../store/api/translation'
 import { PdfViewer } from '../ui/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {
