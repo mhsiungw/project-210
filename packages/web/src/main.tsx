@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { ApiClient, ApiClientProvider, PlatformProvider, createAppStore, App } from '@app/shared'
 import { getAccessToken } from '@app/shared/service/auth'
-import { createHttpTransport } from './transport-http'
+import { createHttpTransport } from '@app/shared/api/transport-http'
 import { webPlatform } from './platform'
 import '@app/shared/styles/global.css'
 

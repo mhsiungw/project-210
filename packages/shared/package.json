@@ -10,6 +10,7 @@
     "./api/transport": "./src/api/transport.ts",
     "./api/context": "./src/api/context.tsx",
     "./api/types": "./src/api/types.ts",
+    "./api/transport-http": "./src/api/transport-http.ts",
     "./platform": "./src/platform/context.tsx",
     "./store": "./src/store/index.ts",
     "./styles": "./src/styles/index.ts",

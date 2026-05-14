@@ -2,7 +2,6 @@ import 'dotenv/config'
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { prisma } from '@app/db'
-import { registerListeners } from './ipc'
 import * as Sentry from '@sentry/electron/main'
 
 Sentry.init({
@@ -18,7 +17,6 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
@@ -57,5 +55,3 @@ app.on('before-quit', async () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
-
-registerListeners()

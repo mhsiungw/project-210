@@ -6,7 +6,8 @@ import { init } from '@sentry/electron/renderer'
 import { init as reactInit } from '@sentry/react'
 import { ErrorBoundary } from '@sentry/react'
 import { ApiClient, ApiClientProvider, PlatformProvider, createAppStore, App } from '@app/shared'
-import { ipcTransport } from './transport-ipc'
+import { createHttpTransport } from '@app/shared/api/transport-http'
+import { getAccessToken } from '@app/shared/service/auth'
 import { desktopPlatform } from './platform'
 import '@app/shared/styles/global.css'
 
@@ -25,7 +26,8 @@ const mq = window.matchMedia('(prefers-color-scheme: dark)')
 applyTheme(mq.matches)
 mq.addEventListener('change', e => applyTheme(e.matches))
 
-const apiClient = new ApiClient(ipcTransport)
+const transport = createHttpTransport(import.meta.env.VITE_API_URL, getAccessToken)
+const apiClient = new ApiClient(transport)
 const store = createAppStore({ apiClient })
 const router = createHashRouter([{ path: '*', element: <App /> }])
 
