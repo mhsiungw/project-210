@@ -23,6 +23,18 @@ const bookApi = emptyApi.injectEndpoints({
       },
       providesTags: ['Book'],
     }),
+    putBook: builder.mutation<void, BookDto>({
+      queryFn: async (book, api) => {
+        try {
+          const { apiClient } = api.extra as ThunkExtra
+          await apiClient.putBook(book)
+          return { data: undefined }
+        } catch (e) {
+          return { error: toQueryError(e) }
+        }
+      },
+      invalidatesTags: ['Book'],
+    }),
     postBook: builder.mutation<
       void,
       { buffer: ArrayBuffer; fileName: string; previewBuffer: ArrayBuffer }
@@ -51,4 +63,5 @@ const bookApi = emptyApi.injectEndpoints({
   }),
 })
 
-export const { useGetBooksQuery, usePostBookMutation, useDeleteBookMutation } = bookApi
+export const { useGetBooksQuery, usePutBookMutation, usePostBookMutation, useDeleteBookMutation } =
+  bookApi

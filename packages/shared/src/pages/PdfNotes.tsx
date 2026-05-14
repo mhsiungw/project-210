@@ -29,6 +29,7 @@ export function PdfNotes(): JSX.Element {
 
   // Seed draft from DB on initial load only (keyed on id, not text, so typing doesn't reset)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraftText(savedTranslation?.text ?? '')
   }, [savedTranslation?.id, savedTranslation?.text])
 

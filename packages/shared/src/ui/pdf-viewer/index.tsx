@@ -105,6 +105,16 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
     recomputeRange()
   }, [totalHeight, recomputeRange])
 
+  const scrollToPage = useCallback(
+    (pageNum: number, behaviour: ScrollBehavior = 'smooth'): void => {
+      const idx = pageNum - 1
+      const c = containerRef.current
+      if (!c || offsets[idx] === undefined) return
+      c.scrollTo({ top: offsets[idx], behavior: behaviour })
+    },
+    [offsets]
+  )
+
   const didInitialScroll = useRef(false)
   useEffect(() => {
     if (didInitialScroll.current) return
@@ -113,7 +123,7 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
     didInitialScroll.current = true
     // also seed currentPageBeforeChange so zoom restore works on first interaction
     currentPageBeforeChange.current = defaultPage
-  }, [offsets, defaultPage])
+  }, [offsets, defaultPage, scrollToPage])
 
   useEffect(() => {
     currentPageRef.current = currentPage
@@ -147,13 +157,6 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
   const handleScaleUp = (): void => {
     currentPageBeforeChange.current = currentPage
     setScale(s => Math.min(SCALE_MAX, parseFloat((s + SCALE_STEP).toFixed(2))))
-  }
-
-  const scrollToPage = (pageNum: number, behaviour: ScrollBehavior = 'smooth'): void => {
-    const idx = pageNum - 1
-    const c = containerRef.current
-    if (!c || offsets[idx] === undefined) return
-    c.scrollTo({ top: offsets[idx], behavior: behaviour })
   }
 
   const handlePrev = (): void => {
