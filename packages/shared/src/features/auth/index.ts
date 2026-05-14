@@ -1,2 +1,2 @@
 export * from '../../store/api/auth'
-export { supabase } from './supabase'
+export { getAccessToken } from './supabase'

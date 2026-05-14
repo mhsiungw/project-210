@@ -15,3 +15,8 @@ export const supabase = createClient(url, anonKey, {
     detectSessionInUrl: false,
   },
 })
+
+export async function getAccessToken(): Promise<string> {
+  const { data } = await supabase.auth.getSession()
+  return data.session?.access_token ?? ''
+}
