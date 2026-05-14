@@ -1,5 +1,5 @@
-import type { BookDto } from '../../api/types'
-import type { ThunkExtra } from '..'
+import type { BookDto } from '@app/shared/client'
+import type { ThunkExtra } from '@app/shared/store'
 import { emptyApi } from './emptyApi'
 
 const bookApi = emptyApi.injectEndpoints({

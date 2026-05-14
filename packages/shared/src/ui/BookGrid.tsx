@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { BookDto } from '@app/shared/api/types'
+import type { BookDto } from '@app/shared/client/types'
 import { useAppDispatch } from '@app/shared/store'
 import { setSelectedBookId } from '@app/shared/store/selectedBook'
 import { BookContextMenu } from './BookContextMenu'

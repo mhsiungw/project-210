@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { prisma } from '@app/db'
 import type { Translation } from '@app/db'
-import type { TranslationDto } from '@app/shared/api/types'
+import type { TranslationDto } from '@app/shared/client/types'
 import { auth } from '../middleware/auth.js'
 
 type Variables = { userId: string }

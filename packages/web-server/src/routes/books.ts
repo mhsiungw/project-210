@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { S3Client, PutObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { prisma } from '@app/db'
 import type { Book } from '@app/db'
-import type { BookDto } from '@app/shared/api/types'
+import type { BookDto } from '@app/shared/client/types'
 import { auth } from '../middleware/auth.js'
 
 type Variables = { userId: string }

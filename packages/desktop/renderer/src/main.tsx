@@ -5,8 +5,14 @@ import { Provider } from 'react-redux'
 import { init } from '@sentry/electron/renderer'
 import { init as reactInit } from '@sentry/react'
 import { ErrorBoundary } from '@sentry/react'
-import { ApiClient, ApiClientProvider, PlatformProvider, createAppStore, App } from '@app/shared'
-import { createHttpTransport } from '@app/shared/api/transport-http'
+import {
+  ApiClient,
+  ApiClientProvider,
+  PlatformProvider,
+  createAppStore,
+  App,
+  createHttpTransport,
+} from '@app/shared'
 import { getAccessToken } from '@app/shared/service/auth'
 import { desktopPlatform } from './platform'
 import '@app/shared/styles/global.css'

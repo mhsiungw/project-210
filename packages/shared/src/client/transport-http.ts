@@ -1,5 +1,5 @@
-import type { Transport } from '@app/shared/api/transport'
-import type { BookDto } from '@app/shared/api/types'
+import type { Transport } from '@app/shared/client/transport'
+import type { BookDto } from '@app/shared/client/types'
 
 export function createHttpTransport(baseUrl: string, getToken: () => Promise<string>): Transport {
   async function authHeader(): Promise<HeadersInit> {
