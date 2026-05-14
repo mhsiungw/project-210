@@ -6,7 +6,7 @@ import { useGetSessionQuery, useSignOutMutation } from '../store/api/auth'
 export default function Sidebar(): JSX.Element {
   const { data: session } = useGetSessionQuery()
   const [signOut] = useSignOutMutation()
-  const email = session?.user.email
+  const email = session?.email
 
   return (
     <nav className="flex flex-col h-full gap-1">

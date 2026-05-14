@@ -1,47 +1,50 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { Session, User } from '@supabase/supabase-js'
-import { supabase } from '../../features/auth/supabase'
+import type { AuthSession } from '@app/shared/service/auth'
+import { getSession, signInWithOtp, verifyOtp, signOut } from '@app/shared/service/auth'
 
 export const auth = createApi({
   reducerPath: 'auth',
   baseQuery: fakeBaseQuery<string>(),
   tagTypes: ['Session'],
   endpoints: builder => ({
-    getSession: builder.query<Session | null, void>({
+    getSession: builder.query<AuthSession | null, void>({
       queryFn: async () => {
-        const { data, error } = await supabase.auth.getSession()
-        if (error) return { error: error.message }
-        return { data: data.session }
+        try {
+          return { data: await getSession() }
+        } catch (e) {
+          return { error: (e as Error).message }
+        }
       },
       providesTags: ['Session'],
     }),
     signInWithOtp: builder.mutation<void, { email: string }>({
       queryFn: async ({ email }) => {
-        const { error } = await supabase.auth.signInWithOtp({ email })
-        if (error) return { error: error.message }
-        return { data: undefined }
+        try {
+          await signInWithOtp(email)
+          return { data: undefined }
+        } catch (e) {
+          return { error: (e as Error).message }
+        }
       },
     }),
-    verifyOtp: builder.mutation<
-      { session: Session | null; user: User | null },
-      { email: string; token: string }
-    >({
+    verifyOtp: builder.mutation<AuthSession | null, { email: string; token: string }>({
       queryFn: async ({ email, token }) => {
-        const { data, error } = await supabase.auth.verifyOtp({
-          email,
-          token,
-          type: 'email',
-        })
-        if (error) return { error: error.message }
-        return { data: { session: data.session, user: data.user } }
+        try {
+          return { data: await verifyOtp(email, token) }
+        } catch (e) {
+          return { error: (e as Error).message }
+        }
       },
       invalidatesTags: ['Session'],
     }),
     signOut: builder.mutation<void, void>({
       queryFn: async () => {
-        const { error } = await supabase.auth.signOut()
-        if (error) return { error: error.message }
-        return { data: undefined }
+        try {
+          await signOut()
+          return { data: undefined }
+        } catch (e) {
+          return { error: (e as Error).message }
+        }
       },
       invalidatesTags: ['Session'],
     }),
