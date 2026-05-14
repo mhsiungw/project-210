@@ -8,7 +8,6 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
 
   return {
     async invoke<T>(method: string, ...args: unknown[]): Promise<T> {
-      console.log('method', method)
       switch (method) {
         case 'getBooks': {
           const res = await fetch(`${baseUrl}/api/books`, { headers: await authHeader() })
