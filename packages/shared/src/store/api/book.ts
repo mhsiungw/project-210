@@ -1,13 +1,25 @@
-import type { BookDto } from '@app/shared/client'
+import { HttpError, type BookDto } from '@app/shared/client'
 import type { ThunkExtra } from '@app/shared/store'
 import { emptyApi } from './emptyApi'
+
+function toQueryError(
+  e: unknown
+): { status: number; data: string } | { status: 'FETCH_ERROR'; error: string } {
+  return e instanceof HttpError
+    ? { status: e.status, data: e.message }
+    : { status: 'FETCH_ERROR' as const, error: String(e) }
+}
 
 const bookApi = emptyApi.injectEndpoints({
   endpoints: builder => ({
     getBooks: builder.query<BookDto[], void>({
       queryFn: async (_arg, api) => {
-        const { apiClient } = api.extra as ThunkExtra
-        return { data: await apiClient.getBooks() }
+        try {
+          const { apiClient } = api.extra as ThunkExtra
+          return { data: await apiClient.getBooks() }
+        } catch (e) {
+          return { error: toQueryError(e) }
+        }
       },
       providesTags: ['Book'],
     }),
@@ -16,15 +28,23 @@ const bookApi = emptyApi.injectEndpoints({
       { buffer: ArrayBuffer; fileName: string; previewBuffer: ArrayBuffer }
     >({
       queryFn: async ({ buffer, fileName, previewBuffer }, api) => {
-        const { apiClient } = api.extra as ThunkExtra
-        return { data: await apiClient.postBook(buffer, fileName, previewBuffer) }
+        try {
+          const { apiClient } = api.extra as ThunkExtra
+          return { data: await apiClient.postBook(buffer, fileName, previewBuffer) }
+        } catch (e) {
+          return { error: toQueryError(e) }
+        }
       },
       invalidatesTags: ['Book'],
     }),
     deleteBook: builder.mutation<void, string>({
       queryFn: async (bookId, api) => {
-        const { apiClient } = api.extra as ThunkExtra
-        return { data: await apiClient.deleteBook(bookId) }
+        try {
+          const { apiClient } = api.extra as ThunkExtra
+          return { data: await apiClient.deleteBook(bookId) }
+        } catch (e) {
+          return { error: toQueryError(e) }
+        }
       },
       invalidatesTags: ['Book'],
     }),

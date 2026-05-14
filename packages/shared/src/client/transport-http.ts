@@ -1,6 +1,16 @@
 import type { Transport } from '@app/shared/client/transport'
 import type { BookDto } from '@app/shared/client/types'
 
+export class HttpError extends Error {
+  constructor(readonly status: number) {
+    super(`HTTP ${status}`)
+  }
+}
+
+function assertOk(res: Response): void {
+  if (!res.ok) throw new HttpError(res.status)
+}
+
 export function createHttpTransport(baseUrl: string, getToken: () => Promise<string>): Transport {
   async function authHeader(): Promise<HeadersInit> {
     return { Authorization: `Bearer ${await getToken()}` }
@@ -11,6 +21,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
       switch (method) {
         case 'getBooks': {
           const res = await fetch(`${baseUrl}/api/books`, { headers: await authHeader() })
+          assertOk(res)
           return res.json()
         }
         case 'postBook': {
@@ -19,11 +30,12 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
           form.append('pdf', new Blob([buffer], { type: 'application/pdf' }), fileName)
           form.append('preview', new Blob([previewBuffer], { type: 'image/png' }))
           form.append('fileName', fileName)
-          await fetch(`${baseUrl}/api/books`, {
+          const res = await fetch(`${baseUrl}/api/books`, {
             method: 'POST',
             headers: await authHeader(),
             body: form,
           })
+          assertOk(res)
           return undefined as T
         }
         case 'putBook': {
@@ -33,14 +45,16 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
             headers: { ...(await authHeader()), 'Content-Type': 'application/json' },
             body: JSON.stringify(book),
           })
+          assertOk(res)
           return res.json()
         }
         case 'deleteBook': {
           const [bookId] = args as [string]
-          await fetch(`${baseUrl}/api/books/${bookId}`, {
+          const res = await fetch(`${baseUrl}/api/books/${bookId}`, {
             method: 'DELETE',
             headers: await authHeader(),
           })
+          assertOk(res)
           return undefined as T
         }
         case 'getPDF': {
@@ -48,6 +62,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
           const res = await fetch(`${baseUrl}/api/pdf?url=${encodeURIComponent(url)}`, {
             headers: await authHeader(),
           })
+          assertOk(res)
           return res.arrayBuffer() as unknown as T
         }
         case 'getTranslation': {
@@ -56,6 +71,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
             headers: await authHeader(),
           })
           if (res.status === 404) return null as T
+          assertOk(res)
           return res.json()
         }
         case 'postTranslation': {
@@ -65,6 +81,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
             headers: { ...(await authHeader()), 'Content-Type': 'application/json' },
             body: JSON.stringify({ bookId, text, id }),
           })
+          assertOk(res)
           return res.json()
         }
         default:

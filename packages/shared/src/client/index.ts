@@ -1,5 +1,5 @@
 export type { Transport } from './transport'
-export { createHttpTransport } from './transport-http'
+export { createHttpTransport, HttpError } from './transport-http'
 export { ApiClient } from './client'
 export { ApiClientProvider, useApiClient } from './context'
 export type { BookDto, TranslationDto } from './types'
