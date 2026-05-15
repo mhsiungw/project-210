@@ -26,7 +26,8 @@ function toBookDto(book: Book): BookDto {
 export const bookRoutes = new Hono<{ Variables: Variables }>()
   .use(auth)
   .get('/', async c => {
-    const books = await prisma.book.findMany()
+    const currentUserId = c.get('userId')
+    const books = await prisma.book.findMany({ where: { user_id: currentUserId } })
     return c.json(books.map(toBookDto))
   })
   .post('/', async c => {
@@ -57,32 +58,42 @@ export const bookRoutes = new Hono<{ Variables: Variables }>()
       ),
     ])
 
+    const currentUserId = c.get('userId')
     await prisma.book.create({
-      data: { file_name: fileName, s3_key: base, s3_preview_key: previewKey },
+      data: {
+        file_name: fileName,
+        s3_key: base,
+        s3_preview_key: previewKey,
+        user_id: currentUserId,
+      },
     })
 
     return c.body(null, 201)
   })
   .put('/:id', async c => {
+    const currentUserId = c.get('userId')
+    const bookId = c.req.param('id')
     const book: BookDto = await c.req.json()
+    const existing = await prisma.book.findFirst({ where: { id: bookId, user_id: currentUserId } })
+    if (!existing) return c.body(null, 404)
     const updated = await prisma.book.update({
-      where: { id: c.req.param('id') },
+      where: { id: bookId },
       data: { current_page: book.currentPage },
     })
     return c.json(toBookDto(updated))
   })
   .delete('/:id', async c => {
+    const currentUserId = c.get('userId')
     const bookId = c.req.param('id')
-    const book = await prisma.book.findUnique({ where: { id: bookId } })
+    const book = await prisma.book.findFirst({ where: { id: bookId, user_id: currentUserId } })
+    if (!book) return c.body(null, 404)
     await prisma.translation.deleteMany({ where: { book_id: bookId } })
     await prisma.book.delete({ where: { id: bookId } })
-    if (book) {
-      await s3.send(
-        new DeleteObjectsCommand({
-          Bucket: process.env.S3_BUCKET,
-          Delete: { Objects: [{ Key: book.s3_key }, { Key: book.s3_preview_key }] },
-        })
-      )
-    }
+    await s3.send(
+      new DeleteObjectsCommand({
+        Bucket: process.env.S3_BUCKET,
+        Delete: { Objects: [{ Key: book.s3_key }, { Key: book.s3_preview_key }] },
+      })
+    )
     return c.body(null, 204)
   })

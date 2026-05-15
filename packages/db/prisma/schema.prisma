@@ -13,6 +13,7 @@ model Book {
   total_pages  Int?
   current_page Int?
   file_name    String        @default("")
+  user_id      String        @db.Uuid
   translations Translation[]
   s3_key         String  @default("")
   s3_preview_key String  @default("")
