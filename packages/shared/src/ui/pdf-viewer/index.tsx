@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { File } from 'react-pdf/dist/shared/types.js'
 import { Document, Page, pdfjs } from 'react-pdf'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { useThrottle } from '../hooks/useThrottle'
 import { PdfToolbar } from './PdfToolbar'
-import { usePdfVirtualizer, type PageDim } from './usePdfVirtualizer'
 
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
@@ -20,6 +20,10 @@ const SCALE_STEP = 0.1
 const SCALE_MIN = 0.5
 const SCALE_MAX = 2.0
 const DEFAULT_SCALE = 1.0
+const PAGE_GAP = 4
+const OVERSCAN = 2
+
+type PageDim = { w: number; h: number }
 
 interface PdfViewerProps {
   file: File
@@ -30,41 +34,81 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
   const [numPages, setNumPages] = useState(0)
   const [scale, setScale] = useState(DEFAULT_SCALE)
   const [containerWidth, setContainerWidth] = useState(0)
+  const [pageDims, setPageDims] = useState<PageDim[]>([])
+  const [currentPage, setCurrentPage] = useState(defaultPage)
+
   const pageWidth = containerWidth > 0 ? containerWidth * scale : undefined
   const setThrottledContainerWidth = useThrottle(setContainerWidth, 700)
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const pageRefs = useRef<(HTMLDivElement | null)[]>([])
+  const currentPageRef = useRef(defaultPage)
+  const didInitialScroll = useRef(false)
+  const isLayoutChanging = useRef(false)
 
-  const {
-    pageDims,
-    setPageDims,
-    range,
-    offsets,
-    totalHeight,
-    scaledHeights,
-    scrollToPage,
-    currentPage,
-    captureCurrentPage,
-  } = usePdfVirtualizer({ defaultPage, containerRef, pageWidth })
+  const virtualizer = useVirtualizer({
+    count: pageDims.length,
+    getScrollElement: () => containerRef.current,
+    estimateSize: i => {
+      if (!pageWidth) return 0
+      return pageDims[i].h * (pageWidth / pageDims[i].w) + PAGE_GAP
+    },
+    overscan: OVERSCAN,
+    onChange: instance => {
+      if (isLayoutChanging.current) return
+      const offset = instance.scrollOffset ?? 0
+      const height = instance.scrollRect?.height ?? 0
+      const mid = offset + height / 2
+      const items = instance.getVirtualItems()
+      const hit = items.find(it => it.start <= mid && mid < it.end)
+      if (hit) {
+        const page = hit.index + 1
+        currentPageRef.current = page
+        setCurrentPage(page)
+      }
+    },
+  })
+
+  const scrollToPage = useCallback(
+    (pageNum: number, behavior: ScrollBehavior = 'smooth'): void => {
+      if (pageNum < 1 || pageNum > pageDims.length) return
+      virtualizer.scrollToIndex(pageNum - 1, { align: 'start', behavior })
+    },
+    [virtualizer, pageDims.length]
+  )
+
+  useEffect(() => {
+    if (didInitialScroll.current) return
+    if (pageDims.length === 0 || !containerRef.current || !pageWidth) return
+    scrollToPage(defaultPage, 'instant')
+    didInitialScroll.current = true
+  }, [pageDims.length, pageWidth, defaultPage, scrollToPage])
+
+  // restore scroll position after zoom or container resize
+  useEffect(() => {
+    if (pageDims.length === 0 || !didInitialScroll.current) return
+    virtualizer.measure()
+    scrollToPage(currentPageRef.current, 'instant')
+    isLayoutChanging.current = false
+  }, [pageWidth, pageDims.length, virtualizer, scrollToPage])
 
   useEffect(() => {
     if (!containerRef.current) return
     const observer = new ResizeObserver(([entry]) => {
-      captureCurrentPage()
+      console.log('isLayoutChanging')
+      isLayoutChanging.current = true
       setThrottledContainerWidth(entry.contentRect.width)
     })
     observer.observe(containerRef.current)
     return () => observer.disconnect()
-  }, [setThrottledContainerWidth, captureCurrentPage])
+  }, [setThrottledContainerWidth])
 
   const handleScaleDown = (): void => {
-    captureCurrentPage()
+    isLayoutChanging.current = true
     setScale(s => Math.max(SCALE_MIN, parseFloat((s - SCALE_STEP).toFixed(2))))
   }
 
   const handleScaleUp = (): void => {
-    captureCurrentPage()
+    isLayoutChanging.current = true
     setScale(s => Math.min(SCALE_MAX, parseFloat((s + SCALE_STEP).toFixed(2))))
   }
 
@@ -76,22 +120,18 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
     if (currentPage < numPages) scrollToPage(currentPage + 1)
   }
 
-  const handleLoadSuccess = useCallback(
-    async (pdf: PDFDocumentProxy) => {
-      setNumPages(pdf.numPages)
-      pageRefs.current = new Array(pdf.numPages).fill(null)
+  const handleLoadSuccess = useCallback(async (pdf: PDFDocumentProxy) => {
+    setNumPages(pdf.numPages)
+    const dims: PageDim[] = new Array(pdf.numPages)
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i)
+      const vp = page.getViewport({ scale: 1 })
+      dims[i - 1] = { w: vp.width, h: vp.height }
+    }
+    setPageDims(dims)
+  }, [])
 
-      const dims: PageDim[] = new Array(pdf.numPages)
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i)
-        const vp = page.getViewport({ scale: 1 })
-        dims[i - 1] = { w: vp.width, h: vp.height }
-      }
-
-      setPageDims(dims)
-    },
-    [setPageDims]
-  )
+  const virtualItems = virtualizer.getVirtualItems()
 
   return (
     <div className="flex flex-col w-full h-full relative">
@@ -104,34 +144,32 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
             loading={<div style={{ color: '#fff', padding: 32 }}>Loading PDF…</div>}
             error={<div style={{ color: '#faa', padding: 32 }}>Failed to load PDF.</div>}
           >
-            <div style={{ position: 'relative', height: totalHeight, width: pageWidth }}>
-              {pageDims.map((_, i) => {
-                const inWindow = i >= range[0] && i <= range[1]
-                return (
-                  <div
-                    key={i}
-                    ref={el => {
-                      pageRefs.current[i] = el
-                    }}
-                    style={{
-                      position: 'absolute',
-                      top: offsets[i],
-                      left: 0,
-                      width: pageWidth,
-                      height: scaledHeights[i],
-                    }}
-                  >
-                    {inWindow && (
-                      <Page
-                        pageNumber={i + 1}
-                        width={pageWidth}
-                        renderAnnotationLayer
-                        renderTextLayer
-                      />
-                    )}
-                  </div>
-                )
-              })}
+            <div
+              style={{
+                position: 'relative',
+                height: virtualizer.getTotalSize(),
+                width: pageWidth,
+              }}
+            >
+              {virtualItems.map(item => (
+                <div
+                  key={item.key}
+                  style={{
+                    position: 'absolute',
+                    top: item.start,
+                    left: 0,
+                    width: pageWidth,
+                    height: item.size - PAGE_GAP,
+                  }}
+                >
+                  <Page
+                    pageNumber={item.index + 1}
+                    width={pageWidth}
+                    renderAnnotationLayer
+                    renderTextLayer
+                  />
+                </div>
+              ))}
             </div>
           </Document>
         </div>
