@@ -135,7 +135,7 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
 
   return (
     <div className="flex flex-col w-full h-full relative">
-      <div ref={containerRef} className="overflow-auto bg-[#525659] pb-20">
+      <div ref={containerRef} className="flex-1 min-h-0 overflow-auto bg-[#525659] pb-20">
         <div className="flex flex-col items-center min-w-min">
           <Document
             file={file}
