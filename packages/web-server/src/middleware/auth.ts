@@ -1,18 +1,32 @@
 import { createMiddleware } from 'hono/factory'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
+type Variables = { userId: string }
 
-export const auth = createMiddleware<{ Variables: { userId: string } }>(async (c, next) => {
-  const token = c.req.header('Authorization')?.replace('Bearer ', '')
-  if (!token) return c.json({ error: 'Unauthorized' }, 401)
+export type VerifyToken = (token: string) => Promise<{ userId: string } | null>
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser(token)
-  if (error || !user) return c.json({ error: 'Unauthorized' }, 401)
+export const createSupabaseVerifyToken = (supabase: SupabaseClient): VerifyToken => {
+  return async token => {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token)
+    if (error || !user) return null
+    return { userId: user.id }
+  }
+}
 
-  c.set('userId', user.id)
-  await next()
-})
+export const createAuth = (verifyToken: VerifyToken) =>
+  createMiddleware<{ Variables: Variables }>(async (c, next) => {
+    const token = c.req.header('Authorization')?.replace('Bearer ', '')
+    if (!token) return c.json({ error: 'Unauthorized' }, 401)
+
+    const result = await verifyToken(token)
+    if (!result) return c.json({ error: 'Unauthorized' }, 401)
+
+    c.set('userId', result.userId)
+    await next()
+  })
+
+export const createSupabaseClient = (url: string, anonKey: string): SupabaseClient =>
+  createClient(url, anonKey)
