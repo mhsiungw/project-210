@@ -20,7 +20,8 @@
     "./pages/*": "./src/pages/*.tsx"
   },
   "scripts": {
-    "typecheck": "tsc --build"
+    "typecheck": "tsc --build",
+    "test": "vitest run"
   },
   "dependencies": {
     "@tanstack/react-virtual": "^3.13.24",

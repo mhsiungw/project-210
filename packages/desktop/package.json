@@ -5,7 +5,12 @@
   "type": "module",
   "main": "./out/main/index.js",
   "scripts": {
-    "typecheck": "tsc --build"
+    "dev": "electron-vite dev",
+    "build": "electron-vite build && electron-builder",
+    "build:unpack": "electron-vite build && electron-builder --dir",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc --build",
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@app/db": "workspace:*",
