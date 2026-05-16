@@ -3,7 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { PdfNotes } from './pages/PdfNotes'
 import { Login } from './pages/Login'
-import Sidebar from './ui/Sidebar'
+import Sidebar from './ui/side-bar/index'
 import { GlobalLoader } from './ui/GlobalLoader'
 import { useGetSessionQuery } from './store/api/auth'
 

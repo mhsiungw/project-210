@@ -1,4 +1,4 @@
-import { useEffect, useRef, type JSX, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type JSX, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
 interface Props {
@@ -10,10 +10,24 @@ interface Props {
 
 export function ContextMenu({ x, y, onClose, children }: Props): JSX.Element {
   const menuRef = useRef<HTMLDivElement>(null)
+  const [pos, setPos] = useState({ x, y })
+
+  useLayoutEffect(() => {
+    const el = menuRef.current
+    if (!el) return
+    const { width, height } = el.getBoundingClientRect()
+    const pad = 8
+    setPos({
+      x: Math.min(x, window.innerWidth - width - pad),
+      y: Math.min(y, window.innerHeight - height - pad),
+    })
+  }, [x, y])
 
   useEffect(() => {
     const onMouseDown = (e: MouseEvent): void => {
-      if (!menuRef.current?.contains(e.target as Node)) onClose()
+      const target = e.target as Node
+      if (menuRef.current?.contains(target)) return
+      onClose()
     }
     const onKeyDown = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') onClose()
@@ -34,8 +48,8 @@ export function ContextMenu({ x, y, onClose, children }: Props): JSX.Element {
   return createPortal(
     <div
       ref={menuRef}
-      style={{ position: 'fixed', left: x + 4, top: y + 4 }}
-      className="flex justify-center items-center gap-2 btn z-50 hover:bg-muted bg-context-menu"
+      style={{ position: 'fixed', left: pos.x, top: pos.y }}
+      className="bg-context-menu rounded-md"
     >
       {children}
     </div>,
