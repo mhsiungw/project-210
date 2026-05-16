@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSignInWithOtpMutation, useVerifyOtpMutation } from '../store/api/auth'
+import { useSignInWithOtpMutation, useVerifyOtpMutation } from '@app/shared/store/api/auth'
 
 export function Login(): JSX.Element {
   const navigate = useNavigate()

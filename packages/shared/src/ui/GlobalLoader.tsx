@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { RiLoader5Line } from '@remixicon/react'
-import { useAppSelector } from '../store'
+import { useAppSelector } from '@app/shared/store'
 
 export function GlobalLoader(): JSX.Element | null {
   const isFetching = useAppSelector(

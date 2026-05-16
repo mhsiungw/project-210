@@ -16,6 +16,7 @@ export default defineConfig({
     alias: {
       '@app/db': resolve(__dirname, '../db/src'),
       '@app/shared': resolve(__dirname, '../shared/src'),
+      '@app/web-server': resolve(__dirname, '../web-server/src'),
     },
   },
 })

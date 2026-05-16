@@ -6,7 +6,7 @@ import {
   type DeleteObjectsCommandInput,
 } from '@aws-sdk/client-s3'
 import type { Book } from '@app/db'
-import { createTestApp, type TestApp } from '../../test-utils/createTestApp.js'
+import { createTestApp, type TestApp } from '@app/web-server/test-utils/createTestApp'
 
 const makeBook = (overrides: Partial<Book> = {}): Book => ({
   id: 'book-1',

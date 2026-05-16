@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import type { Translation } from '@app/db'
-import { createTestApp, type TestApp } from '../../test-utils/createTestApp.js'
+import { createTestApp, type TestApp } from '@app/web-server/test-utils/createTestApp'
 
 const makeTranslation = (overrides: Partial<Translation> = {}): Translation => ({
   id: 'tr-1',
@@ -67,9 +67,7 @@ describe('POST /api/translations', () => {
   })
 
   it('updates an existing translation when id is provided', async () => {
-    ctx.prisma.translation.update.mockResolvedValue(
-      makeTranslation({ text: 'adios' })
-    )
+    ctx.prisma.translation.update.mockResolvedValue(makeTranslation({ text: 'adios' }))
 
     const res = await ctx.app.request('/api/translations', {
       method: 'POST',
