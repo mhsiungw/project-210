@@ -80,7 +80,7 @@ export default function Upload(): JSX.Element {
       {validationError && <p className="text-error mb-3 text-[0.9rem]">{validationError}</p>}
       {isError && (
         <p className="text-error mb-3 text-[0.9rem]">
-          {error instanceof Error ? error.message : 'Upload failed.'}
+          {error && 'data' in error ? String(error.data) : 'Upload failed.'}
         </p>
       )}
     </div>

@@ -85,9 +85,9 @@ describe('Upload', () => {
     expect(previewBuffer).toBeInstanceOf(ArrayBuffer)
   })
 
-  it('shows an upload error when the mutation rejects', async () => {
+  it('shows the error message when the mutation rejects', async () => {
     renderUpload(() => Promise.reject(new Error('boom')))
     selectFile(makePdfFile())
-    expect(await screen.findByText('Upload failed.')).toBeInTheDocument()
+    expect(await screen.findByText('Error: boom')).toBeInTheDocument()
   })
 })

@@ -1,14 +1,6 @@
-import { HttpError, type BookDto } from '@app/shared/client'
+import type { BookDto } from '@app/shared/client'
 import type { ThunkExtra } from '@app/shared/store'
-import { emptyApi } from './emptyApi'
-
-function toQueryError(
-  e: unknown
-): { status: number; data: string } | { status: 'FETCH_ERROR'; error: string } {
-  return e instanceof HttpError
-    ? { status: e.status, data: e.message }
-    : { status: 'FETCH_ERROR' as const, error: String(e) }
-}
+import { emptyApi, toQueryError } from './emptyApi'
 
 const bookApi = emptyApi.injectEndpoints({
   endpoints: builder => ({
