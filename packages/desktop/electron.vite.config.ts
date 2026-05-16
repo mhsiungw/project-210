@@ -12,9 +12,11 @@ const pdfjsDist = dirname(_require.resolve('pdfjs-dist/package.json'))
 const db = resolve(__dirname, '../db/src')
 const shared = resolve(__dirname, '../shared/src')
 const desktop = __dirname
+const envDir = resolve(__dirname, '../..')
 
 export default defineConfig({
   main: {
+    envDir,
     build: {
       lib: { entry: resolve(desktop, 'main/index.ts') },
       watch: {},
@@ -31,19 +33,8 @@ export default defineConfig({
       },
     },
   },
-  preload: {
-    build: {
-      lib: { entry: resolve(desktop, 'preload/index.ts') },
-      externalizeDeps: true,
-    },
-    resolve: {
-      alias: {
-        '@preload': resolve(desktop, 'preload'),
-        '@app/shared': shared,
-      },
-    },
-  },
   renderer: {
+    envDir,
     root: resolve(desktop, 'renderer'),
     build: {
       rollupOptions: {
