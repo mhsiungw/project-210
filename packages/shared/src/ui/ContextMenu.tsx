@@ -1,18 +1,14 @@
-import { useEffect, useRef, type JSX } from 'react'
+import { useEffect, useRef, type JSX, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { RiDeleteBinLine } from '@remixicon/react'
-import type { BookDto } from '@app/shared/client/types'
-import { useDeleteBookMutation } from '@app/shared/store/api/book'
 
 interface Props {
-  book: BookDto
   x: number
   y: number
   onClose: () => void
+  children: ReactNode
 }
 
-export function BookContextMenu({ book, x, y, onClose }: Props): JSX.Element {
-  const [deleteBook] = useDeleteBookMutation()
+export function ContextMenu({ x, y, onClose, children }: Props): JSX.Element {
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -35,19 +31,13 @@ export function BookContextMenu({ book, x, y, onClose }: Props): JSX.Element {
     }
   }, [onClose])
 
-  const handleDelete = (): void => {
-    deleteBook(book.id)
-    onClose()
-  }
-
   return createPortal(
     <div
       ref={menuRef}
       style={{ position: 'fixed', left: x + 4, top: y + 4 }}
       className="flex justify-center items-center gap-2 btn z-50 hover:bg-muted bg-context-menu"
     >
-      <RiDeleteBinLine color="rgba(70,146,221,1)" />
-      <button onClick={handleDelete}>Delete</button>
+      {children}
     </div>,
     document.body
   )
