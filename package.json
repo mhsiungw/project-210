@@ -18,7 +18,7 @@
     "format": "prettier --write .",
     "typecheck": "tsc --build",
     "typecheck:legacy": "tsc --noEmit",
-    "test": "vitest run --config packages/shared/vitest.config.ts && vitest run --config packages/desktop/vitest.config.ts",
+    "test": "vitest run --config packages/shared/vitest.config.ts && vitest run --config packages/desktop/vitest.config.ts && pnpm --filter @app/web-server test",
     "test:renderer": "vitest --config packages/shared/vitest.config.ts",
     "test:main": "vitest --config packages/desktop/vitest.config.ts"
   },
