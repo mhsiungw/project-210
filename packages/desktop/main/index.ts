@@ -1,8 +1,11 @@
 import 'dotenv/config'
 import { app, BrowserWindow } from 'electron'
-import { join } from 'path'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 import { prisma } from '@app/db'
 import * as Sentry from '@sentry/electron/main'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 Sentry.init({
   dsn: process.env.VITE_SENTRY_DSN,
@@ -16,6 +19,7 @@ function createWindow(): void {
     height: 800,
     show: false,
     autoHideMenuBar: true,
+    icon: join(__dirname, 'logo.png'),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -33,6 +37,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(async () => {
+  app.dock?.setIcon(join(__dirname, 'logo.png'))
   if (process.env.NODE_ENV === 'development') {
     try {
       const { installExtension, REDUX_DEVTOOLS } = await import('electron-devtools-installer')

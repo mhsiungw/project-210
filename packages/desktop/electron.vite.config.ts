@@ -32,6 +32,12 @@ export default defineConfig({
         '@app/shared': shared,
       },
     },
+    plugins: [
+      viteStaticCopy({
+        environment: 'ssr',
+        targets: [{ src: `${shared}/assets/logo.png`, dest: '.', rename: { stripBase: true } }],
+      }),
+    ],
   },
   renderer: {
     envDir,

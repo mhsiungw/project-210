@@ -1,5 +1,5 @@
 appId: com.example.electronapp
-productName: ElectronApp
+productName: Proejct-210
 directories:
   buildResources: build
   output: dist
@@ -16,14 +16,17 @@ mac:
     - target: dmg
       arch: [x64, arm64]
   category: public.app-category.developer-tools
+  icon: ../shared/src/assets/logo.png
 win:
   target:
     - target: nsis
       arch: [x64]
+  icon: ../shared/src/assets/logo.png
 linux:
   target:
     - target: AppImage
       arch: [x64]
+  icon: ../shared/src/assets/logo.png
 nsis:
   artifactName: ${productName}-${version}-setup.${ext}
   oneClick: false
