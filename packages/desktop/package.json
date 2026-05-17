@@ -15,5 +15,8 @@
   "dependencies": {
     "@app/db": "workspace:*",
     "@app/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "^42.0.1"
   }
 }

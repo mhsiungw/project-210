@@ -190,6 +190,10 @@ importers:
       '@app/shared':
         specifier: workspace:*
         version: link:../shared
+    devDependencies:
+      electron:
+        specifier: ^42.0.1
+        version: 42.0.1
 
   packages/shared:
     dependencies:

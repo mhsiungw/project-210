@@ -1,5 +1,5 @@
 appId: com.example.electronapp
-productName: Proejct-210
+productName: Project-210
 directories:
   buildResources: build
   output: dist

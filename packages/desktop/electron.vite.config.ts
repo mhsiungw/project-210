@@ -20,7 +20,7 @@ export default defineConfig({
     build: {
       lib: { entry: resolve(desktop, 'main/index.ts') },
       watch: {},
-      externalizeDeps: true,
+      externalizeDeps: { exclude: ['@app/db', '@app/shared'] },
       rollupOptions: {
         external: [/^@prisma\//],
       },
