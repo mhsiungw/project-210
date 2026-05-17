@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build && electron-builder",
+    "build:staging": "electron-vite build --mode staging && electron-builder",
+    "build:production": "electron-vite build --mode production && electron-builder",
     "build:unpack": "electron-vite build && electron-builder --dir",
     "preview": "electron-vite preview",
     "typecheck": "tsc --build",

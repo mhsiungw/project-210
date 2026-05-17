@@ -1,4 +1,3 @@
-import './env.js'
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
@@ -25,7 +24,7 @@ const app = new Hono()
 app.use(
   '/api/*',
   cors({
-    origin: process.env.WEB_ORIGIN ?? 'http://localhost:5174',
+    origin: process.env.WEB_ORIGIN ?? 'http://localhost:5173',
     allowHeaders: ['Authorization', 'Content-Type'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   })

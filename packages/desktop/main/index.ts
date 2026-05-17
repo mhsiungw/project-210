@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { app, BrowserWindow } from 'electron'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'

@@ -12,7 +12,7 @@ const pdfjsDist = dirname(_require.resolve('pdfjs-dist/package.json'))
 const db = resolve(__dirname, '../db/src')
 const shared = resolve(__dirname, '../shared/src')
 const desktop = __dirname
-const envDir = resolve(__dirname, '../..')
+const envDir = resolve(__dirname, '../../env')
 
 export default defineConfig({
   main: {

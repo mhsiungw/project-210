@@ -1,7 +1,7 @@
-import 'dotenv/config'
 import { defineConfig, env } from 'prisma/config'
 
-// Run from repo root: prisma migrate dev --config packages/db/prisma.config.ts
+// Env vars come from env/ via dotenv-cli (see root package.json db:* scripts).
+// Run from repo root: pnpm db:migrate:dev
 export default defineConfig({
   schema: './prisma/schema.prisma',
   migrations: {

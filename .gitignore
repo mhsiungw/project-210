@@ -5,11 +5,11 @@ out/
 *.local
 resource/*
 src/renderer/public/*
-.env
 supabase
 docs
-# Sentry Config File
-.env.sentry-build-plugin
+# Env files — see env/ for layout
+env/.env.development
+env/.env.sentry-build-plugin
 .claude/
 generated/
 *.tsbuildinfo
