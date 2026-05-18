@@ -18,6 +18,7 @@
     "build:web": "pnpm -F @app/web build",
     "preview:desktop": "pnpm -F @app/desktop preview",
     "preview:web": "pnpm -F @app/web preview",
+    "deploy:functions": "supabase functions deploy api",
     "db:generate": "dotenv -e env/.env.development -- prisma generate --config packages/db/prisma.config.ts",
     "db:migrate:dev": "dotenv -e env/.env.development -- prisma migrate dev --config packages/db/prisma.config.ts",
     "db:migrate:staging": "dotenv -e env/.env.staging -e env/.env.staging.local -- prisma migrate deploy --config packages/db/prisma.config.ts",

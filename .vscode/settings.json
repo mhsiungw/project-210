@@ -3,5 +3,7 @@
   "prisma.pinToPrisma6": true,
   "files.associations": {
     "*.css": "tailwindcss"
-  }
+  },
+  "deno.enable": false,
+  "deno.enablePaths": ["packages/functions"]
 }

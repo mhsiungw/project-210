@@ -73,7 +73,7 @@ export const createBookRoutes = ({
           new PutObjectCommand({
             Bucket: config.s3Bucket,
             Key: base,
-            Body: Buffer.from(await pdfFile.arrayBuffer()),
+            Body: new Uint8Array(await pdfFile.arrayBuffer()),
             ContentType: 'application/pdf',
           })
         ),
@@ -81,7 +81,7 @@ export const createBookRoutes = ({
           new PutObjectCommand({
             Bucket: config.s3Bucket,
             Key: previewKey,
-            Body: Buffer.from(await previewFile.arrayBuffer()),
+            Body: new Uint8Array(await previewFile.arrayBuffer()),
             ContentType: 'image/png',
           })
         ),
