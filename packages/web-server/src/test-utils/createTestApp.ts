@@ -35,6 +35,8 @@ export const createTestApp = (overrides: TestAppOverrides = {}): TestApp => {
   const config: BookRoutesConfig = overrides.config ?? {
     cloudfrontBaseUrl: 'https://cdn.test',
     s3Bucket: 'test-bucket',
+    cloudfrontKeyPairId: 'TESTKEYPAIRID',
+    cloudfrontPrivateKey: 'test-private-key',
   }
   const auth =
     overrides.auth ??

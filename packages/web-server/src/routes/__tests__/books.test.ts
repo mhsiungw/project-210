@@ -8,6 +8,10 @@ import {
 import type { Book } from '@app/db'
 import { createTestApp, type TestApp } from '@app/web-server/test-utils/createTestApp'
 
+vi.mock('@aws-sdk/cloudfront-signer', () => ({
+  getSignedUrl: ({ url }: { url: string }): string => `${url}?Signature=test-signature`,
+}))
+
 const makeBook = (overrides: Partial<Book> = {}): Book => ({
   id: 'book-1',
   created_at: new Date('2026-01-01T00:00:00.000Z'),
@@ -39,8 +43,8 @@ describe('GET /api/books', () => {
         fileName: 'foo.pdf',
         s3Key: 'uploads/123-foo.pdf',
         s3PreviewKey: 'uploads/123-foo-preview.png',
-        s3KeyUrl: 'https://cdn.test/uploads/123-foo.pdf',
-        s3PreviewKeyUrl: 'https://cdn.test/uploads/123-foo-preview.png',
+        s3KeyUrl: 'https://cdn.test/uploads/123-foo.pdf?Signature=test-signature',
+        s3PreviewKeyUrl: 'https://cdn.test/uploads/123-foo-preview.png?Signature=test-signature',
         totalPages: 10,
         currentPage: 3,
         createdAt: '2026-01-01T00:00:00.000Z',

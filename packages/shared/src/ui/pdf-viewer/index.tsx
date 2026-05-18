@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import { File } from 'react-pdf/dist/shared/types.js'
 import { Document, Page, pdfjs } from 'react-pdf'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useThrottle } from '../hooks/useThrottle'
@@ -26,11 +25,11 @@ const OVERSCAN = 2
 type PageDim = { w: number; h: number }
 
 interface PdfViewerProps {
-  file: File
+  url: string
   defaultPage?: number
 }
 
-export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Element {
+export function PdfViewer({ url, defaultPage = 1 }: PdfViewerProps): JSX.Element {
   const [numPages, setNumPages] = useState(0)
   const [scale, setScale] = useState(DEFAULT_SCALE)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -138,7 +137,7 @@ export function PdfViewer({ file, defaultPage = 1 }: PdfViewerProps): JSX.Elemen
       <div ref={containerRef} className="flex-1 min-h-0 overflow-auto bg-[#525659] pb-20">
         <div className="flex flex-col items-center min-w-min">
           <Document
-            file={file}
+            file={url}
             options={PDF_OPTIONS}
             onLoadSuccess={handleLoadSuccess}
             loading={<div style={{ color: '#fff', padding: 32 }}>Loading PDF…</div>}

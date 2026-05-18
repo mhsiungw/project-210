@@ -1,6 +1,5 @@
 import { useState, useEffect, type JSX } from 'react'
 import { useBlocker } from 'react-router-dom'
-import { useApiClient } from '@app/shared/client/context'
 import { useAppSelector } from '@app/shared/store'
 import { useGetBooksQuery } from '@app/shared/store/api/book'
 import {
@@ -10,7 +9,6 @@ import {
 import { PdfViewer } from '@app/shared/ui/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {
-  const apiClient = useApiClient()
   const selectedBookId = useAppSelector(state => state.selectedBook.id)
 
   const { book } = useGetBooksQuery(undefined, {
@@ -25,19 +23,12 @@ export function PdfNotes(): JSX.Element {
 
   const [postTranslation] = usePostTranslationMutation()
   const [draftText, setDraftText] = useState('')
-  const [pdfData, setPdfData] = useState(new ArrayBuffer())
 
   // Seed draft from DB on initial load only (keyed on id, not text, so typing doesn't reset)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraftText(savedTranslation?.text ?? '')
   }, [savedTranslation?.id, savedTranslation?.text])
-
-  useEffect(() => {
-    if (book?.s3KeyUrl) {
-      apiClient.getPDF(book.s3KeyUrl).then(setPdfData)
-    }
-  }, [book?.s3KeyUrl, apiClient])
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => currentLocation !== nextLocation
@@ -68,7 +59,9 @@ export function PdfNotes(): JSX.Element {
         />
       </div>
       <div className="flex-1 rounded border border-border p-3 max-w-[calc((100vw-150px)/2)]">
-        <PdfViewer file={pdfData} defaultPage={book?.currentPage || 1} />
+        {book?.s3KeyUrl && typeof book?.s3KeyUrl === 'string' && (
+          <PdfViewer url={book?.s3KeyUrl} defaultPage={book?.currentPage || 1} />
+        )}
       </div>
     </div>
   )

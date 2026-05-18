@@ -17,6 +17,8 @@ const auth = createAuth(createSupabaseVerifyToken(supabase))
 const config = {
   cloudfrontBaseUrl: process.env.CLOUDFRONT_BASE_URL!,
   s3Bucket: process.env.S3_BUCKET!,
+  cloudfrontKeyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID!,
+  cloudfrontPrivateKey: process.env.CLOUDFRONT_PRIVATE_KEY!.replace(/\\n/g, '\n'),
 }
 
 const app = new Hono()
@@ -35,14 +37,6 @@ app.use(
 
 app.route('/api/books', createBookRoutes({ prisma, s3, config, auth }))
 app.route('/api/translations', createTranslationRoutes({ prisma, auth }))
-
-app.get('/api/pdf', async c => {
-  const url = c.req.query('url')
-  if (!url) return c.json({ error: 'url is required' }, 400)
-  const res = await fetch(url)
-  const buffer = await res.arrayBuffer()
-  return c.body(buffer, 200, { 'Content-Type': 'application/pdf' })
-})
 
 const port = Number(process.env.PORT ?? 3001)
 serve({ fetch: app.fetch, port }, () => {

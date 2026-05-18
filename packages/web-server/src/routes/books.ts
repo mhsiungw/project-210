@@ -1,13 +1,18 @@
 import { Hono, type MiddlewareHandler } from 'hono'
 import { S3Client, PutObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/cloudfront-signer'
 import type { PrismaClient, Book } from '@app/db'
 import type { BookDto } from '@app/shared/client/types'
 
 type Variables = { userId: string }
 
+const SIGNED_URL_TTL_MS = 24 * 60 * 60 * 1000
+
 export type BookRoutesConfig = {
   cloudfrontBaseUrl: string
   s3Bucket: string
+  cloudfrontKeyPairId: string
+  cloudfrontPrivateKey: string
 }
 
 export type BookRoutesDeps = {
@@ -23,14 +28,24 @@ export const createBookRoutes = ({
   config,
   auth,
 }: BookRoutesDeps): Hono<{ Variables: Variables }> => {
+  const signCloudfrontUrl = (key: string): string => {
+    const encodedKey = key.split('/').map(encodeURIComponent).join('/')
+    return getSignedUrl({
+      url: `${config.cloudfrontBaseUrl}/${encodedKey}`,
+      keyPairId: config.cloudfrontKeyPairId,
+      privateKey: config.cloudfrontPrivateKey,
+      dateLessThan: new Date(Date.now() + SIGNED_URL_TTL_MS).toISOString(),
+    })
+  }
+
   const toBookDto = (book: Book): BookDto => {
     return {
       id: book.id,
       fileName: book.file_name,
       s3Key: book.s3_key,
       s3PreviewKey: book.s3_preview_key,
-      s3KeyUrl: `${config.cloudfrontBaseUrl}/${book.s3_key}`,
-      s3PreviewKeyUrl: `${config.cloudfrontBaseUrl}/${book.s3_preview_key}`,
+      s3KeyUrl: signCloudfrontUrl(book.s3_key),
+      s3PreviewKeyUrl: signCloudfrontUrl(book.s3_preview_key),
       totalPages: book.total_pages ?? 0,
       currentPage: book.current_page ?? 0,
       createdAt: book.created_at.toISOString(),

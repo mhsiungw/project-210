@@ -13,3 +13,5 @@ env/.env.sentry-build-plugin
 .claude/
 generated/
 *.tsbuildinfo
+
+private_key.pem
