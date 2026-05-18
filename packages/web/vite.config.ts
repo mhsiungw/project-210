@@ -13,6 +13,10 @@ const pdfjsDist = dirname(_require.resolve('pdfjs-dist/package.json'))
 
 export default defineConfig({
   envDir: resolve(root, 'env'),
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
   resolve: {
     alias: {
       '@app/shared': resolve(__dirname, '../shared/src'),
