@@ -9,7 +9,11 @@ supabase/.branches
 supabase/.temp
 supabase/.env
 docs
-# Env files — see env/ for layout
+# Env files — see env/ for layout. Real values live in GitHub secrets;
+# CI materialises these files at deploy time. Keep env/example/ tracked.
+env/.env.development
+env/.env.staging
+env/.env.production
 env/.env.development.functions
 .claude/
 generated/
