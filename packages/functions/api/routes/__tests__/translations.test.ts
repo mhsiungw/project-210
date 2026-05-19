@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import type { Translation } from '@app/db'
-import { createTestApp, type TestApp } from '@app/web-server/test-utils/createTestApp'
+import { createTestApp, type TestApp } from '../../test-utils/createTestApp.ts'
 
 const makeTranslation = (overrides: Partial<Translation> = {}): Translation => ({
   id: 'tr-1',

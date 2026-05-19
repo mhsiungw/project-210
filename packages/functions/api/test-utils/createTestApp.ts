@@ -4,8 +4,8 @@ import { S3Client } from '@aws-sdk/client-s3'
 import { mockClient, type AwsClientStub } from 'aws-sdk-client-mock'
 import { mockDeep, type DeepMockProxy } from 'vitest-mock-extended'
 import type { PrismaClient } from '@app/db'
-import { createBookRoutes, type BookRoutesConfig } from '../routes/books.js'
-import { createTranslationRoutes } from '../routes/translations.js'
+import { createBookRoutes, type BookRoutesConfig } from '../routes/books.ts'
+import { createTranslationRoutes } from '../routes/translations.ts'
 
 type Variables = { userId: string }
 

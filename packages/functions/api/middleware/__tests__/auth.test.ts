@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { Hono } from 'hono'
-import { createAuth, type VerifyToken } from '../auth.js'
+import { createAuth, type VerifyToken } from '../auth.ts'
 
 const buildApp = (verifyToken: VerifyToken) => {
   const app = new Hono<{ Variables: { userId: string } }>()

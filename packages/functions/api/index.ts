@@ -4,13 +4,9 @@ import { cors } from 'hono/cors'
 import { S3Client } from '@aws-sdk/client-s3'
 import { PrismaClient } from '../../db/generated/client/client.ts'
 import { PrismaPg } from '@prisma/adapter-pg'
-import { createBookRoutes } from '../../web-server/src/routes/books.ts'
-import { createTranslationRoutes } from '../../web-server/src/routes/translations.ts'
-import {
-  createAuth,
-  createSupabaseClient,
-  createSupabaseVerifyToken,
-} from '../../web-server/src/middleware/auth.ts'
+import { createBookRoutes } from './routes/books.ts'
+import { createTranslationRoutes } from './routes/translations.ts'
+import { createAuth, createSupabaseClient, createSupabaseVerifyToken } from './middleware/auth.ts'
 
 const env = (key: string): string => {
   const value = Deno.env.get(key)

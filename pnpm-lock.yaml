@@ -198,6 +198,37 @@ importers:
         specifier: ^42.0.1
         version: 42.0.1
 
+  packages/functions:
+    dependencies:
+      '@app/db':
+        specifier: workspace:*
+        version: link:../db
+      '@app/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@aws-sdk/client-s3':
+        specifier: ^3.1045.0
+        version: 3.1045.0
+      '@aws-sdk/cloudfront-signer':
+        specifier: ^3.1045.0
+        version: 3.1048.0
+      '@supabase/supabase-js':
+        specifier: ^2.105.4
+        version: 2.105.4
+      hono:
+        specifier: ^4.0.0
+        version: 4.12.18
+    devDependencies:
+      aws-sdk-client-mock:
+        specifier: ^4.1.0
+        version: 4.1.0
+      vitest:
+        specifier: ^4.1.5
+        version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.7.0)(happy-dom@20.9.0)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0))
+      vitest-mock-extended:
+        specifier: ^4.0.0
+        version: 4.0.0(typescript@6.0.3)(vitest@4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.7.0)(happy-dom@20.9.0)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0)))
+
   packages/shared:
     dependencies:
       '@reduxjs/toolkit':
@@ -230,46 +261,6 @@ importers:
       '@app/shared':
         specifier: workspace:*
         version: link:../shared
-
-  packages/web-server:
-    dependencies:
-      '@app/db':
-        specifier: workspace:*
-        version: link:../db
-      '@app/shared':
-        specifier: workspace:*
-        version: link:../shared
-      '@aws-sdk/client-s3':
-        specifier: ^3.1045.0
-        version: 3.1045.0
-      '@aws-sdk/cloudfront-signer':
-        specifier: ^3.1045.0
-        version: 3.1048.0
-      '@hono/node-server':
-        specifier: ^1.0.0
-        version: 1.19.11(hono@4.12.18)
-      '@supabase/supabase-js':
-        specifier: ^2.105.4
-        version: 2.105.4
-      hono:
-        specifier: ^4.0.0
-        version: 4.12.18
-    devDependencies:
-      aws-sdk-client-mock:
-        specifier: ^4.1.0
-        version: 4.1.0
-      dotenv-cli:
-        specifier: ^11.0.0
-        version: 11.0.0
-      tsx:
-        specifier: ^4.0.0
-        version: 4.21.0
-      vitest:
-        specifier: ^4.1.5
-        version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.7.0)(happy-dom@20.9.0)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0))
-      vitest-mock-extended:
-        specifier: ^4.0.0
-        version: 4.0.0(typescript@6.0.3)(vitest@4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.7.0)(happy-dom@20.9.0)(vite@8.0.12(@types/node@25.7.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0)))
 
 packages:
 
@@ -5174,7 +5165,7 @@ snapshots:
       '@aws-sdk/util-user-agent-browser': 3.972.10
       '@aws-sdk/util-user-agent-node': 3.973.24
       '@smithy/config-resolver': 4.5.1
-      '@smithy/core': 3.24.1
+      '@smithy/core': 3.24.3
       '@smithy/fetch-http-handler': 5.4.1
       '@smithy/hash-node': 4.3.1
       '@smithy/invalid-dependency': 4.3.1
@@ -7971,6 +7962,7 @@ snapshots:
       '@esbuild/win32-arm64': 0.27.7
       '@esbuild/win32-ia32': 0.27.7
       '@esbuild/win32-x64': 0.27.7
+    optional: true
 
   escalade@3.2.0: {}
 
@@ -8284,6 +8276,7 @@ snapshots:
   get-tsconfig@4.14.0:
     dependencies:
       resolve-pkg-maps: 1.0.0
+    optional: true
 
   giget@3.2.0: {}
 
@@ -9305,7 +9298,8 @@ snapshots:
 
   resolve-from@4.0.0: {}
 
-  resolve-pkg-maps@1.0.0: {}
+  resolve-pkg-maps@1.0.0:
+    optional: true
 
   resolve@2.0.0-next.6:
     dependencies:
@@ -9689,6 +9683,7 @@ snapshots:
       get-tsconfig: 4.14.0
     optionalDependencies:
       fsevents: 2.3.3
+    optional: true
 
   type-check@0.4.0:
     dependencies:

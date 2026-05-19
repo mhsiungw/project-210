@@ -6,7 +6,7 @@ import {
   type DeleteObjectsCommandInput,
 } from '@aws-sdk/client-s3'
 import type { Book } from '@app/db'
-import { createTestApp, type TestApp } from '@app/web-server/test-utils/createTestApp'
+import { createTestApp, type TestApp } from '../../test-utils/createTestApp.ts'
 
 vi.mock('@aws-sdk/cloudfront-signer', () => ({
   getSignedUrl: ({ url }: { url: string }): string => `${url}?Signature=test-signature`,

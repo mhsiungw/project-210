@@ -7,16 +7,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   root: __dirname,
   test: {
-    name: 'web-server',
+    name: 'functions',
     environment: 'node',
-    include: ['src/**/*.{test,spec}.ts'],
+    include: ['api/**/*.{test,spec}.ts'],
     globals: true,
   },
   resolve: {
     alias: {
       '@app/db': resolve(__dirname, '../db/src'),
       '@app/shared': resolve(__dirname, '../shared/src'),
-      '@app/web-server': resolve(__dirname, '../web-server/src'),
     },
   },
 })
