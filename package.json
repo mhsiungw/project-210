@@ -19,6 +19,7 @@
     "preview:desktop": "pnpm -F @app/desktop preview",
     "preview:web": "pnpm -F @app/web preview",
     "deploy:functions": "supabase functions deploy api",
+    "functions:serve": "supabase functions serve api --env-file env/.env.development.functions --no-verify-jwt",
     "deploy:web": "pnpm -F @app/web deploy",
     "deploy:web:prod": "pnpm -F @app/web deploy:prod",
     "db:generate": "dotenv -e env/.env.development -- prisma generate --config packages/db/prisma.config.ts",

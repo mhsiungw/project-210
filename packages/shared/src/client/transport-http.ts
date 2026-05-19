@@ -20,7 +20,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
     async invoke<T>(method: string, ...args: unknown[]): Promise<T> {
       switch (method) {
         case 'getBooks': {
-          const res = await fetch(`${baseUrl}/api/books`, { headers: await authHeader() })
+          const res = await fetch(`${baseUrl}/books`, { headers: await authHeader() })
           assertOk(res)
           return res.json()
         }
@@ -30,7 +30,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
           form.append('pdf', new Blob([buffer], { type: 'application/pdf' }), fileName)
           form.append('preview', new Blob([previewBuffer], { type: 'image/png' }))
           form.append('fileName', fileName)
-          const res = await fetch(`${baseUrl}/api/books`, {
+          const res = await fetch(`${baseUrl}/books`, {
             method: 'POST',
             headers: await authHeader(),
             body: form,
@@ -40,7 +40,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
         }
         case 'putBook': {
           const [book] = args as [BookDto]
-          const res = await fetch(`${baseUrl}/api/books/${book.id}`, {
+          const res = await fetch(`${baseUrl}/books/${book.id}`, {
             method: 'PUT',
             headers: { ...(await authHeader()), 'Content-Type': 'application/json' },
             body: JSON.stringify(book),
@@ -50,7 +50,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
         }
         case 'deleteBook': {
           const [bookId] = args as [string]
-          const res = await fetch(`${baseUrl}/api/books/${bookId}`, {
+          const res = await fetch(`${baseUrl}/books/${bookId}`, {
             method: 'DELETE',
             headers: await authHeader(),
           })
@@ -59,7 +59,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
         }
         case 'getPDF': {
           const [url] = args as [string]
-          const res = await fetch(`${baseUrl}/api/pdf?url=${encodeURIComponent(url)}`, {
+          const res = await fetch(`${baseUrl}/pdf?url=${encodeURIComponent(url)}`, {
             headers: await authHeader(),
           })
           assertOk(res)
@@ -67,7 +67,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
         }
         case 'getTranslation': {
           const [bookId] = args as [string]
-          const res = await fetch(`${baseUrl}/api/translations/${bookId}`, {
+          const res = await fetch(`${baseUrl}/translations/${bookId}`, {
             headers: await authHeader(),
           })
           if (res.status === 404) return null as T
@@ -76,7 +76,7 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
         }
         case 'postTranslation': {
           const [bookId, text, id] = args as [string, string, string?]
-          const res = await fetch(`${baseUrl}/api/translations`, {
+          const res = await fetch(`${baseUrl}/translations`, {
             method: 'POST',
             headers: { ...(await authHeader()), 'Content-Type': 'application/json' },
             body: JSON.stringify({ bookId, text, id }),
