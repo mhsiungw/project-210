@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --build"
+    "typecheck": "tsc --build",
+    "deploy": "vite build --mode staging && vercel deploy",
+    "deploy:prod": "vite build --mode production && vercel deploy --prod"
   },
   "dependencies": {
     "@app/shared": "workspace:*"
