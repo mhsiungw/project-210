@@ -8,9 +8,7 @@ src/renderer/public/*
 supabase
 docs
 # Env files — see env/ for layout
-env/.env.development
 env/.env.development.functions
-env/.env.sentry-build-plugin
 .claude/
 generated/
 *.tsbuildinfo
