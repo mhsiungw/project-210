@@ -1,0 +1,6 @@
+project_id = "wdzqjdjgraxwoltdansk"
+
+[functions.api]
+verify_jwt = false
+entrypoint = "../packages/functions/api/index.ts"
+import_map = "../packages/functions/api/deno.json"

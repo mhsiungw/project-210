@@ -5,7 +5,9 @@ out/
 *.local
 resource/*
 src/renderer/public/*
-supabase
+supabase/.branches
+supabase/.temp
+supabase/.env
 docs
 # Env files — see env/ for layout
 env/.env.development.functions
@@ -16,3 +18,7 @@ generated/
 private_key.pem
 public_key.pem
 .vercel
+
+.secrets.ci
+*.secrets*
+!.secrets.ci.example
