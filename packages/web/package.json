@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:staging": "vite build --mode staging",
+    "build:prod": "vite build --mode production",
     "preview": "vite preview",
     "typecheck": "tsc --build",
-    "deploy": "vite build --mode staging && vercel deploy",
-    "deploy:prod": "vite build --mode production && vercel deploy --prod"
+    "deploy:staging": "vercel deploy",
+    "deploy:prod": "vercel deploy --prod"
   },
   "dependencies": {
     "@app/shared": "workspace:*"
