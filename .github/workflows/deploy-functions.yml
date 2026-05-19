@@ -58,7 +58,7 @@ jobs:
       - name: Deploy api function to staging
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: supabase functions deploy api --project-ref ${{ secrets.SUPABASE_STAGING_PROJECT_REF }}
+        run: supabase functions deploy api --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
 
   deploy-production:
     name: Deploy → production
@@ -93,4 +93,4 @@ jobs:
       - name: Deploy api function to production
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: supabase functions deploy api --project-ref ${{ secrets.SUPABASE_PROD_PROJECT_REF }}
+        run: supabase functions deploy api --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}

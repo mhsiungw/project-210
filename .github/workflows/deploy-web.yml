@@ -63,8 +63,19 @@ jobs:
       - name: Install Vercel CLI
         run: pnpm add -g vercel@latest
 
-      - name: Build and deploy to staging
-        run: pnpm deploy:web:staging
+      - name: Build staging bundle
+        run: pnpm -F @app/web build:staging
+
+      - name: Deploy to staging
+        id: deploy
+        working-directory: packages/web
+        run: |
+          url=$(vercel deploy --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Alias deployment to staging-web-1ace3.vercel.app
+        working-directory: packages/web
+        run: vercel alias --token="$VERCEL_TOKEN" "${{ steps.deploy.outputs.url }}" staging-web-1ace3.vercel.app
 
   deploy-production:
     name: Deploy → production
