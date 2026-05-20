@@ -1,0 +1,91 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.env.outputs.value }}
+      db: ${{ steps.filter.outputs.db }}
+      functions: ${{ steps.filter.outputs.functions }}
+      web: ${{ steps.filter.outputs.web }}
+      force: ${{ steps.env.outputs.force }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: env
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "value=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
+            echo "force=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "value=production" >> "$GITHUB_OUTPUT"
+            echo "force=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=staging" >> "$GITHUB_OUTPUT"
+            echo "force=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            db:
+              - 'packages/db/prisma/**'
+              - 'packages/db/package.json'
+              - 'env/**'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/deploy-db.yml'
+            functions:
+              - 'packages/functions/**'
+              - 'packages/db/**'
+              - 'packages/shared/**'
+              - 'env/**'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/deploy-functions.yml'
+            web:
+              - 'packages/web/**'
+              - 'packages/shared/**'
+              - 'env/**'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/deploy-web.yml'
+
+  db:
+    needs: resolve
+    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.db == 'true'
+    uses: ./.github/workflows/deploy-db.yml
+    with:
+      environment: ${{ needs.resolve.outputs.environment }}
+    secrets: inherit
+
+  functions:
+    needs: [resolve, db]
+    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.functions == 'true'
+    uses: ./.github/workflows/deploy-functions.yml
+    with:
+      environment: ${{ needs.resolve.outputs.environment }}
+    secrets: inherit
+
+  web:
+    needs: [resolve, functions]
+    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.web == 'true'
+    uses: ./.github/workflows/deploy-web.yml
+    with:
+      environment: ${{ needs.resolve.outputs.environment }}
+    secrets: inherit

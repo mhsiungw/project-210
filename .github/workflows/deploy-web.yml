@@ -1,15 +1,6 @@
 name: Deploy Web
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'packages/web/**'
-      - 'packages/shared/**'
-      - 'env/**'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/deploy-web.yml'
-    tags: ['v*']
   workflow_dispatch:
     inputs:
       environment:
@@ -18,17 +9,20 @@ on:
         default: staging
         type: choice
         options: [staging, production]
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 concurrency:
-  group: deploy-web-${{ github.ref }}
+  group: deploy-web-${{ github.ref }}-${{ inputs.environment }}
   cancel-in-progress: false
 
 jobs:
   deploy-staging:
     name: Deploy → staging
-    if: >
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+    if: inputs.environment == 'staging'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: staging
@@ -88,9 +82,7 @@ jobs:
 
   deploy-production:
     name: Deploy → production
-    if: >
-      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
-      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    if: inputs.environment == 'production'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
