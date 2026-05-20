@@ -12,9 +12,19 @@ export default $config({
     const { config: loadEnv } = await import('dotenv')
     loadEnv({ path: `../../env/.env.${$app.stage}` })
 
+    const supabaseUrl = process.env.SUPABASE_URL
+    if (!supabaseUrl) throw new Error('Missing SUPABASE_URL')
+
+    const webOrigins = [
+      process.env.WEB_ORIGIN ?? '',
+      'http://localhost:5173',
+      'http://localhost:5174',
+    ].filter(Boolean)
+
     const cloudfrontPrivateKey = new sst.Linkable('CLOUDFRONT_PRIVATE_KEY', {
       properties: { value: process.env.CLOUDFRONT_PRIVATE_KEY ?? '' },
     })
+
     const cloudfrontKeyPairId = new sst.Linkable('CLOUDFRONT_KEY_PAIR_ID', {
       properties: { value: process.env.CLOUDFRONT_KEY_PAIR_ID ?? '' },
     })
@@ -28,7 +38,6 @@ export default $config({
         S3_BUCKET_NAME: bucket.name,
         DATABASE_URL: process.env.DATABASE_URL ?? '',
       },
-      url: true,
     })
 
     const translations = new sst.aws.Function('Translations', {
@@ -38,12 +47,35 @@ export default $config({
         S3_BUCKET_NAME: bucket.name,
         DATABASE_URL: process.env.DATABASE_URL ?? '',
       },
-      url: true,
     })
 
+    const api = new sst.aws.ApiGatewayV2('Api', {
+      cors: {
+        allowOrigins: webOrigins,
+        allowHeaders: ['Authorization', 'Content-Type'],
+        allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      },
+    })
+
+    const supabaseAuthorizer = api.addAuthorizer({
+      name: 'supabase',
+      jwt: {
+        issuer: `${supabaseUrl}/auth/v1`,
+        audiences: ['authenticated'],
+      },
+    })
+
+    const authed = { auth: { jwt: { authorizer: supabaseAuthorizer.id } } }
+
+    api.route('GET /api/books', books.arn, authed)
+    api.route('POST /api/books', books.arn, authed)
+    api.route('PUT /api/books/{id}', books.arn, authed)
+    api.route('DELETE /api/books/{id}', books.arn, authed)
+    api.route('GET /api/translations/{bookId}', translations.arn, authed)
+    api.route('POST /api/translations', translations.arn, authed)
+
     return {
-      books: books.url,
-      translations: translations.url,
+      api: api.url,
       bucket: bucket.name,
     }
   },

@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/aws-lambda'
+import type { APIGatewayProxyEventV2WithJWTAuthorizer } from 'aws-lambda'
 import type { Translation } from '@app/db'
 import type { TranslationDto } from '@app/shared/client/types'
 import { prisma } from '../lib/prisma.js'
@@ -12,10 +13,12 @@ const toTranslationDto = (t: Translation): TranslationDto => ({
 })
 
 type Variables = { userId: string }
+type Bindings = { event: APIGatewayProxyEventV2WithJWTAuthorizer }
 
-const app = new Hono<{ Variables: Variables }>()
+const app = new Hono<{ Variables: Variables; Bindings: Bindings }>()
+  .basePath('/api')
   .use(async (c, next) => {
-    const userId = c.req.header('x-user-id')
+    const userId = c.env.event.requestContext.authorizer.jwt.claims.sub as string | undefined
     if (!userId) return c.body(null, 401)
     c.set('userId', userId)
     await next()

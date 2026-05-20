@@ -6,10 +6,13 @@
 
 declare module "sst" {
   export interface Resource {
+    "Api": {
+      "type": "sst.aws.ApiGatewayV2"
+      "url": string
+    }
     "Books": {
       "name": string
       "type": "sst.aws.Function"
-      "url": string
     }
     "Bucket": {
       "name": string
@@ -26,7 +29,6 @@ declare module "sst" {
     "Translations": {
       "name": string
       "type": "sst.aws.Function"
-      "url": string
     }
   }
 }
