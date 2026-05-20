@@ -11,6 +11,8 @@
     "./api/context": "./src/api/context.tsx",
     "./api/types": "./src/api/types.ts",
     "./api/transport-http": "./src/api/transport-http.ts",
+    "./client": "./src/client/index.ts",
+    "./client/types": "./src/client/types.ts",
     "./platform": "./src/platform/context.tsx",
     "./store": "./src/store/index.ts",
     "./styles": "./src/styles/index.ts",
