@@ -8,14 +8,19 @@ import type { BookDto } from '@app/shared/client/types'
 import { prisma } from '../lib/prisma.js'
 import { signCloudFrontUrl } from '../lib/cloudfront.js'
 
-const CLOUDFRONT_DOMAIN = 'https://d11m54w1vy523e.cloudfront.net'
 const SIGNED_URL_TTL_SECONDS = 24 * 60 * 60
 
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
+const cloudfrontBaseUrl = (): string => {
+  const url = process.env.CLOUDFRONT_BASE_URL
+  if (!url) throw new Error('CLOUDFRONT_BASE_URL is not set')
+  return url
+}
+
 const signKey = (key: string): string => {
   const encodedKey = key.split('/').map(encodeURIComponent).join('/')
-  return signCloudFrontUrl(`${CLOUDFRONT_DOMAIN}/${encodedKey}`, SIGNED_URL_TTL_SECONDS)
+  return signCloudFrontUrl(`${cloudfrontBaseUrl()}/${encodedKey}`, SIGNED_URL_TTL_SECONDS)
 }
 
 const toBookDto = (book: Book): BookDto => ({

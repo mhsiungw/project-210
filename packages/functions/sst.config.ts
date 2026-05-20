@@ -15,6 +15,12 @@ export default $config({
     const supabaseUrl = process.env.SUPABASE_URL
     if (!supabaseUrl) throw new Error('Missing SUPABASE_URL')
 
+    const s3Bucket = process.env.S3_BUCKET
+    if (!s3Bucket) throw new Error('Missing S3_BUCKET')
+
+    const cloudfrontBaseUrl = process.env.CLOUDFRONT_BASE_URL
+    if (!cloudfrontBaseUrl) throw new Error('Missing CLOUDFRONT_BASE_URL')
+
     const webOrigins = [
       process.env.WEB_ORIGIN ?? '',
       'http://localhost:5173',
@@ -29,7 +35,7 @@ export default $config({
       properties: { value: process.env.CLOUDFRONT_KEY_PAIR_ID ?? '' },
     })
 
-    const bucket = sst.aws.Bucket.get('Bucket', 'project-210')
+    const bucket = sst.aws.Bucket.get('Bucket', s3Bucket)
 
     const books = new sst.aws.Function('Books', {
       handler: 'functions/books.handler',
@@ -37,6 +43,7 @@ export default $config({
       environment: {
         S3_BUCKET_NAME: bucket.name,
         DATABASE_URL: process.env.DATABASE_URL ?? '',
+        CLOUDFRONT_BASE_URL: cloudfrontBaseUrl,
       },
     })
 

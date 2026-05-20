@@ -32,10 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: staging
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -50,7 +46,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Materialise env/.env.staging from secret
+      - name: Materialise env/.env.staging and export Vercel credentials
         env:
           WEB_ENV_STAGING: ${{ secrets.WEB_ENV_STAGING }}
         run: |
@@ -59,6 +55,19 @@ jobs:
             exit 1
           fi
           printf '%s\n' "$WEB_ENV_STAGING" > env/.env.staging
+
+          set -a
+          # shellcheck disable=SC1091
+          . env/.env.staging
+          set +a
+          for var in VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN; do
+            if [ -z "${!var:-}" ]; then
+              echo "::error::$var missing from WEB_ENV_STAGING"
+              exit 1
+            fi
+            echo "::add-mask::${!var}"
+            echo "$var=${!var}" >> "$GITHUB_ENV"
+          done
 
       - name: Install Vercel CLI
         run: pnpm add -g vercel@latest
@@ -85,10 +94,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -103,7 +108,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Materialise env/.env.production from secret
+      - name: Materialise env/.env.production and export Vercel credentials
         env:
           WEB_ENV_PRODUCTION: ${{ secrets.WEB_ENV_PRODUCTION }}
         run: |
@@ -112,6 +117,19 @@ jobs:
             exit 1
           fi
           printf '%s\n' "$WEB_ENV_PRODUCTION" > env/.env.production
+
+          set -a
+          # shellcheck disable=SC1091
+          . env/.env.production
+          set +a
+          for var in VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN; do
+            if [ -z "${!var:-}" ]; then
+              echo "::error::$var missing from WEB_ENV_PRODUCTION"
+              exit 1
+            fi
+            echo "::add-mask::${!var}"
+            echo "$var=${!var}" >> "$GITHUB_ENV"
+          done
 
       - name: Install Vercel CLI
         run: pnpm add -g vercel@latest
