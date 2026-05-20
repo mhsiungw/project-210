@@ -13,8 +13,7 @@
     "noEmit": true,
     "declaration": false,
     "sourceMap": true,
-    "outDir": "dist",
-    "baseUrl": "."
+    "outDir": "dist"
   },
   "include": ["functions/**/*", "lib/**/*", "sst-env.d.ts"],
   "exclude": ["node_modules", "dist", "generated", ".sst"]
