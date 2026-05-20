@@ -1,0 +1,115 @@
+name: Deploy DB
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/db/prisma/**'
+      - 'packages/db/package.json'
+      - 'env/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-db.yml'
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+
+concurrency:
+  group: deploy-db-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  migrate-staging:
+    name: Migrate → staging
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Materialise env/.env.staging
+        env:
+          WEB_ENV_STAGING: ${{ secrets.WEB_ENV_STAGING }}
+        run: |
+          if [ -z "$WEB_ENV_STAGING" ]; then
+            echo "::error::WEB_ENV_STAGING secret is empty or unset"
+            exit 1
+          fi
+          printf '%s\n' "$WEB_ENV_STAGING" > env/.env.staging
+
+          set -a
+          # shellcheck disable=SC1091
+          . env/.env.staging
+          set +a
+          if [ -z "${DIRECT_URL:-}" ]; then
+            echo "::error::DIRECT_URL missing from WEB_ENV_STAGING"
+            exit 1
+          fi
+          echo "::add-mask::$DIRECT_URL"
+
+      - name: Apply migrations to staging
+        run: pnpm -F @app/db migrate:staging
+
+  migrate-production:
+    name: Migrate → production
+    if: >
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Materialise env/.env.production
+        env:
+          WEB_ENV_PRODUCTION: ${{ secrets.WEB_ENV_PRODUCTION }}
+        run: |
+          if [ -z "$WEB_ENV_PRODUCTION" ]; then
+            echo "::error::WEB_ENV_PRODUCTION secret is empty or unset"
+            exit 1
+          fi
+          printf '%s\n' "$WEB_ENV_PRODUCTION" > env/.env.production
+
+          set -a
+          # shellcheck disable=SC1091
+          . env/.env.production
+          set +a
+          if [ -z "${DIRECT_URL:-}" ]; then
+            echo "::error::DIRECT_URL missing from WEB_ENV_PRODUCTION"
+            exit 1
+          fi
+          echo "::add-mask::$DIRECT_URL"
+
+      - name: Apply migrations to production
+        run: pnpm -F @app/db migrate:production
