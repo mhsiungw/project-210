@@ -39,6 +39,7 @@ export default $config({
 
     const books = new sst.aws.Function('Books', {
       handler: 'functions/books.handler',
+      runtime: 'nodejs22.x',
       link: [cloudfrontPrivateKey, cloudfrontKeyPairId, bucket],
       environment: {
         S3_BUCKET_NAME: bucket.name,
@@ -49,6 +50,7 @@ export default $config({
 
     const translations = new sst.aws.Function('Translations', {
       handler: 'functions/translations.handler',
+      runtime: 'nodejs22.x',
       link: [cloudfrontPrivateKey, cloudfrontKeyPairId, bucket],
       environment: {
         S3_BUCKET_NAME: bucket.name,

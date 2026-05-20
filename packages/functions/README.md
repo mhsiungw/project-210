@@ -5,9 +5,11 @@ SST v3 (ion) Lambda package with Prisma + PostgreSQL, S3 presigned URLs, and Clo
 ## Setup
 
 ```bash
-pnpm install
-pnpm generate
+pnpm install              # postinstall runs `pnpm -F @app/db generate`
 ```
+
+If you change `packages/db/prisma/schema.prisma`, re-run `pnpm db:generate` from
+the repo root.
 
 ## Environment
 
@@ -35,26 +37,13 @@ pnpm deploy:staging    # loads env/.env.staging,    deploys --stage staging
 pnpm deploy:prod       # loads env/.env.production, deploys --stage production
 ```
 
-For local iteration with live Lambda (loads `env/.env.<your-username>`):
+## Prisma
 
-```bash
-pnpm dev
-```
-
-## Prisma binary targets
-
-`prisma/schema.prisma` declares:
-
-```prisma
-binaryTargets = ["native", "rhel-openssl-3.0.x"]
-```
-
-AWS Lambda's Node.js 22 runtime ships on Amazon Linux 2023, which links against
-OpenSSL 3. Prisma needs the `rhel-openssl-3.0.x` query engine binary to be
-bundled alongside the function or it will fail at cold start with a
-`PRISMA_QUERY_ENGINE_LIBRARY` load error. `native` is kept so `prisma generate`
-also produces a binary that runs on your local machine.
-
-The `sst.config.ts` uses `nodejs.install: ["@prisma/client", "prisma"]` plus
-`copyFiles` to ensure both the Prisma client + engine and `schema.prisma` end
-up inside the deployed Lambda bundle.
+The schema lives in `@app/db` ([packages/db/prisma/schema.prisma](../db/prisma/schema.prisma))
+and uses the `prisma-client` generator (Prisma 7) together with the
+`@prisma/adapter-pg` driver adapter. Queries run through a pure-JS `pg`
+connection, so there is **no Rust query engine binary** to ship — SST's
+esbuild bundle resolves the generated client from
+`packages/db/generated/client/` and packs everything needed into the Lambda
+zip. No `binaryTargets`, `nodejs.install`, or `copyFiles` configuration is
+required.
