@@ -50,11 +50,14 @@ const app = new Hono<{ Variables: Variables; Bindings: Bindings }>()
     return c.json(books.map(toBookDto))
   })
   .post('/books', async c => {
+    const userId = c.get('userId')
+    const existing = await prisma.book.findFirst({ where: { user_id: userId } })
+    if (existing) return c.body(null, 409)
+
     const form = await c.req.formData()
     const pdfFile = form.get('pdf') as File
     const previewFile = form.get('preview') as File
     const fileName = form.get('fileName') as string
-    const userId = c.get('userId')
     const bookId = crypto.randomUUID()
     const base = `${userId}/${bookId}/${fileName}`
     const previewKey = base.replace(/\.pdf$/i, '') + '-preview.png'
