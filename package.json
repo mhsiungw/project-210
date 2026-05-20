@@ -7,9 +7,8 @@
   "main": "./out/main/index.js",
   "scripts": {
     "postinstall": "pnpm -F @app/db generate",
-    "dev": "concurrently -n desktop,web,functions -c blue,green,yellow \"pnpm dev:desktop\" \"pnpm dev:web\" \"pnpm dev:functions\"",
+    "dev": "concurrently -n desktop,web -c blue,green \"pnpm dev:desktop\" \"pnpm dev:web\"",
     "dev:web": "pnpm -F @app/web dev",
-    "dev:functions": "pnpm -F @app/functions serve",
     "dev:desktop": "pnpm -F @app/desktop dev",
     "build:desktop:staging": "pnpm -F @app/desktop build:staging",
     "build:desktop:production": "pnpm -F @app/desktop build:production",
@@ -18,7 +17,6 @@
     "build:web:prod": "pnpm -F @app/web build:prod",
     "preview:desktop": "pnpm -F @app/desktop preview",
     "preview:web": "pnpm -F @app/web preview",
-    "deploy:functions": "pnpm -F @app/functions deploy",
     "deploy:web:staging": "pnpm -F @app/web build:staging && pnpm -F @app/web deploy:staging",
     "deploy:web:prod": "pnpm -F @app/web build:prod && pnpm -F @app/web deploy:prod",
     "secrets:push:web:staging": "gh secret set WEB_ENV_STAGING --env staging < env/.env.staging",
