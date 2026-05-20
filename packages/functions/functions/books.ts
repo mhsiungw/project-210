@@ -54,8 +54,9 @@ const app = new Hono<{ Variables: Variables; Bindings: Bindings }>()
     const pdfFile = form.get('pdf') as File
     const previewFile = form.get('preview') as File
     const fileName = form.get('fileName') as string
-
-    const base = `uploads/${Date.now()}-${fileName}`
+    const userId = c.get('userId')
+    const bookId = crypto.randomUUID()
+    const base = `${userId}/${bookId}/${fileName}`
     const previewKey = base.replace(/\.pdf$/i, '') + '-preview.png'
 
     await Promise.all([
@@ -79,10 +80,11 @@ const app = new Hono<{ Variables: Variables; Bindings: Bindings }>()
 
     await prisma.book.create({
       data: {
+        id: bookId,
         file_name: fileName,
         s3_key: base,
         s3_preview_key: previewKey,
-        user_id: c.get('userId'),
+        user_id: userId,
       },
     })
 
