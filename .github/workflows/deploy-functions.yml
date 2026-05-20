@@ -54,13 +54,19 @@ jobs:
           # shellcheck disable=SC1091
           . env/.env.staging
           set +a
-          for var in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION; do
+          for var in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION \
+                     SUPABASE_URL S3_BUCKET CLOUDFRONT_BASE_URL \
+                     CLOUDFRONT_PRIVATE_KEY CLOUDFRONT_KEY_PAIR_ID DATABASE_URL; do
             if [ -z "${!var:-}" ]; then
               echo "::error::$var missing from WEB_ENV_STAGING"
               exit 1
             fi
-            echo "::add-mask::${!var}"
-            echo "$var=${!var}" >> "$GITHUB_ENV"
+            case $var in
+              AWS_*)
+                echo "::add-mask::${!var}"
+                echo "$var=${!var}" >> "$GITHUB_ENV"
+                ;;
+            esac
           done
 
       - name: Deploy to staging
@@ -100,13 +106,19 @@ jobs:
           # shellcheck disable=SC1091
           . env/.env.production
           set +a
-          for var in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION; do
+          for var in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION \
+                     SUPABASE_URL S3_BUCKET CLOUDFRONT_BASE_URL \
+                     CLOUDFRONT_PRIVATE_KEY CLOUDFRONT_KEY_PAIR_ID DATABASE_URL; do
             if [ -z "${!var:-}" ]; then
               echo "::error::$var missing from WEB_ENV_PRODUCTION"
               exit 1
             fi
-            echo "::add-mask::${!var}"
-            echo "$var=${!var}" >> "$GITHUB_ENV"
+            case $var in
+              AWS_*)
+                echo "::add-mask::${!var}"
+                echo "$var=${!var}" >> "$GITHUB_ENV"
+                ;;
+            esac
           done
 
       - name: Deploy to production

@@ -54,13 +54,18 @@ jobs:
           # shellcheck disable=SC1091
           . env/.env.staging
           set +a
-          for var in VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN; do
+          for var in VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN \
+                     VITE_API_URL VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY; do
             if [ -z "${!var:-}" ]; then
               echo "::error::$var missing from WEB_ENV_STAGING"
               exit 1
             fi
-            echo "::add-mask::${!var}"
-            echo "$var=${!var}" >> "$GITHUB_ENV"
+            case $var in
+              VERCEL_*)
+                echo "::add-mask::${!var}"
+                echo "$var=${!var}" >> "$GITHUB_ENV"
+                ;;
+            esac
           done
 
       - name: Install Vercel CLI
@@ -114,13 +119,18 @@ jobs:
           # shellcheck disable=SC1091
           . env/.env.production
           set +a
-          for var in VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN; do
+          for var in VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN \
+                     VITE_API_URL VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY; do
             if [ -z "${!var:-}" ]; then
               echo "::error::$var missing from WEB_ENV_PRODUCTION"
               exit 1
             fi
-            echo "::add-mask::${!var}"
-            echo "$var=${!var}" >> "$GITHUB_ENV"
+            case $var in
+              VERCEL_*)
+                echo "::add-mask::${!var}"
+                echo "$var=${!var}" >> "$GITHUB_ENV"
+                ;;
+            esac
           done
 
       - name: Install Vercel CLI
