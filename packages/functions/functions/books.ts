@@ -3,9 +3,8 @@ import { handle } from 'hono/aws-lambda'
 import { S3Client, PutObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { Resource } from 'sst'
 import type { APIGatewayProxyEventV2WithJWTAuthorizer } from 'aws-lambda'
-import type { Book } from '@app/db'
+import { prisma, type Book } from '@app/db'
 import type { BookDto } from '@app/shared/client/types'
-import { prisma } from '../lib/prisma.js'
 import { signCloudFrontUrl } from '../lib/cloudfront.js'
 
 const SIGNED_URL_TTL_SECONDS = 24 * 60 * 60
