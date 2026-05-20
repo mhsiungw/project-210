@@ -9,10 +9,12 @@ import globals from 'globals'
 export default [
   {
     ignores: [
-      'node_modules/**',
-      'dist/**',
-      'out/**',
-      'build/**',
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/out/**',
+      '**/build/**',
+      '**/generated/**',
+      '**/.sst/**',
       'resource/**',
       'src/renderer/public/**',
       'supabase/**',

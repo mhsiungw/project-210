@@ -3,7 +3,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
-const bucket = () => {
+const bucket = (): string => {
   const name = process.env.S3_BUCKET_NAME
   if (!name) throw new Error('S3_BUCKET_NAME is not set')
   return name

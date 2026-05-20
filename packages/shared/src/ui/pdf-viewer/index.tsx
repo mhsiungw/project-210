@@ -44,6 +44,7 @@ export function PdfViewer({ url, defaultPage = 1 }: PdfViewerProps): JSX.Element
   const didInitialScroll = useRef(false)
   const isLayoutChanging = useRef(false)
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: pageDims.length,
     getScrollElement: () => containerRef.current,
