@@ -1,8 +1,11 @@
 name: Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
+  push:
     tags: ['v*']
   workflow_dispatch:
     inputs:
@@ -19,6 +22,7 @@ concurrency:
 
 jobs:
   resolve:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.env.outputs.value }}
@@ -27,7 +31,10 @@ jobs:
       web: ${{ steps.filter.outputs.web }}
       force: ${{ steps.env.outputs.force }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 2
 
       - id: env
         run: |
@@ -42,9 +49,11 @@ jobs:
             echo "force=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
+          base: HEAD~1
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           filters: |
             db:
               - 'packages/db/prisma/**'
