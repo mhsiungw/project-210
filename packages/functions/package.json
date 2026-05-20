@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "deploy:staging": "sst deploy --stage staging",
-    "deploy:prod": "sst deploy --stage production",
-    "dev": "sst dev"
+    "deploy:prod": "sst deploy --stage production"
   },
   "dependencies": {
     "@app/db": "workspace:*",
