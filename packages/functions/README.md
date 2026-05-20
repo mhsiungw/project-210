@@ -1,4 +1,4 @@
-# @repo/lambda-function
+# @app/functions
 
 SST v3 (ion) Lambda package with Prisma + PostgreSQL, S3 presigned URLs, and CloudFront signed URLs.
 
