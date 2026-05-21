@@ -2,7 +2,7 @@ import { getSignedUrl } from '@aws-sdk/cloudfront-signer'
 import { Resource } from 'sst'
 
 export function signCloudFrontUrl(url: string, expiresInSeconds: number = 3600): string {
-  const privateKey = Buffer.from(Resource.CLOUDFRONT_PRIVATE_KEY.value, 'base64').toString('utf-8')
+  const privateKey = Resource.CLOUDFRONT_PRIVATE_KEY.value
 
   const keyPairId = Resource.CLOUDFRONT_KEY_PAIR_ID.value
 

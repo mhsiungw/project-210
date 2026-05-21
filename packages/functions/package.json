@@ -22,6 +22,7 @@
     "sst": "^3.3.0"
   },
   "devDependencies": {
+    "@pulumi/tls": "5.0.1",
     "@types/aws-lambda": "^8.10.161",
     "@types/node": "^22.7.0",
     "@types/pg": "^8.11.10",
