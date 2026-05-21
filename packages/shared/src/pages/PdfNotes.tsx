@@ -42,7 +42,7 @@ export function PdfNotes(): JSX.Element {
     }
 
     const save = async (): Promise<void> => {
-      await postTranslation({ bookId, text: draftText, id: savedTranslation?.id })
+      await postTranslation({ bookId, text: draftText })
       blocker.proceed()
     }
     save()

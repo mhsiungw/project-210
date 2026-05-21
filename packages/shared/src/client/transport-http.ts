@@ -75,11 +75,11 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
           return res.json()
         }
         case 'postTranslation': {
-          const [bookId, text, id] = args as [string, string, string?]
+          const [bookId, text] = args as [string, string]
           const res = await fetch(`${baseUrl}/translations`, {
             method: 'POST',
             headers: { ...(await authHeader()), 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bookId, text, id }),
+            body: JSON.stringify({ bookId, text }),
           })
           assertOk(res)
           return res.json()

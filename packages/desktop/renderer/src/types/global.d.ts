@@ -11,7 +11,7 @@ declare global {
       deleteBook(bookId: string): Promise<void>
       getPDF(url: string): Promise<ArrayBuffer>
       getTranslation(bookId: string): Promise<TranslationDto | null>
-      postTranslation(bookId: string, text: string, id?: string): Promise<TranslationDto>
+      postTranslation(bookId: string, text: string): Promise<TranslationDto>
     }
   }
 }

@@ -110,7 +110,6 @@ const app = new Hono<{ Variables: Variables; Bindings: Bindings }>()
     const bookId = c.req.param('id')
     const book = await prisma.book.findFirst({ where: { id: bookId, user_id: userId } })
     if (!book) return c.body(null, 404)
-    await prisma.translation.deleteMany({ where: { book_id: bookId } })
     await prisma.book.delete({ where: { id: bookId } })
     await s3.send(
       new DeleteObjectsCommand({

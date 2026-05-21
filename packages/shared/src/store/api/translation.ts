@@ -15,14 +15,11 @@ const translationApi = emptyApi.injectEndpoints({
       },
       providesTags: (_result, _error, bookId) => [{ type: 'Translation', id: bookId }],
     }),
-    postTranslation: builder.mutation<
-      TranslationDto,
-      { bookId: string; text: string; id?: string }
-    >({
-      queryFn: async ({ bookId, text, id }, api) => {
+    postTranslation: builder.mutation<TranslationDto, { bookId: string; text: string }>({
+      queryFn: async ({ bookId, text }, api) => {
         try {
           const { apiClient } = api.extra as ThunkExtra
-          return { data: await apiClient.postTranslation(bookId, text, id) }
+          return { data: await apiClient.postTranslation(bookId, text) }
         } catch (e) {
           return { error: toQueryError(e) }
         }

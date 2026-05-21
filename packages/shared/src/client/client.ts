@@ -28,7 +28,7 @@ export class ApiClient {
     return this.transport.invoke<TranslationDto | null>('getTranslation', bookId)
   }
 
-  postTranslation(bookId: string, text: string, id?: string): Promise<TranslationDto> {
-    return this.transport.invoke<TranslationDto>('postTranslation', bookId, text, id)
+  postTranslation(bookId: string, text: string): Promise<TranslationDto> {
+    return this.transport.invoke<TranslationDto>('postTranslation', bookId, text)
   }
 }

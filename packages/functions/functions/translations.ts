@@ -31,14 +31,12 @@ const app = new Hono<{ Variables: Variables; Bindings: Bindings }>()
     return c.json(toTranslationDto(t))
   })
   .post('/translations', async c => {
-    const { bookId, text, id } = await c.req.json<{
-      bookId: string
-      text: string
-      id?: string
-    }>()
-    const result = id
-      ? await prisma.translation.update({ where: { id }, data: { text } })
-      : await prisma.translation.create({ data: { book_id: bookId, text } })
+    const { bookId, text } = await c.req.json<{ bookId: string; text: string }>()
+    const result = await prisma.translation.upsert({
+      where: { book_id: bookId },
+      create: { book_id: bookId, text },
+      update: { text },
+    })
     return c.json(toTranslationDto(result), 201)
   })
 
