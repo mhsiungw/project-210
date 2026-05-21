@@ -22,11 +22,13 @@ export default $config({
     const cloudfrontBaseUrl = process.env.CLOUDFRONT_BASE_URL
     if (!cloudfrontBaseUrl) throw new Error('Missing CLOUDFRONT_BASE_URL')
 
-    const webOrigins = [
-      process.env.WEB_ORIGIN ?? '',
-      'http://localhost:5173',
-      'http://localhost:5174',
-    ].filter(Boolean)
+    const webOrigins = process.env.WEB_ORIGIN
+    if (!webOrigins) throw new Error('Missing WEB_ORIGIN')
+
+    const webOriginsForCors =
+      $app.stage === 'production'
+        ? [webOrigins]
+        : [webOrigins, 'http://localhost:5173', 'http://localhost:5174']
 
     const cloudfrontPrivateKey = new sst.Linkable('CLOUDFRONT_PRIVATE_KEY', {
       properties: { value: process.env.CLOUDFRONT_PRIVATE_KEY ?? '' },
@@ -61,7 +63,7 @@ export default $config({
 
     const api = new sst.aws.ApiGatewayV2('Api', {
       cors: {
-        allowOrigins: webOrigins,
+        allowOrigins: webOriginsForCors,
         allowHeaders: ['Authorization', 'Content-Type'],
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       },
