@@ -94,7 +94,6 @@ export function PdfViewer({ url, defaultPage = 1 }: PdfViewerProps): JSX.Element
   useEffect(() => {
     if (!containerRef.current) return
     const observer = new ResizeObserver(([entry]) => {
-      console.log('isLayoutChanging')
       isLayoutChanging.current = true
       setThrottledContainerWidth(entry.contentRect.width)
     })
