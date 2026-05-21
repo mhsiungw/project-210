@@ -1,6 +1,5 @@
 import { useState, useEffect, type JSX } from 'react'
-import { useBlocker } from 'react-router-dom'
-import { useAppSelector } from '@app/shared/store'
+import { useBlocker, useParams } from 'react-router-dom'
 import { useGetBooksQuery } from '@app/shared/store/api/book'
 import {
   useGetTranslationQuery,
@@ -9,16 +8,16 @@ import {
 import { PdfViewer } from '@app/shared/ui/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {
-  const selectedBookId = useAppSelector(state => state.selectedBook.id)
+  const { bookId } = useParams<{ userId: string; bookId: string }>()
 
   const { book } = useGetBooksQuery(undefined, {
     selectFromResult: ({ data }) => ({
-      book: data?.find(b => b.id === selectedBookId),
+      book: data?.find(b => b.id === bookId),
     }),
   })
 
-  const { data: savedTranslation } = useGetTranslationQuery(selectedBookId ?? '', {
-    skip: !selectedBookId,
+  const { data: savedTranslation } = useGetTranslationQuery(bookId ?? '', {
+    skip: !bookId,
   })
 
   const [postTranslation] = usePostTranslationMutation()
@@ -37,14 +36,16 @@ export function PdfNotes(): JSX.Element {
   useEffect(() => {
     if (blocker.state !== 'blocked') return
 
-    if (!selectedBookId) {
+    if (!bookId) {
       blocker.proceed()
       return
     }
 
-    postTranslation({ bookId: selectedBookId, text: draftText, id: savedTranslation?.id }).then(
-      () => blocker.proceed()
-    )
+    const save = async (): Promise<void> => {
+      await postTranslation({ bookId, text: draftText, id: savedTranslation?.id })
+      blocker.proceed()
+    }
+    save()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocker.state])
 

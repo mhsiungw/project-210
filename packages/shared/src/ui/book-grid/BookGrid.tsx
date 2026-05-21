@@ -2,6 +2,7 @@ import { useState, type JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { BookDto } from '@app/shared/client/types'
 import { useAppDispatch } from '@app/shared/store'
+import { useGetSessionQuery } from '@app/shared/store/api/auth'
 import { setSelectedBookId } from '@app/shared/store/selectedBook'
 import { BookContextMenu } from './BookContextMenu'
 
@@ -18,6 +19,7 @@ interface CtxMenu {
 export function BookGrid({ books }: Props): JSX.Element | null {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const { data: session } = useGetSessionQuery()
   const [ctxMenu, setCtxMenu] = useState<CtxMenu | null>(null)
 
   if (books.length === 0) return null
@@ -37,8 +39,9 @@ export function BookGrid({ books }: Props): JSX.Element | null {
             <img
               src={book.s3PreviewKeyUrl}
               onDoubleClick={() => {
+                if (!session?.userId) return
                 dispatch(setSelectedBookId(book.id))
-                navigate('/pdf-notes')
+                navigate(`/pdf-notes/${session.userId}/${book.id}`)
               }}
               alt={book.id}
               className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"

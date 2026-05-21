@@ -40,7 +40,8 @@ export default function App(): JSX.Element {
       <main className="flex flex-1 max-w-[calc(100vw-150px)] overflow-hidden p-2">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/pdf-notes" element={<PdfNotes />} />
+          <Route path="/pdf-notes/:userId/:bookId" element={<PdfNotes />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>
