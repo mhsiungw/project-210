@@ -26,7 +26,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
     viteStaticCopy({
-      targets: [{ src: `${pdfjsDist}/wasm/*.wasm`, dest: 'wasm' }],
+      targets: [
+        { src: `${pdfjsDist}/wasm/*.{wasm,js}`, dest: 'wasm', rename: { stripBase: true } },
+      ],
     }),
   ],
   build: {

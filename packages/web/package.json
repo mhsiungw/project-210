@@ -7,7 +7,7 @@
     "dev": "vite",
     "build:staging": "vite build --mode staging",
     "build:prod": "vite build --mode production",
-    "preview": "vite preview",
+    "preview": "vite preview --port 5173",
     "typecheck": "tsc --build",
     "deploy:staging": "vercel deploy",
     "deploy:prod": "vercel deploy --prod"
