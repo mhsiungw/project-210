@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@app/db": "workspace:*",
+    "@app/ui": "workspace:*",
     "@reduxjs/toolkit": "^2.4.0",
     "@supabase/supabase-js": "^2.105.4",
     "@tanstack/react-virtual": "^3.13.24",

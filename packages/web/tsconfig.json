@@ -9,9 +9,11 @@
     "paths": {
       "@web/*": ["./src/*"],
       "@app/db": ["../db/src"],
-      "@app/db/dto": ["../db/src/dto.ts"]
+      "@app/db/dto": ["../db/src/dto.ts"],
+      "@app/ui": ["../ui/src/index.ts"],
+      "@app/ui/*": ["../ui/src/*"]
     }
   },
   "include": ["src/**/*"],
-  "references": [{ "path": "../db" }]
+  "references": [{ "path": "../db" }, { "path": "../ui" }]
 }

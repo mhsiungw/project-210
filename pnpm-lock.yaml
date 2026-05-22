@@ -228,11 +228,35 @@ importers:
         specifier: ^5.6.0
         version: 5.9.3
 
+  packages/ui:
+    dependencies:
+      '@sentry/react':
+        specifier: 10.50.0
+        version: 10.50.0(react@19.2.6)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.24
+        version: 3.13.24(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      pdfjs-dist:
+        specifier: ^5.4.296
+        version: 5.4.296
+      react:
+        specifier: ^19.2.6
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.2.6
+        version: 19.2.6(react@19.2.6)
+      react-pdf:
+        specifier: ^10.4.1
+        version: 10.4.1(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+
   packages/web:
     dependencies:
       '@app/db':
         specifier: workspace:*
         version: link:../db
+      '@app/ui':
+        specifier: workspace:*
+        version: link:../ui
       '@reduxjs/toolkit':
         specifier: ^2.4.0
         version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6)(redux@5.0.1))(react@19.2.6)

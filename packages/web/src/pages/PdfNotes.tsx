@@ -2,7 +2,7 @@ import { useState, useEffect, type JSX } from 'react'
 import { useBlocker, useParams } from 'react-router-dom'
 import { useGetBooksQuery } from '@web/store/api/book'
 import { useGetTranslationQuery, usePostTranslationMutation } from '@web/store/api/translation'
-import { PdfViewer } from '@web/ui/pdf-viewer'
+import { PdfViewer } from '@app/ui/pdf-viewer'
 
 export function PdfNotes(): JSX.Element {
   const { bookId } = useParams<{ userId: string; bookId: string }>()

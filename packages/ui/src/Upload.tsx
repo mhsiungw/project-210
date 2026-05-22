@@ -1,6 +1,5 @@
 import { useRef, useState, type JSX } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
-import { usePostBookMutation } from '@web/store/api/book'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -8,6 +7,18 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 ).href
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024
+
+export interface UploadPayload {
+  buffer: ArrayBuffer
+  fileName: string
+  previewBuffer: ArrayBuffer
+}
+
+interface UploadProps {
+  onUpload: (payload: UploadPayload) => Promise<unknown> | void
+  isLoading?: boolean
+  errorMessage?: string | null
+}
 
 async function renderFirstPagePreview(pdfBuffer: ArrayBuffer): Promise<ArrayBuffer> {
   const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(pdfBuffer) }).promise
@@ -33,8 +44,7 @@ async function renderFirstPagePreview(pdfBuffer: ArrayBuffer): Promise<ArrayBuff
   })
 }
 
-export default function Upload(): JSX.Element {
-  const [postBook, { isLoading, isError, error }] = usePostBookMutation()
+export default function Upload({ onUpload, isLoading, errorMessage }: UploadProps): JSX.Element {
   const [validationError, setValidationError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -54,7 +64,7 @@ export default function Upload(): JSX.Element {
   async function handleUpload(file: File): Promise<void> {
     const buffer = await file.arrayBuffer()
     const previewBuffer = await renderFirstPagePreview(buffer.slice(0))
-    await postBook({ buffer, fileName: file.name, previewBuffer })
+    await onUpload({ buffer, fileName: file.name, previewBuffer })
     if (inputRef.current) inputRef.current.value = ''
   }
 
@@ -67,7 +77,7 @@ export default function Upload(): JSX.Element {
   return (
     <div>
       <button onClick={() => inputRef.current?.click()} className="btn border" disabled={isLoading}>
-        <p>Upload</p>
+        <p className="text-red-50">Upload</p>
         <input
           ref={inputRef}
           type="file"
@@ -78,11 +88,7 @@ export default function Upload(): JSX.Element {
       </button>
 
       {validationError && <p className="text-error mb-3 text-[0.9rem]">{validationError}</p>}
-      {isError && (
-        <p className="text-error mb-3 text-[0.9rem]">
-          {error && 'data' in error ? String(error.data) : 'Upload failed.'}
-        </p>
-      )}
+      {errorMessage && <p className="text-error mb-3 text-[0.9rem]">{errorMessage}</p>}
     </div>
   )
 }
