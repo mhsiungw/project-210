@@ -9,7 +9,7 @@ export default defineConfig({
   root: __dirname,
   plugins: [react()],
   test: {
-    name: 'renderer',
+    name: 'web',
     environment: 'happy-dom',
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     globals: true,
@@ -20,7 +20,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@app/shared': resolve(__dirname, 'src'),
+      '@web': resolve(__dirname, 'src'),
     },
   },
 })

@@ -3,9 +3,9 @@ import { describe, it, expect } from 'vitest'
 import { Provider } from 'react-redux'
 import { render, type RenderResult } from '@testing-library/react'
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
-import { emptyApi as api } from '@app/shared/store/api/emptyApi'
-import selectedBook from '@app/shared/store/selectedBook'
-import type { RootState } from '@app/shared/store'
+import { emptyApi as api } from '@web/store/api/emptyApi'
+import selectedBook from '@web/store/selectedBook'
+import type { RootState } from '@web/store'
 import { GlobalLoader } from '../GlobalLoader'
 
 function makeStore(apiState: Record<string, unknown> = {}): ReturnType<typeof configureStore> {

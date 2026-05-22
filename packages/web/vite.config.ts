@@ -19,7 +19,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@app/shared': resolve(__dirname, '../shared/src'),
+      '@web': resolve(__dirname, 'src'),
     },
   },
   plugins: [

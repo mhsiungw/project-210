@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { AuthSession } from '@app/shared/service/auth'
-import { getSession, signInWithOtp, verifyOtp, signOut } from '@app/shared/service/auth'
+import type { AuthSession } from '@web/service/auth'
+import { getSession, signInWithOtp, verifyOtp, signOut } from '@web/service/auth'
 
 export const auth = createApi({
   reducerPath: 'auth',

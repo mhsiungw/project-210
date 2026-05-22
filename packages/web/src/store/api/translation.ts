@@ -1,5 +1,5 @@
-import type { TranslationDto } from '@app/shared/client/types'
-import type { ThunkExtra } from '@app/shared/store'
+import type { TranslationDto } from '@app/db/dto'
+import type { ThunkExtra } from '@web/store'
 import { emptyApi, toQueryError } from './emptyApi'
 
 const translationApi = emptyApi.injectEndpoints({

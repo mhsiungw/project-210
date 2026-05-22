@@ -2,8 +2,8 @@ import '@testing-library/jest-dom'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Provider } from 'react-redux'
 import { render, fireEvent, screen, waitFor, type RenderResult } from '@testing-library/react'
-import { ApiClient } from '@app/shared/client'
-import { createAppStore, type AppStore } from '@app/shared/store'
+import { ApiClient } from '@web/client'
+import { createAppStore, type AppStore } from '@web/store'
 import Upload from '../Upload'
 
 const renderMock = vi.fn(() => ({ promise: Promise.resolve() }))

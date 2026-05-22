@@ -178,9 +178,6 @@ importers:
       '@app/db':
         specifier: workspace:*
         version: link:../db
-      '@app/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@aws-sdk/client-s3':
         specifier: ^3.1050.0
         version: 3.1050.0
@@ -231,8 +228,11 @@ importers:
         specifier: ^5.6.0
         version: 5.9.3
 
-  packages/shared:
+  packages/web:
     dependencies:
+      '@app/db':
+        specifier: workspace:*
+        version: link:../db
       '@reduxjs/toolkit':
         specifier: ^2.4.0
         version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
@@ -257,12 +257,6 @@ importers:
       react-redux:
         specifier: ^9.1.2
         version: 9.2.0(@types/react@19.2.14)(react@19.2.6)(redux@5.0.1)
-
-  packages/web:
-    dependencies:
-      '@app/shared':
-        specifier: workspace:*
-        version: link:../shared
 
 packages:
 

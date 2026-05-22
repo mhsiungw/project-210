@@ -1,5 +1,5 @@
 import type { Transport } from './transport'
-import type { BookDto, TranslationDto } from './types'
+import type { BookDto, TranslationDto } from '@app/db/dto'
 
 export class ApiClient {
   constructor(private readonly transport: Transport) {}

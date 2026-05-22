@@ -7,3 +7,4 @@ export const prisma = new PrismaClient({ adapter })
 
 export { PrismaClient } from '../generated/client/client.ts'
 export type { Book, Translation } from '../generated/client/client.ts'
+export type { BookDto, TranslationDto } from './dto.ts'

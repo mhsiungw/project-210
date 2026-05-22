@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
-import Upload from '@app/shared/ui/Upload'
-import { BookGrid } from '@app/shared/ui/book-grid/BookGrid'
-import { useGetBooksQuery } from '@app/shared/store/api/book'
+import Upload from '@web/ui/Upload'
+import { BookGrid } from '@web/ui/book-grid/BookGrid'
+import { useGetBooksQuery } from '@web/store/api/book'
 
 export function Home(): JSX.Element {
   const { data: books = [] } = useGetBooksQuery()

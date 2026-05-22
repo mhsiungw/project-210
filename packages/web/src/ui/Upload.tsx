@@ -1,6 +1,6 @@
 import { useRef, useState, type JSX } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
-import { usePostBookMutation } from '@app/shared/store/api/book'
+import { usePostBookMutation } from '@web/store/api/book'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',

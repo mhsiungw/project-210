@@ -1,8 +1,7 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/aws-lambda'
 import type { APIGatewayProxyEventV2WithJWTAuthorizer } from 'aws-lambda'
-import { prisma, type Translation } from '@app/db'
-import type { TranslationDto } from '@app/shared/client/types'
+import { prisma, type Translation, type TranslationDto } from '@app/db'
 
 const toTranslationDto = (t: Translation): TranslationDto => ({
   id: t.id,

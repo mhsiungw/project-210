@@ -1,5 +1,5 @@
-import type { Transport } from '@app/shared/client/transport'
-import type { BookDto } from '@app/shared/client/types'
+import type { Transport } from '@web/client/transport'
+import type { BookDto } from '@app/db/dto'
 
 export class HttpError extends Error {
   constructor(readonly status: number) {

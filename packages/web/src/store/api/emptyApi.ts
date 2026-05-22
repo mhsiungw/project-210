@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react'
-import { HttpError } from '@app/shared/client'
+import { HttpError } from '@web/client'
 
 export interface QueryError {
   status: number

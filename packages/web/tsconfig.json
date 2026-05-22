@@ -8,10 +8,10 @@
     "types": [],
     "paths": {
       "@web/*": ["./src/*"],
-      "@app/shared": ["../shared/src"],
-      "@app/shared/*": ["../shared/src/*"]
+      "@app/db": ["../db/src"],
+      "@app/db/dto": ["../db/src/dto.ts"]
     }
   },
   "include": ["src/**/*"],
-  "references": [{ "path": "../shared" }]
+  "references": [{ "path": "../db" }]
 }

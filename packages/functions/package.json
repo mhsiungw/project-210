@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@app/db": "workspace:*",
-    "@app/shared": "workspace:*",
     "@aws-sdk/client-s3": "^3.1050.0",
     "@aws-sdk/cloudfront-signer": "^3.1048.0",
     "@aws-sdk/s3-request-presigner": "^3.1050.0",

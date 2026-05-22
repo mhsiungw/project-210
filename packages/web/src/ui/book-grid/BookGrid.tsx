@@ -1,9 +1,9 @@
 import { useState, type JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { BookDto } from '@app/shared/client/types'
-import { useAppDispatch } from '@app/shared/store'
-import { useGetSessionQuery } from '@app/shared/store/api/auth'
-import { setSelectedBookId } from '@app/shared/store/selectedBook'
+import type { BookDto } from '@app/db/dto'
+import { useAppDispatch } from '@web/store'
+import { useGetSessionQuery } from '@web/store/api/auth'
+import { setSelectedBookId } from '@web/store/selectedBook'
 import { BookContextMenu } from './BookContextMenu'
 
 interface Props {

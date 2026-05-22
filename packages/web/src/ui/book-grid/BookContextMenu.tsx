@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { RiDeleteBinLine } from '@remixicon/react'
-import type { BookDto } from '@app/shared/client/types'
-import { useDeleteBookMutation } from '@app/shared/store/api/book'
+import type { BookDto } from '@app/db/dto'
+import { useDeleteBookMutation } from '@web/store/api/book'
 import { ContextMenu } from '../ContextMenu'
 
 interface Props {

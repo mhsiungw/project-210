@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import type { TypedUseSelectorHook } from 'react-redux'
 import { useDispatch, useSelector } from 'react-redux'
-import type { ApiClient } from '@app/shared/client'
+import type { ApiClient } from '@web/client'
 import selectedBook from './selectedBook'
 import { auth } from './api/auth'
 import { emptyApi } from './api/emptyApi'
