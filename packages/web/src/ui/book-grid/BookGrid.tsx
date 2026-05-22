@@ -36,16 +36,18 @@ export function BookGrid({ books }: Props): JSX.Element | null {
             className="cursor-pointer flex flex-col gap-0.5"
             key={book.id}
           >
-            <img
-              src={book.s3PreviewKeyUrl}
-              onDoubleClick={() => {
-                if (!session?.userId) return
-                dispatch(setSelectedBookId(book.id))
-                navigate(`/pdf-notes/${session.userId}/${book.id}`)
-              }}
-              alt={book.id}
-              className="w-full aspect-3/4 object-cover rounded-md border border-border"
-            />
+            <div className="w-full aspect-3/4 rounded-md border border-border overflow-hidden">
+              <img
+                src={book.s3PreviewKeyUrl}
+                onDoubleClick={() => {
+                  if (!session?.userId) return
+                  dispatch(setSelectedBookId(book.id))
+                  navigate(`/pdf-notes/${session.userId}/${book.id}`)
+                }}
+                alt={book.id}
+                className="w-full aspect-3/4 object-cover rounded-md border border-border"
+              />
+            </div>
             <div className="text-center">{book.fileName}</div>
           </div>
         ))}
