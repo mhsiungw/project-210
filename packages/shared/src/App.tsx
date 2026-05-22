@@ -8,10 +8,10 @@ import { GlobalLoader } from './ui/GlobalLoader'
 import { useGetSessionQuery } from './store/api/auth'
 
 export default function App(): JSX.Element {
-  const { data: session, isLoading } = useGetSessionQuery()
+  const { data: session, isLoading: isLogining } = useGetSessionQuery()
   const isLogin = useLocation().pathname === '/login'
 
-  if (isLoading) {
+  if (isLogining) {
     return <GlobalLoader />
   }
 
