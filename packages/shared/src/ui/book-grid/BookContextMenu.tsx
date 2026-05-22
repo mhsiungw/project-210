@@ -22,7 +22,7 @@ export function BookContextMenu({ book, x, y, onClose }: Props): JSX.Element {
   return (
     <ContextMenu x={x} y={y} onClose={onClose}>
       <button onClick={handleDelete} className="flex justify-center items-center gap-2 btn p-2">
-        <RiDeleteBinLine color="rgba(70,146,221,1)" />
+        <RiDeleteBinLine className="text-accent" />
         <span>Delete</span>
       </button>
     </ContextMenu>

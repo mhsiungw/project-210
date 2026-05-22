@@ -44,7 +44,7 @@ export function BookGrid({ books }: Props): JSX.Element | null {
                 navigate(`/pdf-notes/${session.userId}/${book.id}`)
               }}
               alt={book.id}
-              className="w-full aspect-3/4 object-cover rounded-md border border-[#e0e0e0]"
+              className="w-full aspect-3/4 object-cover rounded-md border border-border"
             />
             <div className="text-center">{book.fileName}</div>
           </div>

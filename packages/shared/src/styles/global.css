@@ -3,50 +3,189 @@
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
+/* ============================================================
+   Project 210 — Color tokens
+   Dark-theme first. Light theme via [data-theme='light'].
+   Non-color tokens live in @theme below.
+   See .claude/skills/project-210-deisn-system/ for full spec.
+   ============================================================ */
+
 :root {
-  font-size: 17px;
-}
-#root {
-  min-height: 100vh;
-  height: 100vh;
-  display: flex;
+  /* Brand */
+  --p210-whale-blue: #1976ec;
+  --p210-whale-blue-deep: #0b2f7a;
+  --p210-accent: #4692dd;
+  --p210-accent-hover: #5ea1e6;
+  --p210-accent-pressed: #3a7fc4;
+
+  /* Neutral scale */
+  --p210-gray-50: #f7f7f7;
+  --p210-gray-100: #ececec;
+  --p210-gray-200: #e2e2e2;
+  --p210-gray-300: #cccccc;
+  --p210-gray-400: #9a9a9a;
+  --p210-gray-500: #6b6b6b;
+  --p210-gray-600: #555555;
+  --p210-gray-700: #444444;
+  --p210-gray-750: #343333;
+  --p210-gray-800: #2c2c2c;
+  --p210-gray-900: #212121;
+  --p210-gray-950: #161616;
+
+  /* Status */
+  --p210-error: #d32f2f;
+  --p210-success: #2e7d32;
+  --p210-warning: #b06d00;
+
+  /* Reader chrome (kept across themes) */
+  --p210-reader-canvas: #525659;
+  --p210-reader-toolbar: rgba(40, 40, 40, 0.92);
+
+  /* Semantic — DEFAULT = DARK */
+  --p210-bg: var(--p210-gray-900);
+  --p210-bg-elevated: var(--p210-gray-800);
+  --p210-bg-overlay: var(--p210-gray-700);
+  --p210-sidebar: var(--p210-gray-800);
+  --p210-context-menu: var(--p210-gray-700);
+
+  --p210-fg: var(--p210-gray-200);
+  --p210-fg-muted: var(--p210-gray-400);
+  --p210-fg-faint: var(--p210-gray-500);
+
+  --p210-border: rgba(255, 255, 255, 0.1);
+  --p210-border-strong: rgba(255, 255, 255, 0.18);
+  --p210-divider: rgba(255, 255, 255, 0.06);
+
+  /* Elevation (theme-switches via alpha) */
+  --p210-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --p210-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --p210-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --p210-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  --p210-focus-ring: 0 0 0 3px rgba(70, 146, 221, 0.35);
 }
 
-#root > div {
-  flex: 1;
+[data-theme='light'] {
+  --p210-bg: var(--p210-gray-200);
+  --p210-bg-elevated: #ffffff;
+  --p210-bg-overlay: #ffffff;
+  --p210-sidebar: var(--p210-gray-100);
+  --p210-context-menu: #ffffff;
+
+  --p210-fg: var(--p210-gray-900);
+  --p210-fg-muted: var(--p210-gray-600);
+  --p210-fg-faint: var(--p210-gray-500);
+
+  --p210-border: rgba(0, 0, 0, 0.1);
+  --p210-border-strong: rgba(0, 0, 0, 0.18);
+  --p210-divider: rgba(0, 0, 0, 0.06);
+
+  --p210-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --p210-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --p210-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.14);
 }
 
-body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+/* ============================================================
+   Tailwind theme — non-color tokens defined directly,
+   color/shadow tokens reference :root vars so they theme-switch.
+   ============================================================ */
+@theme inline {
+  /* Theme-switching colors */
+  --color-bg: var(--p210-bg);
+  --color-bg-elevated: var(--p210-bg-elevated);
+  --color-bg-overlay: var(--p210-bg-overlay);
+  --color-sidebar: var(--p210-sidebar);
+  --color-context-menu: var(--p210-context-menu);
+  --color-reader-canvas: var(--p210-reader-canvas);
+  --color-reader-toolbar: var(--p210-reader-toolbar);
+
+  --color-fg: var(--p210-fg);
+  --color-fg-muted: var(--p210-fg-muted);
+  --color-fg-faint: var(--p210-fg-faint);
+
+  --color-accent: var(--p210-accent);
+  --color-error: var(--p210-error);
+  --color-success: var(--p210-success);
+  --color-warning: var(--p210-warning);
+
+  --color-border: var(--p210-border);
+  --color-border-strong: var(--p210-border-strong);
+
+  /* Theme-switching shadows */
+  --shadow-sm: var(--p210-shadow-sm);
+  --shadow-md: var(--p210-shadow-md);
+  --shadow-lg: var(--p210-shadow-lg);
 }
 
-@theme {
-  --color-primary: #e2e2e2;
-  --color-error: #d32f2f;
-  --color-sidebar: #2c2c2c;
-  --color-success: #2e7d32;
-  --color-border: #ccc;
-  --color-muted: #555;
-  --color-bg: #e2e2e2;
-  --color-context-menu: #343333;
-  --color-text: #212121;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-}
+/* ============================================================
+   Base elements
+   ============================================================ */
 
-[data-theme='dark'] {
-  --color-primary: #212121;
-  --color-muted: #555;
-  --color-bg: #212121;
-  --color-sidebar: #2c2c2c;
-  --color-context-menu: #444;
-  --color-text: #e2e2e2;
-  --color-border: #ccc;
+@layer base {
+  :root {
+    font-size: 17px;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    @apply bg-bg text-fg font-sans text-base font-normal leading-normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1 {
+    @apply text-2xl font-semibold leading-tight tracking-tight mb-4;
+  }
+  h2 {
+    @apply text-xl font-semibold leading-snug tracking-tight mb-3;
+  }
+  h3 {
+    @apply text-lg font-semibold leading-snug mb-2;
+  }
+  h4 {
+    @apply text-base font-medium mb-2;
+  }
+
+  code,
+  kbd,
+  samp {
+    @apply font-mono;
+    font-size: 0.92em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: rgba(70, 146, 221, 0.35);
+    color: inherit;
+  }
+
+  :where(button, a, input, textarea, select, [tabindex]):focus-visible {
+    @apply rounded-sm;
+    outline: none;
+    box-shadow: var(--p210-focus-ring);
+  }
 }
 
 @layer components {
   .btn {
-    @apply hover:bg-muted active:bg-muted p-1.5 rounded-sm cursor-pointer duration-150 transition-[background-color,box-shadow,transform] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+    @apply hover:bg-bg-overlay active:bg-bg-overlay p-1.5 rounded-sm cursor-pointer transition-[background-color,box-shadow,transform] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 duration-150 ease-out;
+  }
+
+  .link {
+    color: var(--p210-accent);
+  }
+  .link:hover {
+    color: var(--p210-accent-hover);
   }
 }

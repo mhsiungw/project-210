@@ -32,7 +32,7 @@ export default function App(): JSX.Element {
   }
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 h-full">
       <GlobalLoader />
       <div className="min-w-37.5 bg-sidebar p-2">
         <Sidebar />

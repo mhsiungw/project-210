@@ -21,7 +21,7 @@ export default function Sidebar(): JSX.Element {
     <nav className="relative flex flex-col justify-between h-full gap-1">
       <div>
         <Link className="btn flex gap-2" to="/">
-          <RiFileLine color="rgba(70,146,221,1)" />
+          <RiFileLine className="text-accent" />
           Books
         </Link>
       </div>
@@ -32,7 +32,7 @@ export default function Sidebar(): JSX.Element {
           onClick={toggleSettings}
           aria-label="Settings"
         >
-          <RiSettings2Line color="rgba(255,255,255,1)" />
+          <RiSettings2Line className="text-fg" />
         </button>
       </div>
       {menuPos && (

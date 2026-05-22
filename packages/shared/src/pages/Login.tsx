@@ -62,7 +62,7 @@ export function Login(): JSX.Element {
         )}
       </div>
       {error && (
-        <p className="text-red-600 text-sm">{typeof error === 'string' ? error : error.message}</p>
+        <p className="text-error text-sm">{typeof error === 'string' ? error : error.message}</p>
       )}
       {pending && 'loading'}
     </div>

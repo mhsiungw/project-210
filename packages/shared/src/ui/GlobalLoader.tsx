@@ -10,8 +10,8 @@ export function GlobalLoader(): JSX.Element | null {
   )
   if (!isFetching) return null
   return (
-    <div className="fixed inset-0 bg-muted/20 z-50 flex justify-center items-center">
-      <RiLoader5Line size={36} color="rgba(70,146,221,1)" className="animate-spin" />
+    <div className="fixed inset-0 bg-bg-overlay/20 z-50 flex justify-center items-center">
+      <RiLoader5Line size={36} className="animate-spin text-accent" />
     </div>
   )
 }

@@ -134,14 +134,14 @@ export function PdfViewer({ url, defaultPage = 1 }: PdfViewerProps): JSX.Element
 
   return (
     <div className="flex flex-col w-full h-full relative">
-      <div ref={containerRef} className="flex-1 min-h-0 overflow-auto bg-[#525659] pb-20">
+      <div ref={containerRef} className="flex-1 min-h-0 overflow-auto bg-reader-canvas pb-20">
         <div className="flex flex-col items-center min-w-min">
           <Document
             file={url}
             options={PDF_OPTIONS}
             onLoadSuccess={handleLoadSuccess}
-            loading={<div style={{ color: '#fff', padding: 32 }}>Loading PDF…</div>}
-            error={<div style={{ color: '#faa', padding: 32 }}>Failed to load PDF.</div>}
+            loading={<div className="text-white p-8">Loading PDF…</div>}
+            error={<div className="text-error p-8">Failed to load PDF.</div>}
           >
             <div
               style={{

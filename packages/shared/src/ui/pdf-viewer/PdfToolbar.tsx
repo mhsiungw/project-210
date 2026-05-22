@@ -13,24 +13,7 @@ function ToolbarButton({ onClick, disabled, title, children }: ToolbarButtonProp
       onClick={onClick}
       disabled={disabled}
       title={title}
-      style={{
-        background: 'none',
-        border: 'none',
-        color: disabled ? 'rgba(255,255,255,0.3)' : '#fff',
-        cursor: disabled ? 'default' : 'pointer',
-        fontSize: 20,
-        lineHeight: 1,
-        padding: '2px 6px',
-        borderRadius: 4,
-        transition: 'background 0.15s',
-      }}
-      onMouseEnter={e => {
-        if (!disabled)
-          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.15)'
-      }}
-      onMouseLeave={e => {
-        ;(e.currentTarget as HTMLButtonElement).style.background = 'none'
-      }}
+      className="bg-transparent border-none text-white text-lg leading-none px-1.5 py-0.5 rounded-sm cursor-pointer transition-colors duration-150 hover:bg-white/15 disabled:text-white/30 disabled:cursor-default disabled:hover:bg-transparent"
     >
       {children}
     </button>
@@ -61,42 +44,23 @@ export function PdfToolbar({
   onScaleUp,
 }: PdfToolbarProps): JSX.Element {
   return (
-    <div
-      style={{
-        position: 'absolute',
-        bottom: 24,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        background: 'rgba(40, 40, 40, 0.92)',
-        backdropFilter: 'blur(8px)',
-        borderRadius: 8,
-        padding: '8px 16px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-        zIndex: 1000,
-        color: '#fff',
-        fontSize: 14,
-        userSelect: 'none',
-      }}
-    >
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-1000 flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm select-none backdrop-blur-sm bg-reader-toolbar shadow-md">
       <ToolbarButton onClick={onPrev} disabled={currentPage <= 1} title="Previous page">
         ‹
       </ToolbarButton>
-      <span style={{ minWidth: 90, textAlign: 'center' }}>
+      <span className="min-w-22.5 text-center">
         Page {numPages > 0 ? currentPage : '—'} of {numPages || '—'}
       </span>
       <ToolbarButton onClick={onNext} disabled={currentPage >= numPages} title="Next page">
         ›
       </ToolbarButton>
 
-      <div style={{ width: 1, background: 'rgba(255,255,255,0.2)', height: 20, margin: '0 4px' }} />
+      <div className="w-px h-5 mx-1 bg-white/20" />
 
       <ToolbarButton onClick={onScaleDown} disabled={scale <= scaleMin} title="Zoom out">
         −
       </ToolbarButton>
-      <span style={{ minWidth: 48, textAlign: 'center' }}>{Math.round(scale * 100)}%</span>
+      <span className="min-w-12 text-center">{Math.round(scale * 100)}%</span>
       <ToolbarButton onClick={onScaleUp} disabled={scale >= scaleMax} title="Zoom in">
         +
       </ToolbarButton>
