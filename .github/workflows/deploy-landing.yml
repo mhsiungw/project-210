@@ -131,7 +131,4 @@ jobs:
         run: pnpm add -g vercel@latest
 
       - name: Build and deploy to production
-        working-directory: packages/landing
-        run: |
-          pnpm -F @app/landing build
-          vercel deploy --prod --token="$VERCEL_TOKEN"
+        run: pnpm deploy:landing:prod

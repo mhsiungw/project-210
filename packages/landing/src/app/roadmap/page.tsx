@@ -10,19 +10,9 @@ type Milestone = {
 
 const milestones: Milestone[] = [
   {
-    title: 'Reader MVP',
+    title: 'Users can use their own API key to ask AI questions',
     status: 'in-progress',
-    description: 'Read EPUBs and PDFs with inline translation lookup.',
-  },
-  {
-    title: 'Vocabulary review',
-    status: 'planned',
-    description: 'Spaced-repetition review for words saved while reading.',
-  },
-  {
-    title: 'Mobile apps',
-    status: 'planned',
-    description: 'Native iOS and Android reading clients.',
+    description: '',
   },
 ]
 

@@ -14,6 +14,8 @@
     "preview:web": "pnpm -F @app/web preview",
     "deploy:web:staging": "pnpm -F @app/web build:staging && pnpm -F @app/web deploy:staging",
     "deploy:web:prod": "pnpm -F @app/web build:prod && pnpm -F @app/web deploy:prod",
+    "deploy:landing:staging": "pnpm -F @app/landing build && pnpm -F @app/landing deploy:staging",
+    "deploy:landing:prod": "pnpm -F @app/landing build && pnpm -F @app/landing deploy:prod",
     "deploy:functions:staging": "pnpm -F @app/functions deploy:staging",
     "deploy:functions:prod": "pnpm -F @app/functions deploy:prod",
     "secrets:push:web:staging": "gh secret set WEB_ENV_STAGING --env staging < env/.env.staging",
