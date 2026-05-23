@@ -1,8 +1,9 @@
 'use client'
+import type { JSX } from 'react'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 
-export default function Hero() {
+export default function Hero(): JSX.Element {
   return (
     <div
       id="hero"

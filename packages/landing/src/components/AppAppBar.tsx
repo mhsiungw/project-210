@@ -1,5 +1,6 @@
 'use client'
 import * as React from 'react'
+import type { JSX } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
@@ -11,7 +12,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Typography from '@mui/material/Typography'
 
-export default function AppAppBar() {
+export default function AppAppBar(): JSX.Element {
   const [open, setOpen] = React.useState(false)
 
   const toggleDrawer = (newOpen: boolean) => () => {

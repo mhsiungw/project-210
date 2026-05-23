@@ -1,9 +1,10 @@
 'use client'
+import type { JSX } from 'react'
 import Container from '@mui/material/Container'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
-export default function Footer() {
+export default function Footer(): JSX.Element {
   return (
     <Container className="flex flex-col items-center justify-between gap-8 border-t border-white/10 py-12 text-center md:flex-row md:items-start md:text-left">
       <div className="flex flex-col gap-2">
