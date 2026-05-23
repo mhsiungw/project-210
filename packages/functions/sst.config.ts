@@ -19,13 +19,15 @@ export default $config({
     const supabaseUrl = process.env.SUPABASE_URL
     if (!supabaseUrl) throw new Error('Missing SUPABASE_URL')
 
-    const webOrigins = process.env.WEB_ORIGIN
-    if (!webOrigins) throw new Error('Missing WEB_ORIGIN')
+    const webOrigins = process.env.WEB_ORIGIN?.split(',')
+      .map(s => s.trim())
+      .filter(Boolean)
+    if (!webOrigins?.length) throw new Error('Missing WEB_ORIGIN')
 
     const webOriginsForCors =
       $app.stage === 'production'
-        ? [webOrigins]
-        : [webOrigins, 'http://localhost:5173', 'http://localhost:5174']
+        ? webOrigins
+        : [...webOrigins, 'http://localhost:5173', 'http://localhost:5174']
 
     // policy: allow CloudFront service principal to read objects. enforceHttps is
     // handled by SST's default DenyHTTP statement. The AWS:SourceArn condition is
