@@ -1,0 +1,137 @@
+name: Deploy Landing
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-landing-${{ github.ref }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-staging:
+    name: Deploy → staging
+    if: inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Materialise env/.env.staging and export Vercel credentials
+        env:
+          WEB_ENV_STAGING: ${{ secrets.WEB_ENV_STAGING }}
+        run: |
+          if [ -z "$WEB_ENV_STAGING" ]; then
+            echo "::error::WEB_ENV_STAGING secret is empty or unset"
+            exit 1
+          fi
+          printf '%s\n' "$WEB_ENV_STAGING" > env/.env.staging
+
+          set -a
+          # shellcheck disable=SC1091
+          . env/.env.staging
+          set +a
+          for var in VERCEL_ORG_ID VERCEL_LANDING_PROJECT_ID VERCEL_TOKEN; do
+            if [ -z "${!var:-}" ]; then
+              echo "::error::$var missing from WEB_ENV_STAGING"
+              exit 1
+            fi
+            echo "::add-mask::${!var}"
+          done
+          echo "VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+          echo "VERCEL_PROJECT_ID=$VERCEL_LANDING_PROJECT_ID" >> "$GITHUB_ENV"
+          echo "VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Build staging bundle
+        run: pnpm -F @app/landing build
+
+      - name: Deploy to staging
+        id: deploy
+        working-directory: packages/landing
+        run: |
+          url=$(vercel deploy --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Alias deployment to project-210-landing.vercel.app
+        working-directory: packages/landing
+        run: vercel alias --token="$VERCEL_TOKEN" "${{ steps.deploy.outputs.url }}" project-210-landing.vercel.app
+
+  deploy-production:
+    name: Deploy → production
+    if: inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Materialise env/.env.production and export Vercel credentials
+        env:
+          WEB_ENV_PRODUCTION: ${{ secrets.WEB_ENV_PRODUCTION }}
+        run: |
+          if [ -z "$WEB_ENV_PRODUCTION" ]; then
+            echo "::error::WEB_ENV_PRODUCTION secret is empty or unset"
+            exit 1
+          fi
+          printf '%s\n' "$WEB_ENV_PRODUCTION" > env/.env.production
+
+          set -a
+          # shellcheck disable=SC1091
+          . env/.env.production
+          set +a
+          for var in VERCEL_ORG_ID VERCEL_LANDING_PROJECT_ID VERCEL_TOKEN; do
+            if [ -z "${!var:-}" ]; then
+              echo "::error::$var missing from WEB_ENV_PRODUCTION"
+              exit 1
+            fi
+            echo "::add-mask::${!var}"
+          done
+          echo "VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+          echo "VERCEL_PROJECT_ID=$VERCEL_LANDING_PROJECT_ID" >> "$GITHUB_ENV"
+          echo "VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Build and deploy to production
+        working-directory: packages/landing
+        run: |
+          pnpm -F @app/landing build
+          vercel deploy --prod --token="$VERCEL_TOKEN"
