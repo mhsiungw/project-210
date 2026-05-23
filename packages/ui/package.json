@@ -6,7 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./pdf-viewer": "./src/pdf-viewer/index.tsx",
-    "./Upload": "./src/Upload.tsx",
+    "./Upload": "./src/components/Upload.tsx",
     "./styles/design-system.css": "./src/styles/design-system.css"
   },
   "dependencies": {

@@ -36,14 +36,14 @@ export default function Footer(): JSX.Element {
             </Link>
           </li>
           <li>
-            <Link variant="body2" href="mailto:hello@project210.app" className="text-gray-500">
+            <Link variant="body2" href="mailto:minhsiungw@gmail.com" className="text-gray-500">
               Contact
             </Link>
           </li>
           <li>
             <Link
               variant="body2"
-              href="https://github.com/"
+              href="https://github.com/mhsiungw/project-210"
               className="text-gray-500"
               target="_blank"
               rel="noopener noreferrer"

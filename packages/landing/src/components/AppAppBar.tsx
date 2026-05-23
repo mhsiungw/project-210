@@ -60,7 +60,9 @@ export default function AppAppBar(): JSX.Element {
           <div className="hidden items-center md:flex">
             <Button
               component="a"
-              href="/signup"
+              href="https://app.project-210.space/"
+              target="_blank"
+              rel="noopener noreferrer"
               variant="contained"
               size="medium"
               className="bg-zinc-200 text-black hover:bg-zinc-300"

@@ -8,6 +8,7 @@
     "postinstall": "pnpm -F @app/db generate",
     "dev": "concurrently -n web -c green \"pnpm dev:web\"",
     "dev:web": "pnpm -F @app/web dev",
+    "dev:landing": "pnpm -F @app/landing dev",
     "build:web:staging": "pnpm -F @app/web build:staging",
     "build:web:prod": "pnpm -F @app/web build:prod",
     "preview:web": "pnpm -F @app/web preview",
