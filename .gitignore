@@ -27,3 +27,5 @@ public_key.pem
 *.secrets*
 !.secrets.ci.example
 .sst
+
+.next

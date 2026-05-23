@@ -1,0 +1,11 @@
+@layer theme, base, mui, components, utilities;
+@import 'tailwindcss';
+
+@source "../";
+
+body {
+  @apply bg-black font-sans text-base font-normal leading-normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
