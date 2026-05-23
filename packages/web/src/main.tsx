@@ -2,6 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import GlobalStyles from '@mui/material/GlobalStyles'
+import { theme } from '@app/ui'
 import { ApiClient } from '@web/client/client'
 import { ApiClientProvider } from '@web/client/context'
 import { createAppStore } from '@web/store'
@@ -27,10 +31,15 @@ if (!rootEl) throw new Error('#root element not found')
 
 createRoot(rootEl).render(
   <StrictMode>
-    <Provider store={store}>
-      <ApiClientProvider client={apiClient}>
-        <RouterProvider router={router} />
-      </ApiClientProvider>
-    </Provider>
+    <StyledEngineProvider enableCssLayer>
+      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+      <ThemeProvider theme={theme} defaultMode="dark">
+        <Provider store={store}>
+          <ApiClientProvider client={apiClient}>
+            <RouterProvider router={router} />
+          </ApiClientProvider>
+        </Provider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   </StrictMode>
 )

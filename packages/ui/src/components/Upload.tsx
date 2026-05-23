@@ -44,7 +44,7 @@ async function renderFirstPagePreview(pdfBuffer: ArrayBuffer): Promise<ArrayBuff
   })
 }
 
-export default function Upload({ onUpload, isLoading, errorMessage }: UploadProps): JSX.Element {
+export function Upload({ onUpload, isLoading, errorMessage }: UploadProps): JSX.Element {
   const [validationError, setValidationError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 

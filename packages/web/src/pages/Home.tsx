@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import Upload from '@app/ui/Upload'
+import { Upload } from '@app/ui'
 import { BookGrid } from '@web/ui/book-grid/BookGrid'
 import { useGetBooksQuery, usePostBookMutation } from '@web/store/api/book'
 

@@ -8,37 +8,44 @@
    ============================================================ */
 
 :root {
+  /* Color tokens are stored as space-separated RGB triplets so consumers
+     (Tailwind `bg-fg/40`, MUI `*Channel` palette tokens) can apply alpha.
+     Wrap them in `rgb(...)` at the consumer site. */
+
   /* Brand */
-  --p210-whale-blue: #1976ec;
-  --p210-whale-blue-deep: #0b2f7a;
-  --p210-accent: #4692dd;
-  --p210-accent-hover: #5ea1e6;
-  --p210-accent-pressed: #3a7fc4;
+  --p210-whale-blue: 25 118 236;
+  --p210-whale-blue-deep: 11 47 122;
+  --p210-accent: 70 146 221;
+  --p210-accent-hover: 94 161 230;
+  --p210-accent-pressed: 58 127 196;
 
   /* Neutral scale */
-  --p210-gray-50: #f7f7f7;
-  --p210-gray-100: #ececec;
-  --p210-gray-200: #e2e2e2;
-  --p210-gray-300: #cccccc;
-  --p210-gray-400: #9a9a9a;
-  --p210-gray-500: #6b6b6b;
-  --p210-gray-600: #555555;
-  --p210-gray-700: #444444;
-  --p210-gray-750: #343333;
-  --p210-gray-800: #2c2c2c;
-  --p210-gray-900: #212121;
-  --p210-gray-950: #161616;
+  --p210-gray-50: 247 247 247;
+  --p210-gray-100: 236 236 236;
+  --p210-gray-200: 226 226 226;
+  --p210-gray-300: 204 204 204;
+  --p210-gray-400: 154 154 154;
+  --p210-gray-500: 107 107 107;
+  --p210-gray-600: 85 85 85;
+  --p210-gray-700: 68 68 68;
+  --p210-gray-750: 52 51 51;
+  --p210-gray-800: 44 44 44;
+  --p210-gray-900: 33 33 33;
+  --p210-gray-950: 22 22 22;
 
   /* Status */
-  --p210-error: #d32f2f;
-  --p210-success: #2e7d32;
-  --p210-warning: #b06d00;
+  --p210-error: 211 47 47;
+  --p210-success: 46 125 50;
+  --p210-warning: 176 109 0;
 
   /* Reader chrome (kept across themes) */
-  --p210-reader-canvas: #525659;
+  --p210-reader-canvas: 82 86 89;
   --p210-reader-toolbar: rgba(40, 40, 40, 0.92);
+  --p210-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --p210-focus-ring: 0 0 0 3px rgba(70, 146, 221, 0.35);
+}
 
-  /* Semantic — DEFAULT = DARK */
+[data-theme='dark'] {
   --p210-bg: var(--p210-gray-900);
   --p210-bg-elevated: var(--p210-gray-800);
   --p210-bg-overlay: var(--p210-gray-700);
@@ -53,21 +60,17 @@
   --p210-border-strong: rgba(255, 255, 255, 0.18);
   --p210-divider: rgba(255, 255, 255, 0.06);
 
-  /* Elevation (theme-switches via alpha) */
   --p210-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
   --p210-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --p210-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --p210-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
-  --p210-focus-ring: 0 0 0 3px rgba(70, 146, 221, 0.35);
 }
 
 [data-theme='light'] {
   --p210-bg: var(--p210-gray-200);
-  --p210-bg-elevated: #ffffff;
-  --p210-bg-overlay: #ffffff;
+  --p210-bg-elevated: 255 255 255;
+  --p210-bg-overlay: 255 255 255;
   --p210-sidebar: var(--p210-gray-100);
-  --p210-context-menu: #ffffff;
+  --p210-context-menu: 255 255 255;
 
   --p210-fg: var(--p210-gray-900);
   --p210-fg-muted: var(--p210-gray-600);
@@ -87,23 +90,25 @@
    color/shadow tokens reference :root vars so they theme-switch.
    ============================================================ */
 @theme inline {
-  /* Theme-switching colors */
-  --color-bg: var(--p210-bg);
-  --color-bg-elevated: var(--p210-bg-elevated);
-  --color-bg-overlay: var(--p210-bg-overlay);
-  --color-sidebar: var(--p210-sidebar);
-  --color-context-menu: var(--p210-context-menu);
-  --color-reader-canvas: var(--p210-reader-canvas);
+  /* Triplet-backed colors are wrapped in rgb() so Tailwind's opacity modifier
+     (bg-fg/40) can substitute the alpha channel. Alpha-baked rgba tokens
+     (border, divider, reader-toolbar) are passed through directly. */
+  --color-bg: rgb(var(--p210-bg));
+  --color-bg-elevated: rgb(var(--p210-bg-elevated));
+  --color-bg-overlay: rgb(var(--p210-bg-overlay));
+  --color-sidebar: rgb(var(--p210-sidebar));
+  --color-context-menu: rgb(var(--p210-context-menu));
+  --color-reader-canvas: rgb(var(--p210-reader-canvas));
   --color-reader-toolbar: var(--p210-reader-toolbar);
 
-  --color-fg: var(--p210-fg);
-  --color-fg-muted: var(--p210-fg-muted);
-  --color-fg-faint: var(--p210-fg-faint);
+  --color-fg: rgb(var(--p210-fg));
+  --color-fg-muted: rgb(var(--p210-fg-muted));
+  --color-fg-faint: rgb(var(--p210-fg-faint));
 
-  --color-accent: var(--p210-accent);
-  --color-error: var(--p210-error);
-  --color-success: var(--p210-success);
-  --color-warning: var(--p210-warning);
+  --color-accent: rgb(var(--p210-accent));
+  --color-error: rgb(var(--p210-error));
+  --color-success: rgb(var(--p210-success));
+  --color-warning: rgb(var(--p210-warning));
 
   --color-border: var(--p210-border);
   --color-border-strong: var(--p210-border-strong);
