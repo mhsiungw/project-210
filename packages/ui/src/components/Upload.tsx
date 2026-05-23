@@ -92,3 +92,5 @@ export function Upload({ onUpload, isLoading, errorMessage }: UploadProps): JSX.
     </div>
   )
 }
+
+export default Upload
