@@ -1,8 +1,23 @@
 import type { JSX, ReactNode } from 'react'
+import type { Metadata } from 'next'
 import Providers from '../components/Providers'
 import AppAppBar from '../components/AppAppBar'
 import Footer from '../components/Footer'
 import './globals.css'
+
+export const metadata: Metadata = {
+  title: 'Project 210',
+  appleWebApp: { title: 'Project 210' },
+  manifest: '/assets/site.webmanifest',
+  icons: {
+    icon: [
+      { url: '/assets/favicon.svg', type: 'image/svg+xml' },
+      { url: '/assets/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+    ],
+    shortcut: '/assets/favicon.ico',
+    apple: { url: '/assets/apple-touch-icon.png', sizes: '180x180' },
+  },
+}
 
 export default function RootLayout({ children }: { children: ReactNode }): JSX.Element {
   return (
