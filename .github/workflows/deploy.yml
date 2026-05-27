@@ -29,6 +29,7 @@ jobs:
       db: ${{ steps.filter.outputs.db }}
       functions: ${{ steps.filter.outputs.functions }}
       web: ${{ steps.filter.outputs.web }}
+      landing: ${{ steps.filter.outputs.landing }}
       force: ${{ steps.env.outputs.force }}
     steps:
       - uses: actions/checkout@v6
@@ -77,6 +78,11 @@ jobs:
               - 'env/**'
               - 'pnpm-lock.yaml'
               - '.github/workflows/deploy-web.yml'
+            landing:
+              - 'packages/landing/**'
+              - 'env/**'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/deploy-landing.yml'
 
   db:
     needs: resolve
@@ -98,6 +104,14 @@ jobs:
     needs: [resolve, functions]
     if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.web == 'true'
     uses: ./.github/workflows/deploy-web.yml
+    with:
+      environment: ${{ needs.resolve.outputs.environment }}
+    secrets: inherit
+
+  landing:
+    needs: [resolve, web]
+    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.landing == 'true'
+    uses: ./.github/workflows/deploy-landing.yml
     with:
       environment: ${{ needs.resolve.outputs.environment }}
     secrets: inherit
