@@ -1,7 +1,7 @@
 import type { JSX, RefObject } from 'react'
 import { RiLogoutBoxLine } from '@remixicon/react'
 import { useGetSessionQuery, useSignOutMutation } from '@web/store/api/auth'
-import { ContextMenu } from '@app/ui'
+import { ContextMenu } from '@web/ui/ContextMenu'
 
 interface Props {
   x: number

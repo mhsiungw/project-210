@@ -15,11 +15,11 @@
   },
   "dependencies": {
     "@app/db": "workspace:*",
-    "@app/ui": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^9.0.1",
     "@reduxjs/toolkit": "^2.4.0",
+    "@sentry/react": "10.50.0",
     "@supabase/supabase-js": "^2.105.4",
     "@tanstack/react-virtual": "^3.13.24",
     "pdfjs-dist": "^5.4.296",

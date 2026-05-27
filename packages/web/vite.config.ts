@@ -20,7 +20,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@web': resolve(__dirname, 'src'),
-      '@app/ui': resolve(__dirname, '../ui/src'),
     },
   },
   plugins: [

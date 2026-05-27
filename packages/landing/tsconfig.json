@@ -10,11 +10,7 @@
     "declaration": false,
     "declarationMap": false,
     "types": [],
-    "plugins": [{ "name": "next" }],
-    "paths": {
-      "@app/ui": ["../ui/src/index.ts"],
-      "@app/ui/*": ["../ui/src/*"]
-    }
+    "plugins": [{ "name": "next" }]
   },
   "include": ["next-env.d.ts", "src/**/*", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

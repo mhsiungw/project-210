@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, fireEvent, screen, waitFor } from '@testing-library/react'
-import Upload, { type UploadPayload } from '@app/ui/Upload'
+import Upload, { type UploadPayload } from '@web/ui/Upload'
 
 const renderMock = vi.fn(() => ({ promise: Promise.resolve() }))
 const getPageMock = vi.fn(() =>

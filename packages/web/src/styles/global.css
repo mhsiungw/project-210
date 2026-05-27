@@ -1,9 +1,8 @@
 @layer theme, base, mui, components, utilities;
 @import 'tailwindcss';
-@import '@app/ui/styles/design-system.css';
+@import './design-system.css';
 
 @source "../";
-@source "../../../ui/src";
 
 @layer base {
   html,
