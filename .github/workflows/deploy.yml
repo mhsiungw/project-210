@@ -86,7 +86,10 @@ jobs:
 
   db:
     needs: resolve
-    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.db == 'true'
+    if: >-
+      !cancelled()
+      && needs.resolve.result == 'success'
+      && (needs.resolve.outputs.force == 'true' || needs.resolve.outputs.db == 'true')
     uses: ./.github/workflows/deploy-db.yml
     with:
       environment: ${{ needs.resolve.outputs.environment }}
@@ -94,23 +97,38 @@ jobs:
 
   functions:
     needs: [resolve, db]
-    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.functions == 'true'
+    if: >-
+      !cancelled()
+      && needs.resolve.result == 'success'
+      && needs.db.result != 'failure'
+      && (needs.resolve.outputs.force == 'true' || needs.resolve.outputs.functions == 'true')
     uses: ./.github/workflows/deploy-functions.yml
     with:
       environment: ${{ needs.resolve.outputs.environment }}
     secrets: inherit
 
   web:
-    needs: [resolve, functions]
-    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.web == 'true'
+    needs: [resolve, db, functions]
+    if: >-
+      !cancelled()
+      && needs.resolve.result == 'success'
+      && needs.db.result != 'failure'
+      && needs.functions.result != 'failure'
+      && (needs.resolve.outputs.force == 'true' || needs.resolve.outputs.web == 'true')
     uses: ./.github/workflows/deploy-web.yml
     with:
       environment: ${{ needs.resolve.outputs.environment }}
     secrets: inherit
 
   landing:
-    needs: [resolve, web]
-    if: needs.resolve.outputs.force == 'true' || needs.resolve.outputs.landing == 'true'
+    needs: [resolve, db, functions, web]
+    if: >-
+      !cancelled()
+      && needs.resolve.result == 'success'
+      && needs.db.result != 'failure'
+      && needs.functions.result != 'failure'
+      && needs.web.result != 'failure'
+      && (needs.resolve.outputs.force == 'true' || needs.resolve.outputs.landing == 'true')
     uses: ./.github/workflows/deploy-landing.yml
     with:
       environment: ${{ needs.resolve.outputs.environment }}
