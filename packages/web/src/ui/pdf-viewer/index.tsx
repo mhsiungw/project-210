@@ -27,9 +27,10 @@ type PageDim = { w: number; h: number }
 interface PdfViewerProps {
   url: string
   defaultPage?: number
+  onPageChange?: (page: number) => void
 }
 
-export function PdfViewer({ url, defaultPage = 1 }: PdfViewerProps): JSX.Element {
+export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps): JSX.Element {
   const [numPages, setNumPages] = useState(0)
   const [scale, setScale] = useState(DEFAULT_SCALE)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -41,6 +42,10 @@ export function PdfViewer({ url, defaultPage = 1 }: PdfViewerProps): JSX.Element
 
   const containerRef = useRef<HTMLDivElement>(null)
   const currentPageRef = useRef(defaultPage)
+  const onPageChangeRef = useRef(onPageChange)
+  useEffect(() => {
+    onPageChangeRef.current = onPageChange
+  }, [onPageChange])
   const didInitialScroll = useRef(false)
   const isLayoutChanging = useRef(false)
 
@@ -64,6 +69,7 @@ export function PdfViewer({ url, defaultPage = 1 }: PdfViewerProps): JSX.Element
         const page = hit.index + 1
         currentPageRef.current = page
         setCurrentPage(page)
+        onPageChangeRef.current?.(page)
       }
     },
   })

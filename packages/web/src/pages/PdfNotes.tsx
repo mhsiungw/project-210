@@ -1,8 +1,10 @@
-import { useState, useEffect, type JSX } from 'react'
-import { useBlocker, useParams } from 'react-router-dom'
-import { useGetBooksQuery } from '@web/store/api/book'
+import { useState, useEffect, useRef, useCallback, type JSX } from 'react'
+import { useParams } from 'react-router-dom'
+import { useGetBooksQuery, usePutBookMutation } from '@web/store/api/book'
 import { useGetTranslationQuery, usePostTranslationMutation } from '@web/store/api/translation'
 import { PdfViewer } from '@web/ui/pdf-viewer'
+import { shouldPersistPage } from '@web/ui/pdf-viewer/shouldPersistPage'
+import { useSaveOnExit } from '@web/ui/hooks/useSaveOnExit'
 
 export function PdfNotes(): JSX.Element {
   const { bookId } = useParams<{ userId: string; bookId: string }>()
@@ -18,7 +20,12 @@ export function PdfNotes(): JSX.Element {
   })
 
   const [postTranslation] = usePostTranslationMutation()
+  const [putBook] = usePutBookMutation()
   const [draftText, setDraftText] = useState('')
+
+  // Latest reading position reported by the viewer. null until the PDF loads
+  // and the user scrolls; shouldPersistPage treats null as "nothing to save".
+  const pageRef = useRef<number | null>(null)
 
   // Seed draft from DB on initial load only (keyed on id, not text, so typing doesn't reset)
   useEffect(() => {
@@ -26,25 +33,17 @@ export function PdfNotes(): JSX.Element {
     setDraftText(savedTranslation?.text ?? '')
   }, [savedTranslation?.id, savedTranslation?.text])
 
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) => currentLocation !== nextLocation
-  )
-
-  useEffect(() => {
-    if (blocker.state !== 'blocked') return
-
-    if (!bookId) {
-      blocker.proceed()
-      return
+  // Single exit-save path for both the notes draft and the reading position.
+  const save = useCallback(async (): Promise<void> => {
+    if (!bookId) return
+    const tasks: Promise<unknown>[] = [postTranslation({ bookId, text: draftText })]
+    if (book && shouldPersistPage(pageRef.current, book.currentPage || 1)) {
+      tasks.push(putBook({ ...book, currentPage: pageRef.current as number }))
     }
+    await Promise.all(tasks)
+  }, [bookId, draftText, book, postTranslation, putBook])
 
-    const save = async (): Promise<void> => {
-      await postTranslation({ bookId, text: draftText })
-      blocker.proceed()
-    }
-    save()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blocker.state])
+  useSaveOnExit(save)
 
   return (
     <div className="flex flex-1 gap-4">
@@ -58,7 +57,13 @@ export function PdfNotes(): JSX.Element {
       </div>
       <div className="flex-1 rounded border border-border p-3 max-w-[calc((100vw-150px)/2)]">
         {book?.s3KeyUrl && typeof book?.s3KeyUrl === 'string' && (
-          <PdfViewer url={book?.s3KeyUrl} defaultPage={book?.currentPage || 1} />
+          <PdfViewer
+            url={book?.s3KeyUrl}
+            defaultPage={book?.currentPage || 1}
+            onPageChange={page => {
+              pageRef.current = page
+            }}
+          />
         )}
       </div>
     </div>
