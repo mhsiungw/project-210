@@ -25,7 +25,22 @@ const bookApi = emptyApi.injectEndpoints({
           return { error: toQueryError(e) }
         }
       },
-      invalidatesTags: ['Book'],
+      // Patch the cached book in place rather than invalidating ['Book'].
+      // A refetch re-signs every CloudFront URL, which changes s3KeyUrl and
+      // forces <Document file={url}> to reload the whole PDF mid-read.
+      async onQueryStarted(book, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          bookApi.util.updateQueryData('getBooks', undefined, draft => {
+            const cached = draft.find(b => b.id === book.id)
+            if (cached) cached.currentPage = book.currentPage
+          })
+        )
+        try {
+          await queryFulfilled
+        } catch {
+          patch.undo()
+        }
+      },
     }),
     postBook: builder.mutation<
       void,
