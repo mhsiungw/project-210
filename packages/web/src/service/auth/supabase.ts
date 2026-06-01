@@ -39,6 +39,40 @@ export async function getAccessToken(): Promise<string> {
   return data.session?.access_token ?? ''
 }
 
+/**
+ * Synchronous read of the access token straight from localStorage.
+ *
+ * getAccessToken() awaits supabase.auth.getSession(), which also refreshes
+ * near-expiry tokens. That await makes it unusable from a `pagehide` handler:
+ * the page tears down before the promise resolves, so no request is ever sent.
+ * This reads the persisted session directly so the exit-save path can fire a
+ * keepalive fetch with zero await.
+ *
+ * Couples to supabase-js v2's storage shape: session JSON under an
+ * `sb-<project-ref>-auth-token` localStorage key. Keyed off the suffix so a
+ * project-ref change won't break it; a supabase-js major bump might — grep
+ * for this function if auth storage ever changes.
+ */
+export function getAccessTokenSync(): string {
+  try {
+    const key = Object.keys(localStorage).find(
+      k => k.startsWith('sb-') && k.endsWith('-auth-token')
+    )
+    if (!key) return ''
+    const raw = localStorage.getItem(key)
+    if (!raw) return ''
+    const session = JSON.parse(raw) as { access_token?: string; expires_at?: number }
+    if (!session.access_token) return ''
+    // Skip a doomed request if the token is already expired (expires_at is unix seconds).
+    if (typeof session.expires_at === 'number' && session.expires_at * 1000 <= Date.now()) {
+      return ''
+    }
+    return session.access_token
+  } catch {
+    return ''
+  }
+}
+
 export async function getSession(): Promise<AuthSession | null> {
   const { data, error } = await supabase.auth.getSession()
   if (error) throw new Error(error.message)

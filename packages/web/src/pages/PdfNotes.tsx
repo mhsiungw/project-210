@@ -5,6 +5,7 @@ import { useGetTranslationQuery, usePostTranslationMutation } from '@web/store/a
 import { PdfViewer } from '@web/ui/pdf-viewer'
 import { shouldPersistPage } from '@web/ui/pdf-viewer/shouldPersistPage'
 import { useSaveOnExit } from '@web/ui/hooks/useSaveOnExit'
+import { beaconSaveBook, beaconSaveTranslation } from '@web/service/beacon'
 
 export function PdfNotes(): JSX.Element {
   const { bookId } = useParams<{ userId: string; bookId: string }>()
@@ -33,7 +34,7 @@ export function PdfNotes(): JSX.Element {
     setDraftText(savedTranslation?.text ?? '')
   }, [savedTranslation?.id, savedTranslation?.text])
 
-  // Single exit-save path for both the notes draft and the reading position.
+  // Page-alive exit (in-app nav): RTK mutations keep caches correct.
   const save = useCallback(async (): Promise<void> => {
     if (!bookId) return
     const tasks: Promise<unknown>[] = [postTranslation({ bookId, text: draftText })]
@@ -43,7 +44,17 @@ export function PdfNotes(): JSX.Element {
     await Promise.all(tasks)
   }, [bookId, draftText, book, postTranslation, putBook])
 
-  useSaveOnExit(save)
+  // Teardown exit (tab close / refresh): synchronous keepalive beacons, because
+  // the async RTK path never completes once the page starts unloading.
+  const flush = useCallback((): void => {
+    if (!bookId) return
+    beaconSaveTranslation(bookId, draftText)
+    if (book && shouldPersistPage(pageRef.current, book.currentPage || 1)) {
+      beaconSaveBook({ ...book, currentPage: pageRef.current as number })
+    }
+  }, [bookId, draftText, book])
+
+  useSaveOnExit(save, flush)
 
   return (
     <div className="flex flex-1 gap-4">

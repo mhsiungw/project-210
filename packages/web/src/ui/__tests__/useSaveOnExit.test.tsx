@@ -15,14 +15,17 @@ function blocked(proceed: () => void): ReturnType<typeof useBlocker> {
   return { state: 'blocked', proceed, reset: vi.fn(), location: {} } as never
 }
 
-function Harness({ save }: { save: () => Promise<void> }): null {
-  useSaveOnExit(save)
+function Harness({ save, flush }: { save: () => Promise<void>; flush: () => void }): null {
+  useSaveOnExit(save, flush)
   return null
 }
 
 function setVisibility(state: 'visible' | 'hidden'): void {
   Object.defineProperty(document, 'visibilityState', { value: state, configurable: true })
 }
+
+const noop = (): void => {}
+const noopAsync = async (): Promise<void> => {}
 
 beforeEach(() => {
   mockedUseBlocker.mockReturnValue(unblocked())
@@ -34,57 +37,59 @@ afterEach(() => {
 })
 
 describe('useSaveOnExit', () => {
-  it('saves and then proceeds when navigation is blocked', async () => {
+  it('runs the async save and then proceeds when navigation is blocked', async () => {
     const proceed = vi.fn()
     const save = vi.fn().mockResolvedValue(undefined)
     mockedUseBlocker.mockReturnValue(blocked(proceed))
 
-    render(<Harness save={save} />)
+    render(<Harness save={save} flush={noop} />)
 
     await vi.waitFor(() => expect(proceed).toHaveBeenCalledTimes(1))
     expect(save).toHaveBeenCalledTimes(1)
   })
 
-  it('still proceeds when the save rejects (user is never trapped)', async () => {
+  it('still proceeds when the async save rejects (user is never trapped)', async () => {
     const proceed = vi.fn()
     const save = vi.fn().mockRejectedValue(new Error('network down'))
     mockedUseBlocker.mockReturnValue(blocked(proceed))
 
-    render(<Harness save={save} />)
+    render(<Harness save={save} flush={noop} />)
 
     await vi.waitFor(() => expect(proceed).toHaveBeenCalledTimes(1))
   })
 
-  it('saves on pagehide (tab close / refresh)', () => {
+  it('runs the synchronous flush on pagehide, not the async save', () => {
     const save = vi.fn().mockResolvedValue(undefined)
-    render(<Harness save={save} />)
+    const flush = vi.fn()
+    render(<Harness save={save} flush={flush} />)
 
     act(() => {
       window.dispatchEvent(new Event('pagehide'))
     })
-    expect(save).toHaveBeenCalledTimes(1)
+    expect(flush).toHaveBeenCalledTimes(1)
+    expect(save).not.toHaveBeenCalled()
   })
 
-  it('saves on visibilitychange only when hidden', () => {
-    const save = vi.fn().mockResolvedValue(undefined)
-    render(<Harness save={save} />)
+  it('flushes on visibilitychange only when hidden', () => {
+    const flush = vi.fn()
+    render(<Harness save={noopAsync} flush={flush} />)
 
     act(() => {
       setVisibility('visible')
       document.dispatchEvent(new Event('visibilitychange'))
     })
-    expect(save).not.toHaveBeenCalled()
+    expect(flush).not.toHaveBeenCalled()
 
     act(() => {
       setVisibility('hidden')
       document.dispatchEvent(new Event('visibilitychange'))
     })
-    expect(save).toHaveBeenCalledTimes(1)
+    expect(flush).toHaveBeenCalledTimes(1)
   })
 
-  it('removes its listeners on unmount (no leak, no save after teardown)', () => {
-    const save = vi.fn().mockResolvedValue(undefined)
-    const { unmount } = render(<Harness save={save} />)
+  it('removes its listeners on unmount (no leak, no flush after teardown)', () => {
+    const flush = vi.fn()
+    const { unmount } = render(<Harness save={noopAsync} flush={flush} />)
 
     unmount()
     act(() => {
@@ -92,6 +97,6 @@ describe('useSaveOnExit', () => {
       setVisibility('hidden')
       document.dispatchEvent(new Event('visibilitychange'))
     })
-    expect(save).not.toHaveBeenCalled()
+    expect(flush).not.toHaveBeenCalled()
   })
 })
