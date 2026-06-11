@@ -13,25 +13,17 @@
      Wrap them in `rgb(...)` at the consumer site. */
 
   /* Brand */
-  --p210-whale-blue: 25 118 236;
-  --p210-whale-blue-deep: 11 47 122;
   --p210-accent: 70 146 221;
-  --p210-accent-hover: 94 161 230;
-  --p210-accent-pressed: 58 127 196;
 
   /* Neutral scale */
-  --p210-gray-50: 247 247 247;
   --p210-gray-100: 236 236 236;
   --p210-gray-200: 226 226 226;
-  --p210-gray-300: 204 204 204;
   --p210-gray-400: 154 154 154;
   --p210-gray-500: 107 107 107;
   --p210-gray-600: 85 85 85;
   --p210-gray-700: 68 68 68;
-  --p210-gray-750: 52 51 51;
   --p210-gray-800: 44 44 44;
   --p210-gray-900: 33 33 33;
-  --p210-gray-950: 22 22 22;
 
   /* Status */
   --p210-error: 211 47 47;
@@ -41,7 +33,6 @@
   /* Reader chrome (kept across themes) */
   --p210-reader-canvas: 82 86 89;
   --p210-reader-toolbar: rgba(40, 40, 40, 0.92);
-  --p210-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   --p210-focus-ring: 0 0 0 3px rgba(70, 146, 221, 0.35);
 }
 
@@ -131,22 +122,6 @@
   h1 {
     @apply text-2xl font-semibold leading-tight tracking-tight mb-4;
   }
-  h2 {
-    @apply text-xl font-semibold leading-snug tracking-tight mb-3;
-  }
-  h3 {
-    @apply text-lg font-semibold leading-snug mb-2;
-  }
-  h4 {
-    @apply text-base font-medium mb-2;
-  }
-
-  code,
-  kbd,
-  samp {
-    @apply font-mono;
-    font-size: 0.92em;
-  }
 
   ::selection {
     background: rgba(70, 146, 221, 0.35);
@@ -163,12 +138,5 @@
 @layer components {
   .btn {
     @apply hover:bg-bg-overlay active:bg-bg-overlay p-1.5 rounded-sm cursor-pointer transition-[background-color,box-shadow,transform] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 duration-150 ease-out;
-  }
-
-  .link {
-    color: var(--p210-accent);
-  }
-  .link:hover {
-    color: var(--p210-accent-hover);
   }
 }
