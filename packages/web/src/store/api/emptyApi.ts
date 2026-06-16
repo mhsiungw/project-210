@@ -15,6 +15,6 @@ export function toQueryError(e: unknown): QueryError {
 export const emptyApi = createApi({
   reducerPath: 'api',
   baseQuery: fakeBaseQuery<QueryError>(),
-  tagTypes: ['Book', 'Translation'],
+  tagTypes: ['Book', 'Translation', 'Highlight'],
   endpoints: () => ({}),
 })

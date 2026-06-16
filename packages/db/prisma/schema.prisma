@@ -17,13 +17,28 @@ model Book {
   file_name    String        @default("")
   user_id      String        @db.Uuid
   translations Translation[]
+  highlights   Highlight[]
   s3_key         String  @default("")
   s3_preview_key String  @default("")
 
   @@map("books")
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Highlight {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  book_id    String   @db.Uuid
+  page       Int // 1-based page number
+  rects      Json // [{ x, y, w, h }] normalized 0..1 to the unscaled page viewport
+  text       String // captured selection (the vocab word / sentence)
+  note       String? // optional user note
+  color      String? // optional; default applied in app, no picker UI in v1
+  books      Book     @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([book_id, page])
+  @@map("highlights")
+}
+
 model Translation {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at DateTime @default(now()) @db.Timestamptz(6)

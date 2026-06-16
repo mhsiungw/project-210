@@ -16,3 +16,22 @@ export interface TranslationDto {
   text: string
   createdAt?: string
 }
+
+/** A single rectangle, normalized 0..1 against the unscaled page viewport. */
+export interface HighlightRect {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+export interface HighlightDto {
+  id: string
+  bookId: string
+  page: number
+  rects: HighlightRect[]
+  text: string
+  note?: string
+  color?: string
+  createdAt?: string
+}

@@ -26,6 +26,10 @@ declare module "sst" {
       "type": "sst.sst.Linkable"
       "value": string
     }
+    "Highlights": {
+      "name": string
+      "type": "sst.aws.Function"
+    }
     "Translations": {
       "name": string
       "type": "sst.aws.Function"

@@ -125,6 +125,16 @@ export default $config({
       },
     })
 
+    const highlights = new sst.aws.Function('Highlights', {
+      handler: 'functions/highlights.handler',
+      runtime: 'nodejs22.x',
+      link: [cloudfrontPrivateKey, cloudfrontKeyPairId, bucket],
+      environment: {
+        S3_BUCKET_NAME: bucket.name,
+        DATABASE_URL: process.env.DATABASE_URL ?? '',
+      },
+    })
+
     const api = new sst.aws.ApiGatewayV2('Api', {
       cors: {
         allowOrigins: webOriginsForCors,
@@ -149,6 +159,10 @@ export default $config({
     api.route('DELETE /api/books/{id}', books.arn, authed)
     api.route('GET /api/translations/{bookId}', translations.arn, authed)
     api.route('POST /api/translations', translations.arn, authed)
+    api.route('GET /api/highlights/{bookId}', highlights.arn, authed)
+    api.route('POST /api/highlights', highlights.arn, authed)
+    api.route('PUT /api/highlights/{id}', highlights.arn, authed)
+    api.route('DELETE /api/highlights/{id}', highlights.arn, authed)
 
     return {
       api: api.url,

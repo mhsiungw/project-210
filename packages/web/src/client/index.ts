@@ -1,5 +1,6 @@
 export type { Transport } from './transport'
 export { createHttpTransport, HttpError } from './transport-http'
 export { ApiClient } from './client'
+export type { NewHighlight } from './client'
 export { ApiClientProvider, useApiClient } from './context'
-export type { BookDto, TranslationDto } from '@app/db/dto'
+export type { BookDto, TranslationDto, HighlightDto, HighlightRect } from '@app/db/dto'

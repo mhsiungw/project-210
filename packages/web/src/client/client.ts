@@ -1,5 +1,14 @@
 import type { Transport } from './transport'
-import type { BookDto, TranslationDto } from '@app/db/dto'
+import type { BookDto, TranslationDto, HighlightDto, HighlightRect } from '@app/db/dto'
+
+export interface NewHighlight {
+  bookId: string
+  page: number
+  rects: HighlightRect[]
+  text: string
+  note?: string
+  color?: string
+}
 
 export class ApiClient {
   constructor(private readonly transport: Transport) {}
@@ -30,5 +39,21 @@ export class ApiClient {
 
   postTranslation(bookId: string, text: string): Promise<TranslationDto> {
     return this.transport.invoke<TranslationDto>('postTranslation', bookId, text)
+  }
+
+  getHighlights(bookId: string): Promise<HighlightDto[]> {
+    return this.transport.invoke<HighlightDto[]>('getHighlights', bookId)
+  }
+
+  postHighlight(input: NewHighlight): Promise<HighlightDto> {
+    return this.transport.invoke<HighlightDto>('postHighlight', input)
+  }
+
+  putHighlightNote(id: string, note: string | null): Promise<HighlightDto> {
+    return this.transport.invoke<HighlightDto>('putHighlightNote', id, note)
+  }
+
+  deleteHighlight(id: string): Promise<void> {
+    return this.transport.invoke<void>('deleteHighlight', id)
   }
 }

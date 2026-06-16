@@ -1,5 +1,6 @@
 import type { Transport } from '@web/client/transport'
 import type { BookDto } from '@app/db/dto'
+import type { NewHighlight } from '@web/client/client'
 
 export class HttpError extends Error {
   constructor(readonly status: number) {
@@ -83,6 +84,43 @@ export function createHttpTransport(baseUrl: string, getToken: () => Promise<str
           })
           assertOk(res)
           return res.json()
+        }
+        case 'getHighlights': {
+          const [bookId] = args as [string]
+          const res = await fetch(`${baseUrl}/highlights/${bookId}`, {
+            headers: await authHeader(),
+          })
+          assertOk(res)
+          return res.json()
+        }
+        case 'postHighlight': {
+          const [input] = args as [NewHighlight]
+          const res = await fetch(`${baseUrl}/highlights`, {
+            method: 'POST',
+            headers: { ...(await authHeader()), 'Content-Type': 'application/json' },
+            body: JSON.stringify(input),
+          })
+          assertOk(res)
+          return res.json()
+        }
+        case 'putHighlightNote': {
+          const [id, note] = args as [string, string | null]
+          const res = await fetch(`${baseUrl}/highlights/${id}`, {
+            method: 'PUT',
+            headers: { ...(await authHeader()), 'Content-Type': 'application/json' },
+            body: JSON.stringify({ note }),
+          })
+          assertOk(res)
+          return res.json()
+        }
+        case 'deleteHighlight': {
+          const [id] = args as [string]
+          const res = await fetch(`${baseUrl}/highlights/${id}`, {
+            method: 'DELETE',
+            headers: await authHeader(),
+          })
+          assertOk(res)
+          return undefined as T
         }
         default:
           throw new Error(`httpTransport: unknown method "${method}"`)

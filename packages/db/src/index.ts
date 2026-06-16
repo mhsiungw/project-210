@@ -5,6 +5,6 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
 
 export const prisma = new PrismaClient({ adapter })
 
-export { PrismaClient } from '../generated/client/client.ts'
-export type { Book, Translation } from '../generated/client/client.ts'
-export type { BookDto, TranslationDto } from './dto.ts'
+export { PrismaClient, Prisma } from '../generated/client/client.ts'
+export type { Book, Translation, Highlight } from '../generated/client/client.ts'
+export type { BookDto, TranslationDto, HighlightDto, HighlightRect } from './dto.ts'

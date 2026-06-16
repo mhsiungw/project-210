@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, type JSX } from 'react'
 import { useParams } from 'react-router-dom'
 import { useGetBooksQuery, usePutBookMutation } from '@web/store/api/book'
 import { useGetTranslationQuery, usePostTranslationMutation } from '@web/store/api/translation'
-import { PdfViewer } from '@web/ui/pdf-viewer'
+import { HighlightablePdfViewer } from '@web/ui/pdf-viewer/HighlightablePdfViewer'
 import { shouldPersistPage } from '@web/ui/pdf-viewer/shouldPersistPage'
 import { useSaveOnExit } from '@web/ui/hooks/useSaveOnExit'
 import { beaconSaveBook, beaconSaveTranslation } from '@web/service/beacon'
@@ -67,8 +67,9 @@ export function PdfNotes(): JSX.Element {
         />
       </div>
       <div className="flex-1 rounded border border-border p-3 max-w-[calc((100vw-150px)/2)]">
-        {book?.s3KeyUrl && typeof book?.s3KeyUrl === 'string' && (
-          <PdfViewer
+        {bookId && book?.s3KeyUrl && typeof book?.s3KeyUrl === 'string' && (
+          <HighlightablePdfViewer
+            bookId={bookId}
             url={book?.s3KeyUrl}
             defaultPage={book?.currentPage || 1}
             onPageChange={page => {

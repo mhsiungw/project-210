@@ -1,9 +1,20 @@
-import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type JSX,
+  type ReactNode,
+} from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { Document, Page, pdfjs } from 'react-pdf'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import type { HighlightRect } from '@app/db/dto'
 import { useThrottle } from '../hooks/useThrottle'
 import { PdfToolbar } from './PdfToolbar'
+import { normalizeRects } from './geometry'
 
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
@@ -24,13 +35,39 @@ const OVERSCAN = 2
 
 type PageDim = { w: number; h: number }
 
+export interface PageSize {
+  width: number
+  height: number
+}
+
+/** A text selection captured for highlighting. */
+export interface SelectionCapture {
+  page: number // 1-based
+  rects: HighlightRect[] // normalized 0..1 to the page wrapper box
+  text: string
+  // Selection bounding rect in viewport coords, for anchoring a popover.
+  anchor: { left: number; top: number; width: number; height: number }
+}
+
+/** Imperative handle so a parent (e.g. a review list) can jump to a page. */
+export interface PdfViewerHandle {
+  scrollToPage: (page: number) => void
+}
+
 interface PdfViewerProps {
   url: string
   defaultPage?: number
   onPageChange?: (page: number) => void
+  /** Render an overlay inside each rendered page wrapper (e.g. highlight rects). */
+  renderPageOverlay?: (pageNumber: number, size: PageSize) => ReactNode
+  /** Fired on mouseup when a non-empty text selection lands inside a page. */
+  onSelectionCapture?: (capture: SelectionCapture) => void
 }
 
-export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps): JSX.Element {
+export const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(function PdfViewer(
+  { url, defaultPage = 1, onPageChange, renderPageOverlay, onSelectionCapture },
+  ref
+): JSX.Element {
   const [numPages, setNumPages] = useState(0)
   const [scale, setScale] = useState(DEFAULT_SCALE)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -49,7 +86,6 @@ export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps
   const didInitialScroll = useRef(false)
   const isLayoutChanging = useRef(false)
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: pageDims.length,
     getScrollElement: () => containerRef.current,
@@ -81,6 +117,40 @@ export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps
     },
     [virtualizer, pageDims.length]
   )
+
+  // Expose jump-back to parents (Premise 4). Reuses the existing scrollToPage.
+  useImperativeHandle(ref, () => ({ scrollToPage: page => scrollToPage(page) }), [scrollToPage])
+
+  // Capture a text selection into normalized rects on the page it started in.
+  // Cross-page drags are clamped to the start page: rects whose vertical center
+  // falls outside that page's box are dropped (Resolved Decision #1).
+  const handleMouseUp = useCallback((): void => {
+    if (!onSelectionCapture) return
+    const sel = window.getSelection()
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) return
+    const range = sel.getRangeAt(0)
+    const startNode = range.startContainer
+    const startEl =
+      startNode.nodeType === Node.TEXT_NODE ? startNode.parentElement : (startNode as Element)
+    const wrapper = startEl?.closest('[data-page-number]') as HTMLElement | null
+    if (!wrapper) return
+    const page = Number(wrapper.dataset.pageNumber)
+    if (!Number.isFinite(page)) return
+    const box = wrapper.getBoundingClientRect()
+    const within = Array.from(range.getClientRects()).filter(r => {
+      const cy = r.top + r.height / 2
+      return cy >= box.top && cy <= box.bottom
+    })
+    const rects = normalizeRects(within, box)
+    if (rects.length === 0) return
+    const a = range.getBoundingClientRect()
+    onSelectionCapture({
+      page,
+      rects,
+      text: sel.toString(),
+      anchor: { left: a.left, top: a.top, width: a.width, height: a.height },
+    })
+  }, [onSelectionCapture])
 
   useEffect(() => {
     if (didInitialScroll.current) return
@@ -140,7 +210,11 @@ export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps
 
   return (
     <div className="flex flex-col w-full h-full relative">
-      <div ref={containerRef} className="flex-1 min-h-0 overflow-auto bg-reader-canvas pb-20">
+      <div
+        ref={containerRef}
+        onMouseUp={handleMouseUp}
+        className="flex-1 min-h-0 overflow-auto bg-reader-canvas pb-20"
+      >
         <div className="flex flex-col items-center min-w-min">
           <Document
             file={url}
@@ -159,6 +233,7 @@ export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps
               {virtualItems.map(item => (
                 <div
                   key={item.key}
+                  data-page-number={item.index + 1}
                   style={{
                     position: 'absolute',
                     top: item.start,
@@ -173,6 +248,12 @@ export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps
                     renderAnnotationLayer
                     renderTextLayer
                   />
+                  {renderPageOverlay && pageWidth
+                    ? renderPageOverlay(item.index + 1, {
+                        width: pageWidth,
+                        height: item.size - PAGE_GAP,
+                      })
+                    : null}
                 </div>
               ))}
             </div>
@@ -193,4 +274,4 @@ export function PdfViewer({ url, defaultPage = 1, onPageChange }: PdfViewerProps
       />
     </div>
   )
-}
+})
